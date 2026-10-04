@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" fill="#191970"/>
+  <path d="M88 102v280" stroke="#F7E998" stroke-width="30"/>
+  <text x="118" y="348" fill="#F7E998" font-family="Arial,sans-serif" font-size="183" font-weight="700" letter-spacing="-13">ane</text>
+  <rect x="88" y="398" width="88" height="12" fill="#FF4747"/>
+</svg>
