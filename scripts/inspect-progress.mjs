@@ -1,0 +1,73 @@
+import { chromium } from '@playwright/test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs/promises';
+const base = process.env.BASE ?? 'http://127.0.0.1:4173/';
+const browser = await chromium.launch({ executablePath: process.env.CHROMIUM ?? '/Users/hamza/Library/Caches/ms-playwright/chromium-1228/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing', headless: true });
+await fs.mkdir('artifacts', { recursive: true });
+try {
+  for (const [name, viewport] of Object.entries({ portrait: { width:390, height:844 }, narrow:{ width:320, height:740 }, landscape:{ width:844, height:390 }, desktop:{ width:1440, height:1000 } })) {
+    const context = await browser.newContext({ viewport, deviceScaleFactor:2 });
+    const page = await context.newPage();
+    const errors = [];
+    page.on('pageerror', error => errors.push(error.message));
+    page.on('console', msg => { if (msg.type() === 'error') errors.push(msg.text()); });
+    await page.goto(`${base}#/progress`, { waitUntil:'networkidle' });
+    await page.evaluate(() => document.fonts.ready);
+    assert.equal(await page.locator('.path-node').count(), 5);
+    assert.equal(await page.locator('.path-node[aria-current]').getAttribute('href'), '#/feed/yellow-light');
+    assert.equal(await page.locator('.path-xp').getAttribute('aria-label'), '0 total XP');
+    assert.equal(await page.evaluate(() => localStorage.getItem('roadloop-progress')), null);
+    assert.ok(await page.locator('.path-phone').evaluate(el => el.scrollWidth <= el.clientWidth));
+    assert.ok(await page.locator('.learning-path a, .learning-path button').evaluateAll(els => els.filter(el => el.getClientRects().length).every(el => { const r = el.getBoundingClientRect(); return r.width >=44 && r.height >=44; })));
+    await page.screenshot({ path:`artifacts/progress-${name}.png` });
+    await page.getByRole('button', { name:'Choose a road lesson', exact:true }).click();
+    assert.equal(await page.locator('.path-dialog progress').evaluate(el => el.value), 0);
+    await page.screenshot({ path:`artifacts/progress-unit-${name}.png` });
+    await page.keyboard.press('Escape');
+    assert.equal(await page.getByRole('button', { name:'Choose a road lesson', exact:true }).evaluate(el => el === document.activeElement), true);
+    await page.getByRole('button', { name:'View unit progress', exact:true }).click();
+    await page.locator('.path-dialog a[href="#/feed/school-bus"]').click();
+    await page.locator('.lane-feed').waitFor();
+    await page.goto(`${base}#/progress`);
+    await page.locator('.path-node').first().click();
+    await page.locator('.lane-feed').waitFor();
+    await page.goto(`${base}#/progress`);
+    await page.evaluate(() => localStorage.setItem('roadloop-progress', JSON.stringify({ xp:20, clips:{ 'yellow-light':{ done:true, tries:1, firstTry:true }, roundabout:{ done:true, tries:1, firstTry:true } }, daily:{}, liked:[], saved:[] })));
+    await page.reload({ waitUntil:'networkidle' });
+    assert.equal(await page.locator('.is-complete').count(), 2);
+    assert.equal(await page.locator('.path-node[aria-current]').getAttribute('href'), '#/feed/four-way-stop');
+    await page.screenshot({ path:`artifacts/progress-started-${name}.png` });
+    await page.locator('.learning-path').evaluate(el => el.scrollTop = el.scrollHeight);
+    await page.screenshot({ path:`artifacts/progress-bottom-${name}.png` });
+    const end = await page.locator('.path-upcoming>small').boundingBox();
+    const nav = await page.locator('.home-nav').boundingBox();
+    assert.ok(end.y + end.height < nav.y, 'Final content clears navigation');
+    await page.evaluate(async () => { await navigator.serviceWorker.ready; if (!navigator.serviceWorker.controller) await new Promise(resolve => navigator.serviceWorker.addEventListener('controllerchange', resolve, { once:true })); });
+    await context.setOffline(true);
+    await page.reload({ waitUntil:'load' });
+    await page.locator('.path-node').first().waitFor();
+    assert.equal(await page.locator('.is-complete').count(), 2);
+    assert.equal(await page.locator('.path-xp').getAttribute('aria-label'), '20 total XP');
+    await page.locator('.home-nav a[href="#/home"]').click();
+    await page.locator('.home-live').waitFor();
+    await page.locator('.home-nav a[href="#/progress"]').click();
+    await page.locator('.path-lessons').waitFor();
+    await context.setOffline(false);
+    await page.evaluate(() => { const state = JSON.parse(localStorage.getItem('roadloop-progress')); for (const id of ['yellow-light','roundabout','four-way-stop','following-distance','school-bus']) state.clips[id] = { done:true, tries:1, firstTry:true }; state.xp = 50; localStorage.setItem('roadloop-progress', JSON.stringify(state)); });
+    await page.reload({ waitUntil:'load' });
+    assert.equal(await page.locator('.is-complete').count(), 5);
+    assert.equal(await page.locator('.path-start').count(), 0);
+    await page.getByRole('button', { name:'View unit progress', exact:true }).click();
+    assert.equal(await page.locator('.path-dialog progress').evaluate(el => el.value), 5);
+    assert.match(await page.locator('.path-dialog').innerText(), /All five lessons complete/);
+    await page.keyboard.press('Escape');
+    if (name === 'narrow') {
+      await page.addStyleTag({ content:'.path-toolbar h1 { font-size:36px; } .path-unit-select>span { font-size:28px; } .path-unit-select small { font-size:20px; }' });
+      assert.ok(await page.locator('.path-phone').evaluate(el => el.scrollWidth <= el.clientWidth));
+      await page.screenshot({ path:'artifacts/progress-larger-text.png' });
+    }
+    assert.deepEqual(errors, []);
+    console.log(`${name}: layout, unit picker, lesson links, real progress, focus return, completion and offline passed.`);
+    await context.close();
+  }
+} finally { await browser.close(); }

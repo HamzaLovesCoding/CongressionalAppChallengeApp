@@ -1,0 +1,16 @@
+export const PATH_COPY = {
+  title: 'Learning path',
+  course: 'Road basics',
+  unit: 'Unit 1 · Getting started',
+  nextUnit: 'Unit 2',
+  comingSoon: 'Coming soon',
+  upcoming: 'More road lessons are on the way.',
+  start: 'Start',
+  continue: 'Continue',
+  review: 'Review',
+  completed: 'Completed',
+  available: 'Explore lesson',
+  summary: 'Your road ahead',
+  summaryDetail: 'Choose a lesson to learn something new or revisit a familiar topic.',
+  allDone: 'All five lessons complete. Revisit any lesson to keep it fresh.',
+} as const;

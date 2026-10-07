@@ -1,0 +1,71 @@
+/* Practice tab and permit test. Built on the home shell (home.css); every rule is scoped under .practice
+   and prefixed so it outranks the shell's `.home-preview p` / `h1` margin resets. */
+.practice .practice-content { padding:max(1.6em,calc(env(safe-area-inset-top) + 1em)) 1.05em 6.7em; outline:none; }
+.practice .practice-heading h1 { font-size:1.9em; font-weight:400; letter-spacing:-.05em; line-height:1.35; }
+.practice .practice-heading p { margin-top:.1em; font-size:1.09em; color:#2e3825; }
+.practice .practice-feature { min-height:0; }
+.practice .practice-feature .home-continue { margin-top:1.3em; }
+.practice .practice-list { list-style:none; margin:0; padding:.25em 1.1em; border-radius:1.55em; background:#ffffffd4; }
+.practice .practice-list li { display:flex; align-items:center; justify-content:space-between; gap:1em; min-height:3.3em; padding:.65em 0; line-height:1.35; }
+.practice .practice-list li + li { border-top:1px solid #e3ecdf; }
+.practice .practice-list b { font-weight:400; }
+.practice .practice-list span { flex:none; font-size:.9em; color:#495143; }
+.practice .practice-note { margin-top:1.2em; font-size:.92em; line-height:1.5; color:#495143; }
+
+/* Tests and long reading use a quieter mint page with the glow kept to the header (DESIGN.md §3). */
+.practice .practice-quiet { background:radial-gradient(ellipse at 40% -8%,#d1f385 0,transparent 24%),linear-gradient(#e4f2d4 0,#e6f4e8 22%,#e6f3e9 100%); }
+.practice .pt { display:flex; flex-direction:column; min-height:100dvh; padding:max(1em,calc(env(safe-area-inset-top) + .6em)) 1.05em max(1.4em,calc(env(safe-area-inset-bottom) + 1em)); outline:none; }
+.practice .pt-top { display:flex; align-items:center; gap:.75em; }
+.practice .pt-exit { width:3em; height:3em; min-width:44px; min-height:44px; }
+.practice .pt-exit svg { width:1.35em; height:1.35em; }
+.practice .pt-title { flex:1; min-width:0; color:#2e3825; }
+.practice .pt-count { flex:none; padding:.45em .9em; border:1px solid #ffffffc0; border-radius:2em; background:#fbfff0cf; font-variant-numeric:tabular-nums; white-space:nowrap; }
+.practice .pt-progress { height:.6em; margin:1.1em 0 1.8em; overflow:hidden; border-radius:1em; background:#ffffffb8; }
+.practice .pt-progress span { display:block; height:100%; border-radius:inherit; background:linear-gradient(#5dcc1b,#36ac12); transition:width .25s ease; }
+.practice .pt-eyebrow { margin-bottom:.45em; font-size:.95em; color:#495143; }
+.practice .pt h1 { margin-bottom:1.1em; font-size:1.45em; font-weight:500; line-height:1.3; letter-spacing:-.02em; overflow-wrap:anywhere; }
+.practice .pt h1:focus { outline:none; }
+.practice .pt-sign { display:grid; place-items:center; width:10.5em; height:10.5em; margin:0 auto 1.4em; border-radius:1.6em; background:#ffffffd4; }
+.practice .pt-sign img { width:7.6em; height:7.6em; }
+.practice .pt fieldset { display:grid; gap:.6em; min-width:0; margin:0; padding:0; border:0; }
+.practice .pt-option { display:flex; align-items:center; gap:.8em; min-height:3.9em; padding:.8em 1em; border:1.5px solid transparent; border-radius:1.15em; background:#ffffffd9; font-size:1.06em; line-height:1.35; overflow-wrap:anywhere; cursor:pointer; transition:border-color .15s,background-color .15s; }
+.practice .pt-option input { appearance:none; display:block; flex:none; width:1.3em; height:1.3em; margin:0; border:1.5px solid #7f8c79; border-radius:50%; background:#fff; }
+.practice .pt-option input:checked { border-color:#244f17; background:#244f17; box-shadow:inset 0 0 0 .22em #fff; }
+.practice .pt-option:has(input:checked) { border-color:#348d19; background:#f3fae9; }
+.practice .pt-option:has(input:focus-visible) { outline:3px solid #348d19; outline-offset:3px; }
+.practice .pt-option:has(input:disabled) { cursor:default; }
+.practice .pt-option-text { flex:1; }
+.practice .pt-option-status { display:grid; place-items:center; flex:none; width:1.6em; height:1.6em; border-radius:50%; color:#fff; }
+.practice .pt-option-status svg { width:1em; height:1em; }
+/* :has(input) matches the specificity of the checked-state rule above so the result colors win. */
+.practice .pt-option.is-right:has(input) { border-color:#36ac12; background:#effae4; }
+.practice .pt-option.is-right .pt-option-status { background:#36ac12; }
+.practice .pt-option.is-wrong:has(input) { border-color:#c0675f; background:#fbf0ee; }
+.practice .pt-option.is-wrong .pt-option-status { background:#a8473f; }
+.practice .pt-bottom { margin-top:auto; padding-top:1.6em; }
+.practice .pt-feedback { display:flex; align-items:flex-start; gap:.5em; min-height:1.6em; margin-bottom:.8em; line-height:1.4; }
+.practice .pt-feedback svg { flex:none; width:1.25em; height:1.25em; margin-top:.05em; }
+.practice .pt-feedback strong { font-weight:500; }
+.practice .pt-feedback.is-good { color:#22610f; }
+.practice .pt-feedback.is-bad { color:#93372f; }
+.practice .pt-action, .practice .pt-secondary { display:flex; align-items:center; justify-content:center; width:100%; min-height:3.5em; border-radius:1em; font-size:1.06em; }
+.practice .pt-action { border:0; background:#244f17; color:#fff; font-weight:500; }
+.practice .pt-action:disabled { background:#b7c6b0; color:#f6f9f3; cursor:default; transform:none; }
+.practice .pt-secondary { margin-top:.6em; border:1.5px solid #c9dcc0; background:#ffffff9e; color:#1d3b12; }
+.practice .pt-caption { margin-top:.8em; text-align:center; font-size:.87em; color:#545c50; }
+
+.practice .pt h1.pt-results-title { margin-bottom:.6em; font-size:1.9em; font-weight:400; letter-spacing:-.05em; }
+.practice .pt-score { min-height:0; margin-top:0; padding:1.05em 1.2em 1.3em; }
+.practice .pt-score-value { margin-top:.15em; font-size:3.4em; line-height:1.1; letter-spacing:-.04em; }
+.practice .pt-score-track { position:relative; height:.75em; margin-top:1.1em; border-radius:1em; background:#ffffff30; }
+.practice .pt-score-track span { display:block; height:100%; border-radius:inherit; background:linear-gradient(#5dcc1b,#36ac12); }
+.practice .pt-score-track i { position:absolute; top:-.3em; bottom:-.3em; width:2px; margin-left:-1px; border-radius:1px; background:#fff; }
+.practice .pt-score-status { display:flex; align-items:flex-start; gap:.45em; margin-top:.95em; color:#f1f5e9; line-height:1.4; }
+.practice .pt-score-status svg { flex:none; width:1.2em; height:1.2em; color:#9be36a; }
+.practice .pt-section h2 { margin:1.4em 0 .6em; font-size:1.23em; font-weight:400; letter-spacing:-.025em; }
+.practice .pt-detail { margin-top:.6em; font-size:.92em; line-height:1.45; color:#495143; }
+.practice .pt-top + .pt-eyebrow { margin-top:1.8em; }
+.practice .pt-leave h2 { font-weight:500; line-height:1.25; }
+.practice .pt-leave div { color:#2e3825; }
+.practice .pt-dialog-leave { width:100%; margin-top:10px; padding:12px; border:1.5px solid #c9dcc0; border-radius:14px; background:transparent; color:#1d3b12; }
+@media (prefers-reduced-motion:reduce) { .practice .pt-progress span, .practice .pt-option { transition:none; } }

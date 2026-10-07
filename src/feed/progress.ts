@@ -1,8 +1,11 @@
+import { AVATARS, DEFAULT_AVATAR, avatarById, type AvatarId } from '../profile/avatars.ts';
+
 export const XP_PER_CLIP = 10;
 export const DAILY_GOAL = 50;
+export const DAILY_GOALS = [10, 30, 50] as const;
 
 type ClipRecord = { tries: number; firstTry: boolean; done: boolean };
-type Stored = { xp: number; clips: Record<string, ClipRecord>; daily: Record<string, number>; liked: string[]; saved: string[] };
+type Stored = { xp: number; clips: Record<string, ClipRecord>; daily: Record<string, number>; liked: string[]; saved: string[]; dailyGoal?: number; spentXp?: number; ownedAvatars?: AvatarId[]; selectedAvatar?: AvatarId };
 
 const KEY = 'roadloop-progress';
 const empty = (): Stored => ({ xp: 0, clips: {}, daily: {}, liked: [], saved: [] });
@@ -22,6 +25,17 @@ function save() {
 const dayKey = (date: Date) => date.toLocaleDateString('en-CA');
 
 export function record(id: string): ClipRecord | undefined { return data.clips[id]; }
+
+export function dailyGoal() {
+  return DAILY_GOALS.some(goal => goal === data.dailyGoal) ? data.dailyGoal! : DAILY_GOAL;
+}
+
+export function setDailyGoal(goal: number) {
+  if (!DAILY_GOALS.some(option => option === goal)) return false;
+  data.dailyGoal = goal;
+  save();
+  return true;
+}
 
 export function answer(id: string, correct: boolean, complete = true) {
   const clip = data.clips[id] ??= { tries: 0, firstTry: false, done: false };
@@ -47,6 +61,35 @@ export function toggleMark(list: 'liked' | 'saved', id: string) {
   return on;
 }
 
+export function avatarState() {
+  const owned = AVATARS.filter(avatar => avatar.id === DEFAULT_AVATAR || (Array.isArray(data.ownedAvatars) && data.ownedAvatars.includes(avatar.id))).map(avatar => avatar.id);
+  const selected = owned.find(id => id === data.selectedAvatar) ?? DEFAULT_AVATAR;
+  const spent = typeof data.spentXp === 'number' && Number.isSafeInteger(data.spentXp) && data.spentXp >= 0 ? data.spentXp : 0;
+  return { owned, selected, spent, available: Math.max(0, data.xp - spent) };
+}
+
+export function buyAvatar(id: string): 'purchased' | 'owned' | 'insufficient' | 'unknown' {
+  const avatar = avatarById(id);
+  if (!avatar) return 'unknown';
+  const state = avatarState();
+  if (state.owned.includes(avatar.id)) return 'owned';
+  if (state.available < avatar.price) return 'insufficient';
+  // Lifetime XP and daily totals describe learning, so purchases only change this ledger.
+  data.spentXp = state.spent + avatar.price;
+  data.ownedAvatars = [...state.owned, avatar.id];
+  data.selectedAvatar = avatar.id;
+  save();
+  return 'purchased';
+}
+
+export function selectAvatar(id: string) {
+  const selected = avatarState().owned.find(owned => owned === id);
+  if (!selected) return false;
+  data.selectedAvatar = selected;
+  save();
+  return true;
+}
+
 export function stats() {
   const now = new Date();
   const today = data.daily[dayKey(now)] ?? 0;
@@ -67,6 +110,8 @@ export function stats() {
     xpTotal: data.xp, xpToday: today, streak, week, todayIndex: (now.getDay() + 6) % 7,
     attempted: attempted.length,
     firstTryRight: attempted.filter(clip => clip.firstTry).length,
+    firstTryPercentage: attempted.length ? Math.round(attempted.filter(clip => clip.firstTry).length / attempted.length * 100) : null,
+    daysPracticed: Object.values(data.daily).filter(xp => xp > 0).length,
     done: attempted.filter(clip => clip.done).length,
   };
 }

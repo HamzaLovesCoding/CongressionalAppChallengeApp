@@ -20,11 +20,39 @@ try {
       await page.screenshot({ path: `artifacts/game-${label}-${name}.png` });
     };
     const stored = () => page.evaluate(() => JSON.parse(localStorage.getItem('roadloop-progress')));
-    await page.goto(base, { waitUntil: 'load' });
+    await page.goto(`${base}#/feed`, { waitUntil: 'load' });
     await page.locator('.is-current [data-play]').click();
     await page.evaluate(() => document.fonts.ready);
     await shot('feed');
+    assert.equal(await page.locator('.is-current .lane-rail button').count(), 3);
+    assert.match(await page.locator('.is-current').innerText(), /^Since you've been scrolling\s+\d+:\d+\s+When the light turns yellow$/);
+    const seconds = async () => (await page.locator('.is-current time').innerText()).split(':').reduce((total, part) => total * 60 + Number(part), 0);
+    const started = await seconds();
+    await page.waitForTimeout(1100);
+    assert.ok(await seconds() > started, 'Scrolling timer keeps counting while playback is paused');
+    for (const kind of ['like', 'save']) {
+      await page.locator(`.is-current [data-${kind}]`).click();
+      assert.equal(await page.locator(`.is-current [data-${kind}]`).getAttribute('aria-pressed'), 'true');
+    }
+    await page.evaluate(() => Object.defineProperty(navigator, 'share', { configurable: true, value: async data => { window.sharedLesson = data; } }));
+    await page.locator('.is-current [data-share]').click();
+    assert.match((await page.evaluate(() => window.sharedLesson)).url, /#\/feed\/yellow-light$/);
+    const beforeScroll = await seconds();
+    await page.locator('.lane-feed').evaluate(el => el.scrollTo({ top: el.clientHeight, behavior: 'instant' }));
+    await page.waitForURL(/feed\/roundabout$/);
+    assert.ok(await seconds() >= beforeScroll, 'Changing lessons does not reset the scrolling timer');
+    await page.locator('.lane-feed').evaluate(el => el.scrollTo({ top: 0, behavior: 'instant' }));
+    await page.waitForURL(/feed\/yellow-light$/);
+    await page.reload({ waitUntil: 'load' });
     await page.locator('.is-current [data-play]').click();
+    for (const kind of ['like', 'save']) {
+      assert.equal(await page.locator(`.is-current [data-${kind}]`).getAttribute('aria-pressed'), 'true', `${kind} survives reload`);
+      await page.locator(`.is-current [data-${kind}]`).click();
+      assert.equal(await page.locator(`.is-current [data-${kind}]`).getAttribute('aria-pressed'), 'false');
+    }
+    assert.equal(await seconds(), 0, 'A fresh visit resets the scrolling timer');
+    await page.locator('.is-current [data-play]').click();
+    await shot('playing');
     await page.locator('.lane-sheet[aria-hidden="false"]').waitFor({ timeout: 12000 });
     assert.match(await page.locator('.lane-checkpoints').getAttribute('aria-label'), /0 of 2/);
     await shot('quiz');
@@ -49,7 +77,7 @@ try {
     await shot('drive');
     await page.locator('#exit').click();
     assert.match(page.url(), /feed\/roundabout$/);
-    await page.locator('.is-current .lane-position').click();
+    await page.goto(`${base}#/lesson-progress`);
     assert.match(await page.locator('.lane-total-xp').innerText(), /10 XP/);
     assert.equal(await page.locator('.lane-route-stop.is-cleared').count(), 1);
     await shot('progress');

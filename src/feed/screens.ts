@@ -1,5 +1,5 @@
 import { CLIPS, type Clip } from './clips';
-import { DAILY_GOAL, record, stats } from './progress';
+import { dailyGoal, record, stats } from './progress';
 import type { View } from '../navigation';
 
 function weakSpot() {
@@ -25,13 +25,13 @@ export function mountProgress(root: HTMLElement): View {
   const readiness = Math.round(s.done / CLIPS.length * 100);
   const remaining = CLIPS.length - s.done;
   const next = CLIPS.find(clip => !record(clip.id)?.done) ?? CLIPS[0];
-  const peak = Math.max(DAILY_GOAL, ...s.week);
+  const peak = Math.max(dailyGoal(), ...s.week);
   const weak = weakSpot();
   const stat = (value: string | number, label: string) => `<div class="lane-stat"><strong>${value}</strong><span>${label}</span></div>`;
   const plural = (count: number, word: string) => `${count} ${word}${count === 1 ? '' : 's'}`;
   root.innerHTML = `<main class="rl lane-summary">
     <div class="lane-summary-inner">
-      <header class="lane-summary-top"><span class="lane-summary-mark">lane</span><span class="lane-total-xp">${s.xpTotal} XP</span><a href="#/" aria-label="Back to feed">×</a></header>
+      <header class="lane-summary-top"><span class="lane-summary-mark">lane</span><span class="lane-total-xp">${s.xpTotal} XP</span><a href="#/feed" aria-label="Back to feed">×</a></header>
       <span class="lane-summary-kicker">SMALL ROUNDS. REAL ROAD SKILLS.</span>
       <h1 tabindex="-1">Your run.</h1>
       <section class="lane-readiness" aria-label="Route progress">
