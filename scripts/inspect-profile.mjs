@@ -1,0 +1,118 @@
+import { chromium } from '@playwright/test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs/promises';
+const base = process.env.BASE ?? 'http://127.0.0.1:4173/';
+const browser = await chromium.launch({ executablePath:process.env.CHROMIUM ?? '/Users/hamza/Library/Caches/ms-playwright/chromium-1228/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing', headless:true, args:['--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader'] });
+await fs.mkdir('artifacts', {recursive:true});
+try {
+  for (const [name, viewport] of Object.entries({portrait:{width:390,height:844}, narrow:{width:320,height:740}, landscape:{width:844,height:390}, desktop:{width:1440,height:1000}})) {
+    const context = await browser.newContext({viewport, deviceScaleFactor:2});
+    const page = await context.newPage();
+    const errors = [];
+    page.on('pageerror', error => errors.push(error.message));
+    page.on('console', message => {if(message.type() === 'error') errors.push(message.text());});
+    const shot = async suffix => { await page.evaluate(() => document.fonts.ready); await page.screenshot({path:`artifacts/profile-${suffix}-${name}.png`}); };
+    const saved = () => page.evaluate(() => JSON.parse(localStorage.getItem('roadloop-progress')));
+    const layout = async () => {
+      assert.ok(await page.locator('.home-phone').evaluate(el => el.scrollWidth <= el.clientWidth), 'No horizontal overflow');
+      assert.ok(await page.locator('.profile-content img').evaluateAll(images => images.every(img => img.complete && img.naturalWidth > 0)), 'All avatar art loaded');
+      assert.ok(await page.locator('.profile-page button, .profile-page a').evaluateAll(elements => elements.filter(el => el.getClientRects().length).every(el => {const r=el.getBoundingClientRect(); return r.width >=44 && r.height >=44;})), 'Touch targets at least 44px');
+    };
+    await page.goto(`${base}#/profile`, {waitUntil:'networkidle'});
+    assert.equal(await page.locator('[data-avatar-name]').innerText(), 'Sprout');
+    assert.equal(await page.locator('[data-profile-xp]').innerText(), '0');
+    assert.equal(await page.locator('[data-profile-streak]').innerText(), '0');
+    assert.equal(await page.locator('[data-profile-days]').innerText(), '0');
+    assert.equal(await page.locator('[data-profile-accuracy]').innerText(), '—');
+    assert.equal(await page.locator('[data-avatar][aria-disabled="true"]').count(), 3);
+    assert.equal(await saved(), null, 'Opening Profile does not rewrite old progress');
+    await layout(); await shot('empty');
+    await page.locator('[data-jump]').click();
+    assert.ok(page.url().endsWith('#/profile'), 'Avatar shortcut preserves hash router');
+    assert.equal(await page.locator('.profile-collection').evaluate(el => el === document.activeElement), true);
+    await shot('locked');
+    await page.locator('[data-avatar="sunny"]').focus();
+    await page.keyboard.press('Enter');
+    assert.equal(await page.locator('.profile-purchase').evaluate(el => el.open), false);
+    assert.equal(await saved(), null);
+    await page.locator('.profile-likes-empty a').click();
+    await page.locator('.is-current [data-play]').click();
+    await page.locator('.is-current [data-like]').click();
+    await page.goto(`${base}#/profile`);
+    assert.equal(await page.locator('.profile-likes li').count(), 1);
+    await page.locator('.profile-likes li a').click();
+    assert.match(page.url(), /feed\/yellow-light$/);
+    await page.locator('.is-current [data-like]').click();
+    await page.goto(`${base}#/profile`);
+    await page.locator('.profile-likes-empty').waitFor();
+    await page.evaluate(() => {
+      const today=new Date(), yesterday=new Date(); yesterday.setDate(today.getDate()-1);
+      localStorage.setItem('roadloop-progress', JSON.stringify({xp:30, clips:{'yellow-light':{done:true,tries:1,firstTry:true},roundabout:{done:true,tries:2,firstTry:false},'four-way-stop':{done:true,tries:1,firstTry:true}}, daily:{[today.toLocaleDateString('en-CA')]:20,[yesterday.toLocaleDateString('en-CA')]:10}, dailyGoal:30, liked:['yellow-light','four-way-stop','removed-lesson'], saved:['roundabout']}));
+    });
+    await page.reload({waitUntil:'networkidle'});
+    const learningBefore = await saved();
+    assert.equal(await page.locator('[data-profile-xp]').innerText(), '30');
+    assert.equal(await page.locator('[data-profile-streak]').innerText(), '2');
+    assert.equal(await page.locator('[data-profile-days]').innerText(), '2');
+    assert.equal(await page.locator('[data-profile-accuracy]').innerText(), '67%');
+    assert.equal(await page.locator('.profile-likes li').count(), 2);
+    await shot('active');
+    await page.locator('[data-jump]').click(); await shot('collection');
+    await page.locator('[data-avatar="sunny"]').click();
+    await page.locator('[data-cancel]').click();
+    assert.deepEqual(await saved(), learningBefore, 'Cancel never spends');
+    assert.equal(await page.locator('[data-avatar="sunny"]').evaluate(el => el === document.activeElement), true);
+    await page.locator('[data-avatar="sunny"]').click();
+    await shot('purchase');
+    await page.locator('[data-confirm]').click();
+    assert.equal((await saved()).spentXp, 10);
+    assert.equal((await saved()).selectedAvatar, 'sunny');
+    assert.equal(await page.locator('[data-available]').innerText(), '20 XP');
+    assert.equal(await page.locator('[data-avatar="sunny"]').getAttribute('aria-pressed'), 'true');
+    await page.locator('[data-avatar="sprout"]').click();
+    await page.locator('[data-avatar="sunny"]').click();
+    assert.equal((await saved()).spentXp, 10);
+    await page.locator('[data-avatar="cloud"]').click();
+    await page.locator('[data-confirm]').click();
+    assert.equal(await page.locator('[data-available]').innerText(), '0 XP');
+    assert.equal(await page.locator('[data-avatar="peach"]').getAttribute('aria-disabled'), 'true');
+    const {spentXp,ownedAvatars,selectedAvatar,...learningAfter} = await saved();
+    assert.deepEqual(learningAfter,learningBefore,'Spending preserves earned XP, daily records, likes, saves and lesson results');
+    assert.equal(spentXp,30); assert.equal(selectedAvatar,'cloud'); assert.deepEqual(ownedAvatars,['sprout','sunny','cloud']);
+    await shot('owned');
+    await page.reload({waitUntil:'networkidle'});
+    assert.equal(await page.locator('[data-avatar-name]').innerText(),'Cloud');
+    assert.equal(await page.locator('[data-profile-xp]').innerText(),'30');
+    await page.locator('.home-nav a[href="#/home"]').click();
+    assert.equal(await page.locator('[data-xp]').innerText(),'30');
+    assert.equal(await page.locator('[data-goal-detail]').innerText(),'20 / 30 XP today');
+    await page.locator('.home-nav a[href="#/profile"]').click();
+    await page.locator('.profile-page').evaluate(el=>el.scrollTop=el.scrollHeight);
+    await shot('likes');
+    const last = await page.locator('.profile-likes').boundingBox(); const bar = await page.locator('.home-nav').boundingBox();
+    assert.ok(last.y+last.height <= bar.y, 'Liked lessons clear navigation');
+    await page.evaluate(async()=>{await navigator.serviceWorker.ready; if(!navigator.serviceWorker.controller) await new Promise(resolve=>navigator.serviceWorker.addEventListener('controllerchange',resolve,{once:true}));});
+    await context.setOffline(true);
+    await page.reload({waitUntil:'load'});
+    await page.locator('.profile-identity').waitFor();
+    await page.waitForFunction(()=>[...document.querySelectorAll('.profile-content img')].every(img=>img.complete&&img.naturalWidth));
+    assert.equal(await page.locator('[data-avatar-name]').innerText(),'Cloud');
+    await page.locator('[data-avatar="sunny"]').click();
+    assert.equal(await page.locator('[data-avatar-name]').innerText(),'Sunny');
+    await layout();
+    await context.setOffline(false);
+    if(name === 'portrait') {
+      await page.goto(`${base}#/drive`); await page.locator('#exit').click();
+      await page.goto(`${base}#/profile`); await page.locator('.profile-identity').waitFor();
+      assert.equal(await page.evaluate(()=>getComputedStyle(document.body).touchAction),'auto');
+      await layout(); await shot('after-simulator');
+    }
+    if(name === 'narrow') {
+      await page.addStyleTag({content:'.profile-content { font-size:20px; } .profile-heading h1 { font-size:42px!important; } .profile-accuracy h3,.profile-avatar-card h3,.profile-likes li b { font-size:21px!important; } .profile-avatar-card button {font-size:18px!important;}'});
+      await layout(); await page.locator('[data-jump]').click(); await shot('larger-text');
+    }
+    assert.deepEqual(errors,[]);
+    console.log(`${name}: real stats, empty states, likes, purchase/cancel, free switching, persistence, offline, focus and layout passed.`);
+    await context.close();
+  }
+} finally { await browser.close(); }
