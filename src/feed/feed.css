@@ -249,3 +249,6 @@ html,body { margin:0; }
   .rl *, .rl *::before,.rl *::after { animation:none!important; transition:none!important; scroll-behavior:auto!important; }
   .rl .lane-clear-emblem>i { display:none; }
 }
+
+.rl .lane-home { display:flex; align-items:center; gap:7px; min-height:44px; padding-right:8px; font:500 14px Plex,Arial,sans-serif; text-decoration:none; }
+.rl .lane-home>span { font-size:22px; }

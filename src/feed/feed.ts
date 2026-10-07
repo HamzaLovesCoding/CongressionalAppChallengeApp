@@ -2,30 +2,28 @@ import { CLIPS, clipById, nextClip, type Clip } from './clips';
 import { answer, marked, record, stats, toggleMark, XP_PER_CLIP } from './progress';
 import { preloadDrive } from '../drive';
 import { go, type View } from '../navigation';
+import { createScrollTimer } from './scrollTimer';
+import { roadPoster } from './poster';
+import './minimal.css';
 
 const DEMO_SECONDS = 8;
 const esc = (value: string) => value.replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]!);
 const clock = (seconds: number) => `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(Math.floor(seconds % 60)).padStart(2, '0')}`;
 const bookmark = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12v18l-6-4-6 4z"/></svg>';
-const pause = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14M16 5v14"/></svg>';
+const heart = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/></svg>';
+const shareIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m21 3-7 18-4-8-8-3 19-7Zm0 0L10 13"/></svg>';
+const back = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14 5-7 7 7 7"/></svg>';
 const play = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 5 11 7-11 7z"/></svg>';
 const check = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg>';
 const roundNumber = (index: number) => String(index + 1).padStart(2, '0');
-function runHud(index: number) {
-  const s = stats();
-  return `<div class="lane-run-score"><span>ROUND ${roundNumber(index)}</span><span>${s.streak ? `${s.streak} DAY STREAK` : 'LET’S GET ROLLING'}</span><strong>${s.xpTotal} XP</strong></div><div class="lane-run-track" aria-label="${s.done} of ${CLIPS.length} rounds cleared">${CLIPS.map((clip, i) => `<i class="${record(clip.id)?.done ? 'is-cleared' : i === index ? 'is-active' : ''}"></i>`).join('')}</div>`;
-}
 function clipHtml(clip: Clip, index: number) {
-  const { lines, caption, background, foreground } = clip.poster;
-  return `<article class="lane-clip" data-clip="${clip.id}" style="--clip-bg:${background};--clip-fg:${foreground}" aria-label="Lesson ${index + 1}: ${esc(clip.title)}">
+  return `<article class="lane-clip" data-clip="${clip.id}" aria-label="Lesson ${index + 1}: ${esc(clip.title)}">
     <video class="lane-video" ${clip.video ? `src="${esc(clip.video)}"` : ''} playsinline muted preload="metadata" aria-label="${esc(clip.title)}"></video>
-    <div class="lane-poster" aria-hidden="true"><span class="lane-poster-label">${clip.video ? 'VIDEO LESSON' : 'DEMO CLIP / 08 SEC'}</span><strong class="lane-poster-title">${lines.map(line => `<span>${esc(line)}</span>`).join('')}</strong><span class="lane-poster-rule"></span><span class="lane-poster-caption">${esc(caption)}</span></div>
-    <div class="lane-top"><span class="lane-wordmark">lane</span><span class="lane-for-you">Your run</span><a class="lane-position" href="#/progress" aria-label="Your progress">${roundNumber(index)} / ${String(CLIPS.length).padStart(2, '0')} ↗</a></div>
-    <div class="lane-run-hud">${runHud(index)}</div>
-    <div class="lane-meta"><span>${esc(clip.topic.toUpperCase())}</span><h2>${esc(clip.title)}</h2><div class="lane-stage-path" aria-label="Watch, quick check${clip.simulator ? ', driving practice' : ''}"><span class="is-active"><i>01</i> WATCH</span><b>→</b><span><i>02</i> CHECK</span>${clip.simulator ? '<b>→</b><span><i>03</i> DRIVE</span>' : ''}</div></div>
-    <div class="lane-rail"><button class="lane-icon" data-save="${clip.id}" aria-label="Save lesson" aria-pressed="${marked('saved', clip.id)}">${bookmark}<small>Save</small></button><button class="lane-icon" data-share="${clip.id}" aria-label="Share lesson"><span class="lane-share" aria-hidden="true">↗</span><small>Share</small></button></div>
-    <div class="lane-controls"><button class="lane-icon lane-play" data-play="${clip.id}" aria-label="Pause clip">${pause}</button><span class="lane-time">00:00 / 00:08</span><span>SWIPE UP</span></div>
-    <div class="lane-progress"><span></span></div>
+    <div class="lane-poster" aria-hidden="true">${roadPoster(index)}</div>
+    <button class="lane-play-surface" data-play="${clip.id}" aria-label="Pause clip"></button>
+    <div class="lane-top"><a class="lane-home" href="#/home" aria-label="Back to home">${back}</a><div class="lane-scroll-time"><span>Since you've been scrolling</span><time>00:00</time></div></div>
+    <div class="lane-meta"><h2>${esc(clip.title)}</h2></div>
+    <div class="lane-rail"><button class="lane-icon" data-like="${clip.id}" aria-label="${marked('liked', clip.id) ? 'Unlike lesson' : 'Like lesson'}" aria-pressed="${marked('liked', clip.id)}">${heart}</button><button class="lane-icon" data-save="${clip.id}" aria-label="${marked('saved', clip.id) ? 'Unsave lesson' : 'Save lesson'}" aria-pressed="${marked('saved', clip.id)}">${bookmark}</button><button class="lane-icon" data-share="${clip.id}" aria-label="Share lesson">${shareIcon}</button></div>
   </article>`;
 }
 
@@ -34,7 +32,7 @@ export function mountFeed(root: HTMLElement, target?: { id: string; quiz: boolea
   const { done } = stats();
   root.innerHTML = `<main class="rl lane-shell">
     <h1 class="rl-visually-hidden">Lane driving lessons</h1>
-    <div class="lane-feed" tabindex="0" aria-label="Vertical video lessons"><div class="lane-track">${CLIPS.map(clipHtml).join('')}<section class="lane-end"><span>ALL CAUGHT UP</span><h2>Keep your eyes on the road.</h2><p>${done} of ${CLIPS.length} lessons completed.</p><a href="#/progress">See your progress</a></section></div></div>
+    <div class="lane-feed" tabindex="0" aria-label="Vertical video lessons"><div class="lane-track">${CLIPS.map(clipHtml).join('')}<section class="lane-end"><span>ALL CAUGHT UP</span><h2>Keep your eyes on the road.</h2><p>${done} of ${CLIPS.length} lessons completed.</p><a href="#/lesson-progress">See your progress</a><a href="#/home">Back to home</a></section></div></div>
     <div class="lane-scrim" hidden></div><section class="lane-sheet" role="dialog" aria-modal="true" aria-label="Quick check" aria-hidden="true"><div class="lane-sheet-grab"></div><div class="lane-sheet-content"></div></section>
     <div class="lane-toast" role="status" aria-live="polite"></div>
   </main>`;
@@ -51,6 +49,9 @@ export function mountFeed(root: HTMLElement, target?: { id: string; quiz: boolea
   let questionMissed = false, firstTryCount = 0, earnedXP = 0;
   let scrollTarget: number | null = null;
   let playing = true, elapsed = 0, lastTick = performance.now(), toastTimeout = 0;
+  const scrollTimer = createScrollTimer(lastTick);
+  const timers = [...root.querySelectorAll<HTMLElement>('.lane-scroll-time time')];
+  let displayedSeconds = -1;
   const current = () => CLIPS[active];
   const panel = () => panels[active];
   const video = () => {
@@ -66,7 +67,8 @@ export function mountFeed(root: HTMLElement, target?: { id: string; quiz: boolea
 
   function paintPlayback() {
     const button = panel().querySelector<HTMLButtonElement>('[data-play]')!;
-    button.innerHTML = playing ? pause : play;
+    button.innerHTML = playing ? '' : play;
+    panel().classList.toggle('is-paused', !playing);
     button.setAttribute('aria-label', playing ? 'Pause clip' : elapsed >= DEMO_SECONDS ? 'Replay clip' : 'Play clip');
   }
   function setPlaying(value: boolean) {
@@ -164,7 +166,6 @@ export function mountFeed(root: HTMLElement, target?: { id: string; quiz: boolea
     feedback.innerHTML = `<strong>${questionMissed ? 'Nice recovery.' : 'Nailed it.'}<small>${questionMissed ? 'CHECK CLEARED' : 'FIRST TRY'}</small></strong><span>${esc(q.explanation)}</span>`;
     const more = questionIndex < questions().length - 1;
     content.querySelector<HTMLElement>('.lane-answer-action')!.innerHTML = `<button class="lane-sheet-action" data-continue>${more ? 'Next check' : 'Finish round'} <span aria-hidden="true">→</span></button>`;
-    panels.forEach((item, i) => { item.querySelector('.lane-run-hud')!.innerHTML = runHud(i); });
     root.querySelector('.lane-end p')!.textContent = `${stats().done} of ${CLIPS.length} rounds cleared.`;
     content.querySelector<HTMLButtonElement>('[data-continue]')?.focus({ preventScroll: true });
     // Scroll only the sheet: scrollIntoView can also shift the paused feed beneath it.
@@ -174,21 +175,14 @@ export function mountFeed(root: HTMLElement, target?: { id: string; quiz: boolea
   }
   function next() {
     closeSheet();
-    if (nextClip(current().id)) { setActive(active + 1); announce(`Round ${roundNumber(active)} · Let’s go`); }
-    else { feed.scrollTo({ top: track.scrollHeight, behavior: 'smooth' }); go('#/progress'); }
+    if (nextClip(current().id)) { setActive(active + 1); }
+    else { feed.scrollTo({ top: track.scrollHeight, behavior: 'smooth' }); go('#/lesson-progress'); }
   }
   function replay() {
     closeSheet(); elapsed = 0;
     const media = video();
     if (media) media.currentTime = 0;
     setPlaying(true);
-  }
-  function updateProgress() {
-    const media = video();
-    const duration = media && Number.isFinite(media.duration) && media.duration > 0 ? media.duration : DEMO_SECONDS;
-    const time = media ? media.currentTime : elapsed;
-    panel().querySelector<HTMLElement>('.lane-progress span')!.style.transform = `scaleX(${Math.min(1, time / duration)})`;
-    panel().querySelector<HTMLElement>('.lane-time')!.textContent = `${clock(time)} / ${clock(duration)}`;
   }
   feed.addEventListener('scroll', () => {
     if (sheetOpen) return;
@@ -212,8 +206,10 @@ export function mountFeed(root: HTMLElement, target?: { id: string; quiz: boolea
     if (target.closest('.lane-replay')) { replay(); return; }
     const playback = target.closest<HTMLButtonElement>('[data-play]');
     if (playback) { if (!playing && elapsed >= DEMO_SECONDS) replay(); else setPlaying(!playing); return; }
+    const like = target.closest<HTMLButtonElement>('[data-like]');
+    if (like) { const on = toggleMark('liked', like.dataset.like!); like.setAttribute('aria-pressed', String(on)); like.setAttribute('aria-label', on ? 'Unlike lesson' : 'Like lesson'); return; }
     const save = target.closest<HTMLButtonElement>('[data-save]');
-    if (save) { const on = toggleMark('saved', save.dataset.save!); save.setAttribute('aria-pressed', String(on)); save.setAttribute('aria-label', on ? 'Unsave lesson' : 'Save lesson'); announce(on ? 'Saved for later' : 'Removed from saved'); return; }
+    if (save) { const on = toggleMark('saved', save.dataset.save!); save.setAttribute('aria-pressed', String(on)); save.setAttribute('aria-label', on ? 'Unsave lesson' : 'Save lesson'); return; }
     const share = target.closest<HTMLButtonElement>('[data-share]');
     if (share) {
       const clip = clipById(share.dataset.share);
@@ -242,12 +238,13 @@ export function mountFeed(root: HTMLElement, target?: { id: string; quiz: boolea
     }
     if (event.key === 'ArrowDown' || event.key === 'ArrowUp') { event.preventDefault(); setActive(active + (event.key === 'ArrowDown' ? 1 : -1)); }
   }, { signal: controller.signal });
-  document.addEventListener('visibilitychange', () => { if (document.hidden) { video()?.pause(); lastTick = performance.now(); } else if (playing && !sheetOpen) setPlaying(true); }, { signal: controller.signal });
+  document.addEventListener('visibilitychange', () => { scrollTimer.tick(performance.now(), false); if (document.hidden) { video()?.pause(); lastTick = performance.now(); } else if (playing && !sheetOpen) setPlaying(true); }, { signal: controller.signal });
   const ticker = window.setInterval(() => {
     const now = performance.now(), delta = Math.min((now - lastTick) / 1000, .2);
     lastTick = now;
     if (playing && !sheetOpen && !document.hidden && !video()) { elapsed = Math.min(DEMO_SECONDS, elapsed + delta); if (elapsed >= DEMO_SECONDS) finishClip(); }
-    updateProgress();
+    const seconds = scrollTimer.tick(now, !document.hidden);
+    if (seconds !== displayedSeconds) { timers.forEach(timer => { timer.textContent = clock(seconds); }); displayedSeconds = seconds; }
   }, 100);
   setActive(initial, false); feed.scrollTop = panel().offsetTop;
   if (target?.quiz) { renderQuestion(); openSheet(); }

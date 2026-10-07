@@ -9,7 +9,7 @@ export function mountDrive(root: HTMLElement, clipId: string | undefined): View 
   let disposed = false;
   let lab: { dispose(): void } | null = null;
   const next = clipId ? nextClip(clipId) : undefined;
-  const exit = () => go(next ? `#/feed/${next.id}` : clipId ? '#/progress' : '#/', true);
+  const exit = () => go(next ? `#/feed/${next.id}` : clipId ? '#/lesson-progress' : '#/home', true);
   Promise.all([preloadDrive(), import('./style.css')])
     .then(async ([{ createDrivingLab }]) => {
       if (disposed) return;
@@ -18,7 +18,7 @@ export function mountDrive(root: HTMLElement, clipId: string | undefined): View 
     })
     .catch(error => {
       console.error('Simulator failed to load', error);
-      if (!disposed) root.innerHTML = '<main class="rl rl-screen"><div class="rl-screen-inner"><h1 class="rl-page-title">The simulator could not load.</h1><a class="rl-cta" href="#/">Back to the feed</a></div></main>';
+      if (!disposed) root.innerHTML = '<main class="rl rl-screen"><div class="rl-screen-inner"><h1 class="rl-page-title">The simulator could not load.</h1><a class="rl-cta" href="#/feed">Back to the feed</a></div></main>';
     });
   return { dispose() { disposed = true; lab?.dispose(); } };
 }
