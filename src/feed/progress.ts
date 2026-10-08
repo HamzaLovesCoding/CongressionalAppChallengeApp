@@ -90,6 +90,23 @@ export function selectAvatar(id: string) {
   return true;
 }
 
+// Use the same local calendar as daily XP. Spending never changes these earned totals.
+export function weeklyProgress(now = new Date()) {
+  const dayIndex = (now.getDay() + 6) % 7;
+  const monday = new Date(now);
+  monday.setHours(0, 0, 0, 0);
+  monday.setDate(monday.getDate() - dayIndex);
+  let xp = 0;
+  for (let index = 0; index <= dayIndex; index++) {
+    const day = new Date(monday);
+    day.setDate(day.getDate() + index);
+    xp += data.daily[dayKey(day)] ?? 0;
+  }
+  const resetsAt = new Date(monday);
+  resetsAt.setDate(resetsAt.getDate() + 7);
+  return { xp, resetsAt, daysUntilReset: 7 - dayIndex };
+}
+
 export function stats() {
   const now = new Date();
   const today = data.daily[dayKey(now)] ?? 0;

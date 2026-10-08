@@ -1,4 +1,5 @@
 import './home.css';
+import { mountLeaderboard } from './leaderboard';
 import type { View } from '../navigation';
 import { CLIPS } from '../feed/clips';
 import { dailyGoal, DAILY_GOALS, marked, record, setDailyGoal, stats, toggleMark } from '../feed/progress';
@@ -42,6 +43,7 @@ export function mountHome(root: HTMLElement): View {
         <div class="home-goal-card"><span class="home-clock">${icon('clock')}</span><div class="home-goal-copy"><h3 data-goal-title></h3><p data-goal-detail></p><progress class="home-progress" aria-label="Daily XP goal" value="0" max="50"></progress></div></div>
         <p class="home-goal-note">${esc(learning.allDone ? copy.caughtUpNote : copy.goalNote)}</p><span class="home-sr-only" role="status" data-goal-status></span>
       </section>
+      <section class="home-leaderboard" aria-labelledby="home-leaderboard-title"></section>
       <section class="home-practice" aria-labelledby="home-practice-title">
         <div class="home-section-heading"><h2 id="home-practice-title">Make your next move</h2></div>
         <div class="home-shortcuts">${copy.shortcuts.map(item => {
@@ -56,6 +58,7 @@ export function mountHome(root: HTMLElement): View {
     <dialog class="home-dialog home-library-dialog" aria-labelledby="home-library-title"><button class="home-dialog-close" data-close aria-label="Close lessons">×</button><h2 id="home-library-title"></h2><div data-library></div></dialog>
   </div>`;
   root.append(page);
+  const leaderboard = mountLeaderboard(page.querySelector<HTMLElement>('.home-leaderboard')!);
   const menu = page.querySelector<HTMLDialogElement>('.home-menu-dialog')!;
   const goalDialog = page.querySelector<HTMLDialogElement>('.home-goal-dialog')!;
   const library = page.querySelector<HTMLDialogElement>('.home-library-dialog')!;
@@ -110,5 +113,5 @@ export function mountHome(root: HTMLElement): View {
   renderGoal();
   page.addEventListener('click', onClick);
   page.addEventListener('submit', onSubmit);
-  return { dispose() { page.removeEventListener('click', onClick); page.removeEventListener('submit', onSubmit); page.remove(); } };
+  return { dispose() { leaderboard.dispose(); page.removeEventListener('click', onClick); page.removeEventListener('submit', onSubmit); page.remove(); } };
 }

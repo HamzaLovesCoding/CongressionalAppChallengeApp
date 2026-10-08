@@ -15,3 +15,11 @@ export const homeContent = {
     { title: 'Saved lessons', detail: 'Pick up a bookmark', action: 'saved', icon: 'bookmark' },
   ],
 } as const;
+
+export const LEADERBOARD_COPY = {
+  title: 'Weekly leaderboard',
+  noRank: 'Rank not available yet',
+  yourPlace: 'Your place',
+  group: { tab: 'Group', list: 'Group weekly rankings' },
+  global: { tab: 'Global', list: 'Global weekly rankings' },
+} as const;
