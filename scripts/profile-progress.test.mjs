@@ -95,3 +95,84 @@ test('storage-disabled sessions retain purchases and prevent repeat charges in m
   assert.equal(api.avatarState().available, 20);
   assert.equal(api.selectAvatar('sprout'), true);
 });
+
+test('new and legacy saves get the default Hatchback without writes or losing avatar spending', async () => {
+  const fresh = await store();
+  assert.deepEqual(fresh.api.carState(), {owned:['hatchback'], selected:'hatchback', spent:0, available:0});
+  assert.equal(fresh.writes(), 0);
+  const old = {...legacy, spentXp:10, ownedAvatars:['sprout','sunny'], selectedAvatar:'sunny'};
+  const migrated = await store(old);
+  assert.deepEqual(migrated.api.carState(), {owned:['hatchback'], selected:'hatchback', spent:10, available:20});
+  assert.deepEqual(migrated.saved(), old);
+  assert.equal(migrated.writes(), 0);
+});
+test('car purchases persist and only deduct spendable XP, preserving learning and weekly totals', async () => {
+  const {api, saved} = await store(legacy);
+  const before = api.stats(), week = api.weeklyProgress();
+  assert.equal(api.buyCar('sedan'), 'purchased');
+  assert.deepEqual(api.carState(), {owned:['hatchback','sedan'], selected:'sedan', spent:15, available:15});
+  assert.deepEqual(api.stats(), before);
+  assert.deepEqual(api.weeklyProgress(), week);
+  assert.equal(api.dailyGoal(), 30);
+  assert.deepEqual(saved(), {...legacy, spentXp:15, ownedCars:['hatchback','sedan'], selectedCar:'sedan'});
+  const reload = await store(saved());
+  assert.deepEqual(reload.api.carState(), api.carState());
+});
+test('insufficient XP, duplicate cars and unknown cars are rejected without writes', async () => {
+  const {api, writes} = await store(legacy);
+  assert.equal(api.buyCar('pickup'), 'insufficient');
+  assert.equal(api.buyCar('__proto__'), 'unknown');
+  assert.equal(api.buyCar('hatchback'), 'owned');
+  assert.equal(writes(), 0);
+  assert.equal(api.buyCar('sedan'), 'purchased');
+  const state = api.carState();
+  assert.equal(api.buyCar('sedan'), 'owned');
+  assert.equal(api.buyCar('wagon'), 'insufficient');
+  assert.deepEqual(api.carState(), state);
+  assert.equal(writes(), 1);
+});
+test('selecting cars requires ownership and is free, with no mutable ownership leak', async () => {
+  const {api, writes} = await store(legacy);
+  assert.equal(api.selectCar('pickup'), false);
+  assert.equal(api.selectCar('unknown'), false);
+  assert.equal(writes(), 0);
+  api.buyCar('sedan');
+  assert.equal(api.selectCar('hatchback'), true);
+  assert.equal(api.carState().selected, 'hatchback');
+  assert.equal(api.selectCar('sedan'), true);
+  assert.equal(api.carState().spent, 15);
+  api.carState().owned.push('pickup');
+  assert.equal(api.selectCar('pickup'), false);
+});
+test('cars and avatars spend one pool in either purchase order', async () => {
+  const {api} = await store({...legacy, xp:40});
+  assert.equal(api.buyAvatar('sunny'), 'purchased');
+  assert.equal(api.carState().available, 30);
+  assert.equal(api.buyCar('wagon'), 'purchased');
+  assert.equal(api.avatarState().available, 5);
+  assert.equal(api.buyAvatar('cloud'), 'insufficient');
+  assert.equal(api.buyCar('sedan'), 'insufficient');
+  api.answer('new-lesson', true);
+  assert.equal(api.buyCar('sedan'), 'purchased');
+  assert.equal(api.avatarState().available, 0);
+  const reverse = await store(legacy);
+  assert.equal(reverse.api.buyCar('sedan'), 'purchased');
+  assert.equal(reverse.api.buyAvatar('sunny'), 'purchased');
+  assert.equal(reverse.api.carState().available, 5);
+  const state = reverse.api.carState();
+  reverse.api.toggleMark('liked', 'a');
+  reverse.api.toggleMark('saved', 'a');
+  assert.deepEqual(reverse.api.carState(), state, 'Social marks cannot earn or spend car XP');
+});
+test('invalid optional car fields fall back and storage-disabled purchases remain safe', async () => {
+  const {api} = await store({...legacy, ownedCars:['sedan','sedan','unknown'], selectedCar:'pickup'});
+  assert.deepEqual(api.carState().owned, ['hatchback','sedan']);
+  assert.equal(api.carState().selected, 'hatchback');
+  const malformed = await store({...legacy, ownedCars:'sedan', selectedCar:'sedan'});
+  assert.deepEqual(malformed.api.carState().owned, ['hatchback']);
+  assert.equal(malformed.api.carState().selected, 'hatchback');
+  const disabled = await store(legacy, true);
+  assert.equal(disabled.api.buyCar('sedan'), 'purchased');
+  assert.equal(disabled.api.buyCar('sedan'), 'owned');
+  assert.equal(disabled.api.carState().available, 15);
+});

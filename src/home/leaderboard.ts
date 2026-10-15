@@ -1,6 +1,6 @@
-import { avatarState, weeklyProgress } from '../feed/progress';
+import { weeklyProgress } from '../feed/progress';
 import './leaderboard.css';
-import { avatarById, AVATARS } from '../profile/avatars';
+import { icon } from './icons';
 import { leaderboardRows, type LeaderboardRow, type LeaderboardSnapshot } from './leaderboard-model';
 import { LEADERBOARD_COPY as copy } from './content';
 
@@ -11,22 +11,20 @@ const empty: LeaderboardSnapshot = { entries: [], yourRank: null };
 export function mountLeaderboard(root: HTMLElement, snapshots: Partial<Record<Scope, LeaderboardSnapshot>> = {}) {
   let scope: Scope = 'group';
   root.innerHTML = `<div class="home-section-heading"><h2 id="home-leaderboard-title">${copy.title}</h2></div>
-    <div class="home-board-card">
-    <div class="home-board-tabs" role="tablist" aria-label="Leaderboard scope">${(['group', 'global'] as const).map(id => `<button id="board-tab-${id}" role="tab" aria-controls="board-panel" aria-selected="${id === scope}" tabindex="${id === scope ? 0 : -1}" data-board-tab="${id}">${copy[id].tab}</button>`).join('')}</div>
-    <div id="board-panel" role="tabpanel" aria-labelledby="board-tab-group" tabindex="0"></div></div>`;
+    <div class="home-board-tabs ui-segmented" role="tablist" aria-label="Leaderboard scope">${(['group', 'global'] as const).map(id => `<button id="board-tab-${id}" role="tab" aria-controls="board-panel" aria-selected="${id === scope}" tabindex="${id === scope ? 0 : -1}" data-board-tab="${id}">${copy[id].tab}</button>`).join('')}</div>
+    <div class="home-board-card"><div id="board-panel" role="tabpanel" aria-labelledby="board-tab-group" tabindex="0"></div></div>`;
   const panel = root.querySelector<HTMLElement>('[role="tabpanel"]')!;
   const tabs = [...root.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
   const row = (entry: LeaderboardRow) => {
-    const avatar = avatarById(entry.avatar) ?? AVATARS[0];
     return `<li class="home-board-row${entry.isYou ? ' is-you' : ''}"${entry.isYou ? ' data-board-you' : ''}>
       <span class="home-board-rank${entry.rank !== null && entry.rank <= 3 ? ` is-place-${entry.rank}` : ''}" aria-label="${entry.rank === null ? copy.noRank : `Rank ${entry.rank}`}">${entry.rank ?? '—'}</span>
-      <img src="${esc(avatar.image)}" width="40" height="40" alt="${entry.isYou ? esc(`${avatar.name}, your selected avatar`) : ''}">
+      <span class="home-board-person" aria-hidden="true">${icon('profile')}</span>
       <span class="home-board-name"><b>${esc(entry.nickname)}</b></span>
       <span class="home-board-xp"><strong>${entry.xp.toLocaleString('en-US')}</strong><small>XP</small></span></li>`;
   };
   function refresh() {
     const week = weeklyProgress();
-    const rows = leaderboardRows(snapshots[scope] ?? empty, { avatar: avatarState().selected, xp: week.xp });
+    const rows = leaderboardRows(snapshots[scope] ?? empty, { avatar: '', xp: week.xp });
     panel.setAttribute('aria-labelledby', `board-tab-${scope}`);
     panel.innerHTML = `${rows.top.length ? `<ol class="home-board-list" aria-label="${copy[scope].list}">${rows.top.map(row).join('')}</ol>` : ''}
       ${rows.pinned ? `<div class="home-board-pinned${rows.top.length ? ' is-separated' : ''}"><ol class="home-board-list" aria-label="${copy.yourPlace}">${row(rows.pinned)}</ol></div>` : ''}`;

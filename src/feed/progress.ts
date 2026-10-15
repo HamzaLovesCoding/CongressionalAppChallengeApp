@@ -1,11 +1,13 @@
 import { AVATARS, DEFAULT_AVATAR, avatarById, type AvatarId } from '../profile/avatars.ts';
 
+import { CARS, DEFAULT_CAR, carById, type CarId } from '../profile/cars.ts';
+
 export const XP_PER_CLIP = 10;
 export const DAILY_GOAL = 50;
 export const DAILY_GOALS = [10, 30, 50] as const;
 
 type ClipRecord = { tries: number; firstTry: boolean; done: boolean };
-type Stored = { xp: number; clips: Record<string, ClipRecord>; daily: Record<string, number>; liked: string[]; saved: string[]; dailyGoal?: number; spentXp?: number; ownedAvatars?: AvatarId[]; selectedAvatar?: AvatarId };
+type Stored = { xp: number; clips: Record<string, ClipRecord>; daily: Record<string, number>; liked: string[]; saved: string[]; dailyGoal?: number; spentXp?: number; ownedAvatars?: AvatarId[]; selectedAvatar?: AvatarId; ownedCars?: CarId[]; selectedCar?: CarId };
 
 const KEY = 'roadloop-progress';
 const empty = (): Stored => ({ xp: 0, clips: {}, daily: {}, liked: [], saved: [] });
@@ -61,11 +63,15 @@ export function toggleMark(list: 'liked' | 'saved', id: string) {
   return on;
 }
 
+function wallet() {
+  const spent = typeof data.spentXp === 'number' && Number.isSafeInteger(data.spentXp) && data.spentXp >= 0 ? data.spentXp : 0;
+  return { spent, available: Math.max(0, data.xp - spent) };
+}
+
 export function avatarState() {
   const owned = AVATARS.filter(avatar => avatar.id === DEFAULT_AVATAR || (Array.isArray(data.ownedAvatars) && data.ownedAvatars.includes(avatar.id))).map(avatar => avatar.id);
   const selected = owned.find(id => id === data.selectedAvatar) ?? DEFAULT_AVATAR;
-  const spent = typeof data.spentXp === 'number' && Number.isSafeInteger(data.spentXp) && data.spentXp >= 0 ? data.spentXp : 0;
-  return { owned, selected, spent, available: Math.max(0, data.xp - spent) };
+  return { owned, selected, ...wallet() };
 }
 
 export function buyAvatar(id: string): 'purchased' | 'owned' | 'insufficient' | 'unknown' {
@@ -86,6 +92,33 @@ export function selectAvatar(id: string) {
   const selected = avatarState().owned.find(owned => owned === id);
   if (!selected) return false;
   data.selectedAvatar = selected;
+  save();
+  return true;
+}
+
+export function carState() {
+  const owned = CARS.filter(car => car.id === DEFAULT_CAR || (Array.isArray(data.ownedCars) && data.ownedCars.includes(car.id))).map(car => car.id);
+  const selected = owned.find(id => id === data.selectedCar) ?? DEFAULT_CAR;
+  return { owned, selected, ...wallet() };
+}
+
+export function buyCar(id: string): 'purchased' | 'owned' | 'insufficient' | 'unknown' {
+  const car = carById(id);
+  if (!car) return 'unknown';
+  const state = carState();
+  if (state.owned.includes(car.id)) return 'owned';
+  if (state.available < car.price) return 'insufficient';
+  data.spentXp = state.spent + car.price;
+  data.ownedCars = [...state.owned, car.id];
+  data.selectedCar = car.id;
+  save();
+  return 'purchased';
+}
+
+export function selectCar(id: string) {
+  const selected = carState().owned.find(owned => owned === id);
+  if (!selected) return false;
+  data.selectedCar = selected;
   save();
   return true;
 }

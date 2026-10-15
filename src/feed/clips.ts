@@ -1,4 +1,8 @@
-// Timed posters stand in until footage exists. Only the yellow-light clip has a matching simulator.
+import { VIDEO_LESSONS } from './curriculum';
+import type { PosterScene } from './poster';
+
+// The curriculum video lessons come first; the five original lessons still use timed posters.
+// Only the yellow-light lesson has a matching simulator.
 export type Clip = {
   id: string;
   topic: string;
@@ -7,13 +11,29 @@ export type Clip = {
   options: string[];
   answer: number;
   explanation: string;
-  poster: { lines: string[]; caption: string; background: string; foreground: string };
+  /** `scene` picks the decorative street map drawn behind the lesson (an intersection by default). */
+  poster?: { lines: string[]; caption: string; background: string; foreground: string; scene?: PosterScene };
   followUp?: { question: string; options: string[]; answer: number; explanation: string };
   video?: string;
   simulator?: boolean;
+  /** Owner curriculum text not yet approved against the handbook by a human. */
+  draft?: boolean;
+  /** Handbook citation for the quick check. */
+  source?: string;
+  /** On-screen context for curriculum video lessons. */
+  lesson?: {
+    category: string;
+    summary: string;
+    /** California correction shown over the clip; most source videos need one. */
+    californiaRule: string;
+    handbook: string;
+    local: string;
+    credit: { title: string; url: string };
+  };
 };
 
 export const CLIPS: Clip[] = [
+  ...VIDEO_LESSONS,
   {
     id: 'yellow-light', topic: 'signals',
     title: 'When the light turns yellow',
@@ -32,7 +52,7 @@ export const CLIPS: Clip[] = [
     options: ['Traffic already on the roundabout', 'Whoever signals first', 'Vehicles in the right lane', "You do, once you're past the line"],
     answer: 0,
     explanation: 'Give way to anything already circulating. Your lane only sets which exit you can take.',
-    poster: { lines: ['GIVE', 'WAY.'], caption: 'Look for traffic already moving around.', background: '#FFF2E1', foreground: '#121313' },
+    poster: { lines: ['GIVE', 'WAY.'], caption: 'Look for traffic already moving around.', background: '#FFF2E1', foreground: '#121313', scene: 'roundabout' },
   },
   {
     id: 'four-way-stop', topic: 'right of way',

@@ -31,31 +31,29 @@ export function mountProgress(root: HTMLElement): View {
   const plural = (count: number, word: string) => `${count} ${word}${count === 1 ? '' : 's'}`;
   root.innerHTML = `<main class="rl lane-summary">
     <div class="lane-summary-inner">
-      <header class="lane-summary-top"><span class="lane-summary-mark">lane</span><span class="lane-total-xp">${s.xpTotal} XP</span><a href="#/feed" aria-label="Back to feed">×</a></header>
-      <span class="lane-summary-kicker">SMALL ROUNDS. REAL ROAD SKILLS.</span>
-      <h1 tabindex="-1">Your run.</h1>
+      <header class="lane-summary-top ui-page-head"><h1 tabindex="-1">Lesson summary</h1><a href="#/feed" aria-label="Back to feed">×</a></header>
       <section class="lane-readiness" aria-label="Route progress">
-        <span>ROAD ESSENTIALS / ROUTE 01</span>
+        <div class="lane-readiness-heading"><span>Road basics</span><span class="lane-total-xp ui-chip is-accent">${s.xpTotal} XP</span></div>
         <strong>${s.done}<small> / ${CLIPS.length}</small></strong>
         <div class="lane-readiness-track" role="progressbar" aria-valuenow="${readiness}" aria-valuemin="0" aria-valuemax="100" aria-label="Lessons completed"><span style="width:${readiness}%"></span></div>
-        <p>${remaining ? `${plural(remaining, 'round')} ahead. You’ve got this.` : 'Route cleared. Replay a round to stay sharp.'}</p>
-        <a class="lane-resume" href="#/feed/${next.id}">${s.done ? remaining ? 'Continue your run' : 'Play again' : 'Start your run'} <span aria-hidden="true">→</span></a>
+        <p>${remaining ? `${plural(remaining, 'lesson')} remaining.` : 'All lessons complete.'}</p>
+        <a class="lane-resume ui-button is-split" href="#/feed/${next.id}">${s.done ? remaining ? 'Continue learning' : 'Review lessons' : 'Start learning'} <span aria-hidden="true">→</span></a>
       </section>
-      <section class="lane-route" aria-label="Choose a round"><div class="lane-route-heading"><h2>Your route.</h2><span>PLAY IN ANY ORDER</span></div>${CLIPS.map((clip, i) => {
+      <section class="lane-route" aria-label="Choose a lesson"><div class="lane-route-heading"><h2>Your lessons</h2><span>${s.done} / ${CLIPS.length}</span></div>${CLIPS.map((clip, i) => {
         const done = record(clip.id)?.done;
-        return `<a class="lane-route-stop${done ? ' is-cleared' : clip.id === next.id ? ' is-next' : ''}" href="#/feed/${clip.id}"><span class="lane-route-node" aria-hidden="true">${done ? '✓' : String(i + 1).padStart(2, '0')}</span><span class="lane-route-copy"><small>${done ? 'CLEARED' : clip.id === next.id ? 'UP NEXT' : `ROUND ${String(i + 1).padStart(2, '0')}`}${clip.simulator ? ' / + DRIVING PRACTICE' : ''}</small><strong>${clip.title}</strong></span><span aria-hidden="true">${done ? '↻' : '↗'}</span></a>`;
+        return `<a class="lane-route-stop${done ? ' is-cleared' : clip.id === next.id ? ' is-next' : ''}" href="#/feed/${clip.id}"><span class="lane-route-node" aria-hidden="true">${done ? '<svg viewBox="0 0 24 24"><path d="m6 12.5 4 4 8-9"/></svg>' : String(i + 1).padStart(2, '0')}</span><span class="lane-route-copy"><small>${done ? 'Complete' : clip.id === next.id ? 'Up next' : `Lesson ${String(i + 1).padStart(2, '0')}`}${clip.simulator ? ' · Driving practice available' : ''}</small><strong>${clip.title}</strong></span><span aria-hidden="true">${done ? '↻' : '↗'}</span></a>`;
       }).join('')}</section>
       <section class="lane-week" aria-label="XP earned each day this week">
-        <h2>This week.</h2>
+        <h2>This week</h2>
         <div class="lane-week-bars">${s.week.map((xp, i) => `<div class="lane-week-day${i === s.todayIndex ? ' is-today' : ''}"><span style="height:${Math.max(8, Math.round(xp / peak * 74))}px"></span><small aria-label="${['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'][i]}: ${xp} XP">${'MTWTFSS'[i]}</small></div>`).join('')}</div>
       </section>
       <section class="lane-stats" aria-label="Learning statistics">
-        ${stat(s.done, 'rounds cleared')}
+        ${stat(s.done, 'lessons complete')}
         ${stat(s.attempted ? `${Math.round(s.firstTryRight / s.attempted * 100)}%` : '—', 'right first try')}
         ${stat(s.streak, 'day streak')}
         ${stat(s.xpTotal, 'XP total')}
       </section>
-      ${weak ? `<section class="lane-weak"><span>KEEP PRACTICING</span><h2>${weak.topic}.</h2><p>${weak.pct}% right first try over ${plural(weak.attempted, 'lesson')}.</p>${weak.open.length ? `<a href="#/feed/${weak.open[0].id}/quiz">Review ${plural(weak.open.length, 'lesson')}</a>` : ''}</section>` : ''}
+      ${weak ? `<section class="lane-weak"><span>Review topic</span><h2>${weak.topic}</h2><p>${weak.pct}% right first try over ${plural(weak.attempted, 'lesson')}.</p>${weak.open.length ? `<a class="ui-button is-secondary" href="#/feed/${weak.open[0].id}/quiz">Review ${plural(weak.open.length, 'lesson')}</a>` : ''}</section>` : ''}
     </div>
   </main>`;
   root.querySelector<HTMLElement>('h1')?.focus();

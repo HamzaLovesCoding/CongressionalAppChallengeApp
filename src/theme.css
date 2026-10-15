@@ -1,0 +1,73 @@
+/* Neutral surfaces with the existing earthy accent, shared by every screen. */
+:root {
+  --lane-ink: #29251f;
+  --lane-support: #46423a;
+  --lane-muted: #655f54;
+  --lane-page: #f0e4ce;
+  --lane-page-end: #faf8f3;
+  --lane-glow: #efe7d7;
+  --lane-surface: #fffaf0;
+  --lane-soft: #e8dcc5;
+  --lane-line: #b1a38b;
+  --lane-surround: #ded5c5;
+  --lane-primary: #29251f;
+  --lane-primary-hover: #493f31;
+  --lane-hero: #29251f;
+  --lane-hero-glow: #493f31;
+  --lane-accent: #d19735;
+  --lane-accent-ink: #785119;
+  --lane-accent-soft: #f0dbad;
+  --lane-success: #405332;
+  --lane-success-soft: #e4ead8;
+  --lane-error: #974b3d;
+  --lane-error-soft: #f5e4dc;
+  --lane-olive: #89936b;
+  --lane-disabled: #d8d2c6;
+  --lane-map-line: #e1d2b8;
+  --lane-track: #d3c5aa;
+  --lane-road: #34322d;
+  /* Progress road scenery. Work-zone orange keeps its real-road meaning: construction ahead. */
+  --lane-lawn: #e2dab9;
+  --lane-tree: #8d986c;
+  --lane-tree-light: #b4bd8b;
+  --lane-roof: #c99d6b;
+  --lane-roof-shade: #ab7f51;
+  --lane-work: #dc7b2e;
+  --lane-page-background: var(--lane-page);
+  --lane-hero-background: var(--lane-hero);
+  /* Type: four sizes and two weights across every screen. --fs-hero is reserved for one large number. */
+  --fs-caption: 12px;
+  --fs-body: 15px;
+  --fs-title: 20px;
+  --fs-display: 26px;
+  --fs-hero: 48px;
+  --fw-regular: 400;
+  --fw-bold: 600;
+  /* 4/8-point spacing. Related items sit one step apart; separate groups two steps. */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 24px;
+  --sp-6: 32px;
+  --sp-7: 48px;
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 24px;
+  /* Elevation stays soft and warm-tinted so it reads as depth on cream, never as grey smudge. */
+  --shadow-soft: 0 1px 2px rgb(41 37 31 / .06), 0 8px 20px -12px rgb(120 81 25 / .32);
+  --shadow-raised: 0 2px 4px rgb(41 37 31 / .07), 0 18px 36px -18px rgb(120 81 25 / .45);
+  --shadow-cta: inset 0 1px 0 rgb(255 250 240 / .45), 0 10px 20px -10px rgb(120 81 25 / .6);
+  --glow-accent: 0 0 0 6px rgb(209 151 53 / .2);
+  --glow-success: 0 0 0 5px rgb(141 152 108 / .3);
+  /* The app column: a centered phone-width column on tablets and desktops. */
+  --app-width: min(100%, 430px);
+  color-scheme: light;
+  background: var(--lane-surround);
+  /* iOS Safari otherwise enlarges text when the phone turns to landscape. */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+/* Phones fill the screen at any width; several are 440–480px wide and would otherwise show side bars. */
+@media (max-width: 540px) { :root { --app-width: 100%; } }

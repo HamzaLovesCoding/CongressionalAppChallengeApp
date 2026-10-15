@@ -1,0 +1,23 @@
+/* Home bottom sheets. The <dialog> fills the viewport and stays invisible; its scrim and panel are what
+   the springs in sheet.ts move, frame by frame, so the shared dialog fade in motion.css is switched off here.
+   overflow:clip, not just hidden: WebKit otherwise scrolls the dialog to reveal the focused close button
+   while the panel is still below the screen, so the sheet flies off the top before snapping back. */
+.home-preview .home-sheet, .home-preview .home-sheet[open] { position:fixed; inset:0; width:100%; height:100%; max-width:none; max-height:none; margin:0; padding:0; border:0; overflow:hidden; overflow:clip; background:transparent; color:var(--lane-ink); font:400 15px/1.45 Plex,Arial,sans-serif; opacity:1; scale:1; transition:none; }
+.home-preview .home-sheet::backdrop, .home-preview .home-sheet[open]::backdrop { background:transparent; opacity:1; transition:none; }
+@starting-style { .home-preview .home-sheet[open] { opacity:1; scale:1; } }
+.home-sheet-scrim { position:absolute; inset:0; background:#29251f55; touch-action:none; }
+.home-sheet-panel { position:absolute; left:50%; bottom:0; display:flex; flex-direction:column; width:var(--app-width); max-height:88dvh; margin-left:calc(var(--app-width) / -2); border:1.5px solid var(--lane-ink); border-bottom:0; border-radius:var(--radius-xl) var(--radius-xl) 0 0; background:var(--lane-surface); box-shadow:0 -16px 40px -20px rgb(41 37 31 / .45); touch-action:none; will-change:transform; }
+/* Content that scrolls keeps native scrolling; the grab bar and header still drag. */
+.home-sheet-panel.is-scrollable { touch-action:auto; }
+.home-sheet-grab, .home-sheet-head { touch-action:none; }
+.home-sheet-grab { display:grid; place-items:center; flex:none; height:22px; cursor:grab; }
+.home-sheet-grab::before { content:''; width:36px; height:5px; border-radius:3px; background:var(--lane-line); }
+.home-sheet-head { display:flex; align-items:center; justify-content:space-between; gap:var(--sp-3); flex:none; padding:var(--sp-1) 20px var(--sp-3); }
+.home-sheet-head h2:focus { outline:none; }
+.home-sheet-head h2 { margin:0; font-size:var(--fs-title); line-height:1.2; font-weight:var(--fw-bold); letter-spacing:-.01em; }
+.home-preview .home-sheet-close { display:grid; place-items:center; flex:none; width:44px; height:44px; padding:0; border:1px solid var(--lane-ink); border-radius:var(--radius-md); background:transparent; }
+.home-sheet-close svg { width:20px; height:20px; }
+.home-sheet-body { overflow:auto; overscroll-behavior:contain; padding:4px 20px max(24px,env(safe-area-inset-bottom)); }
+.home-sheet-body > p { margin:0; color:var(--lane-muted); font-size:var(--fs-body); }
+.home-sheet-cancel { display:flex; align-items:center; justify-content:center; width:100%; min-height:48px; margin-top:var(--sp-2); border:0; background:transparent; color:var(--lane-support); }
+@media (prefers-reduced-transparency:reduce) { .home-sheet-scrim { background:#29251f99; } }

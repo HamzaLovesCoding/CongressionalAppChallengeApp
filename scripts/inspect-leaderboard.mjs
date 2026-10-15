@@ -7,7 +7,7 @@ const browser=await chromium.launch({executablePath:process.env.CHROMIUM ?? '/Us
 await fs.mkdir('artifacts',{recursive:true});
 try {
   for(const [name,viewport] of Object.entries({portrait:{width:390,height:844},narrow:{width:320,height:740},landscape:{width:844,height:390},desktop:{width:1440,height:1000}})) {
-    const context=await browser.newContext({viewport,deviceScaleFactor:2,timezoneId:'America/Los_Angeles'});
+    const context=await browser.newContext({viewport,deviceScaleFactor:2,reducedMotion:'reduce',timezoneId:'America/Los_Angeles'});
     const page=await context.newPage(); const errors=[];
     page.on('pageerror',e=>errors.push(e.message));
     page.on('console',m=>{if(m.type()==='error') errors.push(m.text());});
@@ -15,8 +15,6 @@ try {
     await page.goto(`${base}#/home`,{waitUntil:'networkidle'});
     assert.equal(await page.locator('[data-board-you] .home-board-xp').innerText(),'0\nXP');
     assert.equal(await page.locator('[data-board-reset]').count(),0);
-    assert.equal(await page.evaluate(()=>document.querySelector('.home-goal').nextElementSibling.className),'home-leaderboard');
-    assert.equal(await page.evaluate(()=>document.querySelector('.home-leaderboard').nextElementSibling.className),'home-practice');
     assert.equal(await page.evaluate(()=>localStorage.getItem('roadloop-progress')),null);
     await page.evaluate(()=>localStorage.setItem('roadloop-progress',JSON.stringify({xp:140,spentXp:10,ownedAvatars:['sprout','sunny'],selectedAvatar:'sunny',clips:{},daily:{'2026-10-04':100,'2026-10-05':10,'2026-10-06':10,'2026-10-07':20},liked:[],saved:[]})));
     await page.reload({waitUntil:'networkidle'});
@@ -24,7 +22,7 @@ try {
     await board.evaluate(el=>el.scrollIntoView({block:'start'}));
     await page.evaluate(()=>document.fonts.ready);
     assert.equal(await page.locator('[data-board-you] .home-board-xp strong').innerText(),'40');
-    assert.equal(await page.locator('[data-board-you] img').getAttribute('src'),'/images/avatars/sunny.png');
+    assert.equal(await page.locator('[data-board-you] img').count(),0, 'Avatar portraits removed');
     assert.equal(await page.locator('[data-board-you] .home-board-rank').innerText(),'—');
     await page.screenshot({path:`artifacts/leaderboard-group-${name}.png`});
     await page.getByRole('tab',{name:'Group',exact:true}).focus();
@@ -40,18 +38,17 @@ try {
     assert.equal(await page.getByRole('tabpanel').evaluate(el=>el===document.activeElement),true);
     await page.locator('.home-nav a[href="#/profile"]').click();
     assert.equal(await page.locator('.home-leaderboard').count(),0);
-    await page.locator('[data-avatar="sprout"]').click();
-    await page.locator('.home-nav a[href="#/home"]').click();
-    assert.equal(await page.locator('[data-board-you] img').getAttribute('src'),'/images/home/mascot.png');
-    await page.locator('.home-nav a[href="#/profile"]').click();
-    await page.locator('[data-avatar="cloud"]').click(); await page.locator('[data-confirm]').click();
+    await page.locator('[data-car="sedan"]').click(); await page.locator('[data-item-action]').click(); await page.locator('[data-confirm]').click();
+    await page.waitForFunction(() => !document.querySelector('.profile-item-sheet').open);
     await page.locator('.home-nav a[href="#/home"]').click();
     assert.equal(await page.locator('[data-board-you] .home-board-xp strong').innerText(),'40');
-    assert.equal(await page.locator('[data-board-you] img').getAttribute('src'),'/images/avatars/cloud.png');
+    assert.equal(await page.locator('[data-board-you] img, [data-board-you] [data-car-art]').count(),0);
     await page.clock.fastForward(5*86400000);
     assert.equal(await page.locator('[data-board-you] .home-board-xp strong').innerText(),'0');
     assert.equal(await page.locator('[data-board-reset]').count(),0);
-    assert.equal(await page.locator('[data-xp]').innerText(),'140');
+    await page.locator('.home-nav a[href="#/profile"]').click();
+    assert.equal(await page.locator('[data-profile-xp]').innerText(),'140');
+    await page.locator('.home-nav a[href="#/home"]').click();
     assert.ok(await page.locator('.home-phone').evaluate(el=>el.scrollWidth<=el.clientWidth));
     assert.ok(await page.locator('[role="tab"]').evaluateAll(els=>els.every(el=>el.getBoundingClientRect().height>=44)));
     await page.evaluate(async()=>{await navigator.serviceWorker.ready;if(!navigator.serviceWorker.controller)await new Promise(r=>navigator.serviceWorker.addEventListener('controllerchange',r,{once:true}));});
@@ -60,7 +57,7 @@ try {
     assert.equal(await page.locator('[data-board-you]').count(),1);
     assert.equal(await page.locator('[data-board-you] .home-board-xp strong').innerText(),'0');
     assert.deepEqual(errors,[]); await context.close();
-    console.log(`${name}: placement, weekly XP, tabs/keyboard, avatar refresh, spending, Monday rollover, offline and layout passed.`);
+    console.log(`${name}: placement, weekly XP, tabs/keyboard, garage spending, Monday rollover, offline and layout passed.`);
   }
   // Development-only ranked fixtures exercise the future data boundary, never shipped sample users.
   for(const width of [390,320]) {
