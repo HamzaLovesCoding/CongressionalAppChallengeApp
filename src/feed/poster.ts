@@ -1,23 +1,48 @@
-// A decorative media fallback, not a depiction of a lesson's correct driving action.
-export function roadPoster(index: number) {
-  const id = `road-${index}`;
+// Decorative street map for lessons that do not yet have licensed video.
+export type PosterScene = 'roundabout';
+
+const car = (x: number, y: number, angle = 0, fill = 'var(--lane-accent)') =>
+  `<g transform="translate(${x} ${y}) rotate(${angle})"><rect x="-12" y="-28" width="24" height="55" rx="7" fill="${fill}" stroke="var(--lane-ink)" stroke-width="2"/><path d="M-8-13H8L6-3H-6ZM-6 11H6L8 19H-8Z" fill="var(--lane-ink)"/><path d="M-8-22h5m6 0h5" stroke="var(--lane-surface)" stroke-width="3"/></g>`;
+
+// A two-lane roundabout. Traffic circulates counterclockwise, as in California: the route enters from
+// the south, keeps right around the island and leaves north, while a car already on the ring heads for
+// that entry. Yield lines mark every entry.
+const roundabout = () => {
+  // Roads stop at y 640 like the intersection map, so the lesson title below always sits on the cream page.
+  const roads = 'M215 85V640M-30 400H465';
   return `<svg class="lane-road-art" viewBox="0 0 430 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-    <defs>
-      <linearGradient id="${id}-grass" x2=".6" y2="1"><stop stop-color="#d8efac"/><stop offset="1" stop-color="#b9d8b6"/></linearGradient>
-      <linearGradient id="${id}-car" x2="1" y2="1"><stop stop-color="#f9fff1"/><stop offset="1" stop-color="#c5dea9"/></linearGradient>
-      <filter id="${id}-shadow" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="0" dy="6" stdDeviation="5" flood-color="#173b20" flood-opacity=".12"/></filter>
-    </defs>
-    <rect width="430" height="900" fill="url(#${id}-grass)"/>
-    <path d="M-90 240Q140 40 500 135M-90 780Q30 575 500 710" fill="none" stroke="#e8f1c8" stroke-width="80" opacity=".45"/>
-    <path d="M265-80C380 100 305 185 225 310S170 520 210 640 205 810 140 970" fill="none" stroke="#a9c89c" stroke-width="132"/>
-    <path d="M265-80C380 100 305 185 225 310S170 520 210 640 205 810 140 970" fill="none" stroke="#f0f4dc" stroke-width="118"/>
-    <path d="M265-80C380 100 305 185 225 310S170 520 210 640 205 810 140 970" fill="none" stroke="#6f8874" stroke-width="105"/>
-    <path d="M265-80C380 100 305 185 225 310S170 520 210 640 205 810 140 970" fill="none" stroke="#f2efd0" stroke-width="3" stroke-dasharray="17 20" opacity=".85"/>
-    <g fill="#a5c790" opacity=".5"><ellipse cx="81" cy="343" rx="38" ry="17"/><ellipse cx="342" cy="563" rx="38" ry="17"/><ellipse cx="44" cy="748" rx="44" ry="20"/></g>
-    <g filter="url(#${id}-shadow)"><g fill="#7da86c"><circle cx="75" cy="300" r="29"/><circle cx="94" cy="318" r="25"/><circle cx="57" cy="321" r="23"/></g><circle cx="72" cy="302" r="23" fill="#97bf7d"/>
-    <g fill="#7aa475"><circle cx="350" cy="517" r="31"/><circle cx="331" cy="539" r="26"/><circle cx="367" cy="539" r="23"/></g><circle cx="348" cy="518" r="23" fill="#95b986"/>
-    <g fill="#719f69"><circle cx="38" cy="705" r="32"/><circle cx="57" cy="721" r="30"/><circle cx="24" cy="732" r="26"/></g><circle cx="36" cy="707" r="26" fill="#8db67a"/></g>
-    <g class="lane-poster-car" filter="url(#${id}-shadow)"><g transform="translate(212 441) rotate(-3)"><rect x="-19" y="-30" width="38" height="67" rx="14" fill="url(#${id}-car)"/><rect x="-15" y="-15" width="30" height="36" rx="9" fill="#344f41"/><rect x="-12" y="-4" width="24" height="17" rx="5" fill="#dbeaca"/><path d="M-11-24h6m10 0h6" stroke="#fff" stroke-width="4" stroke-linecap="round"/><path d="M-11 28h5m11 0h-5" stroke="#ce8974" stroke-width="3" stroke-linecap="round"/></g></g>
-    <g opacity=".6" fill="#f1f7d8"><ellipse cx="68" cy="159" rx="25" ry="9" transform="rotate(-35 68 159)"/><ellipse cx="342" cy="752" rx="23" ry="8" transform="rotate(-35 342 752)"/></g>
+    <rect width="430" height="900" fill="var(--lane-page)"/>
+    <g fill="var(--lane-soft)" stroke="var(--lane-line)" stroke-width="1">
+      <rect x="-24" y="100" width="152" height="188" rx="12"/><rect x="302" y="100" width="160" height="188" rx="12"/>
+      <rect x="-24" y="512" width="152" height="128" rx="12"/><rect x="302" y="512" width="160" height="128" rx="12"/>
+    </g>
+    <g fill="none" stroke="var(--lane-map-line)" stroke-width="18"><circle cx="215" cy="400" r="131"/><path d="M164 85V640M266 85V640M-30 349H465M-30 451H465"/></g>
+    <g fill="none" stroke="var(--lane-ink)"><path d="${roads}" stroke-width="78"/><circle cx="215" cy="400" r="88" stroke-width="68"/></g>
+    <g fill="none" stroke="var(--lane-road)"><path d="${roads}" stroke-width="74"/><circle cx="215" cy="400" r="88" stroke-width="64"/></g>
+    <circle cx="215" cy="400" r="55" fill="var(--lane-soft)" stroke="var(--lane-ink)" stroke-width="2"/><circle cx="215" cy="400" r="34" fill="var(--lane-map-line)"/>
+    <g fill="none" stroke="var(--lane-page)" stroke-width="2" stroke-dasharray="12 16"><circle cx="215" cy="400" r="88"/><path d="M215 85V276M215 524V640M-30 400H91M339 400H465"/></g>
+    <g stroke="var(--lane-surface)" stroke-width="4" stroke-dasharray="4 6"><path d="M217 523H251M179 277H213M337 363V398M93 402V437"/></g>
+    <path d="M233.5 627V570C233.5 536 270 492 288.5 473.5A104 104 0 0 0 288.5 326.5C270 308 233.5 270 233.5 240V60" fill="none" stroke="var(--lane-accent)" stroke-width="4" stroke-linecap="round"/>
+    ${car(164, 451, 135, 'var(--lane-surface)')}${car(233.5, 600)}
+  </svg>`;
+};
+
+export function roadPoster(index: number, scene?: PosterScene) {
+  if (scene === 'roundabout') return roundabout();
+  const turn = index % 2 ? 'M-30 450H200Q265 450 265 385V-30' : 'M220-30V350Q220 450 320 450H470';
+  return `<svg class="lane-road-art" viewBox="0 0 430 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <rect width="430" height="900" fill="var(--lane-page)"/>
+    <g fill="var(--lane-soft)" stroke="var(--lane-line)" stroke-width="1">
+      <rect x="-24" y="145" width="156" height="125" rx="12"/><rect x="324" y="145" width="138" height="125" rx="12"/>
+      <rect x="-24" y="335" width="156" height="72" rx="12"/><rect x="324" y="335" width="138" height="72" rx="12"/>
+      <rect x="-24" y="504" width="156" height="126" rx="12"/><rect x="324" y="504" width="138" height="126" rx="12"/>
+    </g>
+    <g fill="none" stroke="var(--lane-map-line)" stroke-width="22"><path d="M-20 302H450M165 95V650M298 95V650"/></g>
+    <path d="M220 85V640M-30 450H465" fill="none" stroke="var(--lane-ink)" stroke-width="78"/>
+    <path d="M220 85V640M-30 450H465" fill="none" stroke="var(--lane-road)" stroke-width="74"/>
+    <path d="M220 85V395M220 510V640M-30 450H170M277 450H465" fill="none" stroke="var(--lane-page)" stroke-width="2" stroke-dasharray="12 16"/>
+    <path d="${turn}" fill="none" stroke="var(--lane-accent)" stroke-width="4" stroke-linecap="round"/>
+    <g stroke="var(--lane-surface)" stroke-width="4" stroke-dasharray="4 6"><path d="M188 390H251M188 513H251M159 419V482M279 419V482"/></g>
+    ${car(index % 2 ? 280 : 232, 300)}
   </svg>`;
 }

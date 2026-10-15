@@ -8,7 +8,7 @@ export function mountControls(root: HTMLElement, scenario: Scenario, onCamera: (
     <main class="experience" data-state="loading">
       <div class="world"><canvas id="scene" aria-label="Real-time 3D suburban intersection" tabindex="0"></canvas><div class="vignette"></div></div>
       <header class="header">
-        <a class="brand" href="./" aria-label="Lane driving practice">lane</a>
+        <a class="brand" href="./" aria-label="Lane driving practice"><span class="sim-wordmark" aria-hidden="true"></span></a>
         <div class="chapter"><span class="chapter-number">01</span><span>The yellow light<small>CEDAR AVE × MAPLE ST</small></span></div>
         <div class="header-actions">${onExit ? '<button class="icon-button exit-button" id="exit" aria-label="Back to feed" title="Back to feed (Esc)"><span aria-hidden="true">←</span><span class="exit-label">Feed</span></button>' : ''}<button class="icon-button sound-button" id="mute" aria-label="Enable sound" title="Enable sound">Sound<small id="sound-state">Off</small></button><button class="icon-button camera-button" id="camera" aria-label="Switch Camera" title="Switch Camera (C)"><span class="camera-icon"></span><span class="camera-label">Switch camera</span></button></div>
       </header>
@@ -21,7 +21,7 @@ export function mountControls(root: HTMLElement, scenario: Scenario, onCamera: (
       <div class="replay-key" id="replay-key" hidden><span><i class="key-needed"></i><span id="key-distance"></span></span><span id="key-margin-row"><i class="key-spare"></i><span id="key-margin"></span></span><span><i class="key-line"></i>Stop line</span></div>
       <section class="bottom-panel" aria-label="Scenario controls">
         <div class="panel-top"><span class="eyebrow" id="eyebrow">READ THE ROAD</span><span class="step-count" id="step-count">01 / 03</span></div>
-        <div class="panel-copy" aria-live="polite" aria-atomic="true"><h1 id="title">A little yellow.<br>A big decision.</h1><p id="description">You're approaching Cedar Avenue. Watch the light and be ready to choose.</p></div>
+        <div class="panel-copy" aria-live="polite" aria-atomic="true"><h1 id="title">Approaching the intersection.</h1><p id="description">You're approaching Cedar Avenue. Watch the light and be ready to choose.</p></div>
         <div class="approach-status" id="approach-status"><span class="motion-dot"></span><span>Driving automatically</span><span class="ahead-arrow">↗</span></div>
         <div class="decision-actions" id="decision-actions" hidden>
           <button class="choice brake" id="brake" aria-pressed="false"><span class="button-symbol">Ⅱ</span><span id="brake-copy">Hold to brake<small>Release to coast</small></span><kbd>B</kbd></button>
@@ -35,7 +35,7 @@ export function mountControls(root: HTMLElement, scenario: Scenario, onCamera: (
       </section>
       <div class="prototype-note">INTERACTIVE 3D STUDY <span>•</span> 01</div>
       <div class="paused-banner" id="paused-banner" hidden>Paused <span>Press Space to resume</span></div>
-      <div class="loading" id="loading" role="status"><span class="loading-mark">lane</span><span class="eyebrow">NEXT CHECKPOINT / DRIVE</span><h2>Take the wheel.</h2><p id="loading-message">Building your neighborhood…</p><div class="loading-track"><div id="loading-progress"></div></div><span id="loading-percent">0%</span></div>
+      <div class="loading" id="loading" role="status"><span class="loading-mark">lane</span><span class="eyebrow">DRIVING PRACTICE</span><h2>Loading the intersection</h2><p id="loading-message">Preparing the driving scene…</p><div class="loading-track"><div id="loading-progress"></div></div><span id="loading-percent">0%</span></div>
       <pre class="performance" id="performance" hidden></pre>
       <details class="performance-report" id="performance-report" hidden><summary>Device measurements</summary><textarea id="performance-results" readonly aria-label="Device performance results"></textarea><small>Long-press to select and copy. FPS is measured on this browser; thermal state needs a manual check.</small></details>
     </main>`;
@@ -237,7 +237,7 @@ export function mountControls(root: HTMLElement, scenario: Scenario, onCamera: (
         els.approach.innerHTML = `<span class="motion-dot"></span><span>${scenario.choice === 'brake' ? 'Slowing to a stop' : 'Continuing at 20 mph'}</span><span class="ahead-arrow">↗</span>`;
       } else {
         els.eyebrow.textContent = 'READ THE ROAD';
-        els.title.innerHTML = 'A little yellow.<br>A big decision.';
+        els.title.innerHTML = 'Approaching the intersection.';
         els.description.textContent = "You're approaching Cedar Avenue. Watch the light and be ready to choose.";
         els.approach.innerHTML = '<span class="motion-dot"></span><span>Driving automatically</span><span class="ahead-arrow">↗</span>';
       }

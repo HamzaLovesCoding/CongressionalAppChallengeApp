@@ -1,74 +1,193 @@
-.learning-path .path-phone {
-  background:radial-gradient(ellipse at 45% -8%,#d1f385 0,transparent 42%),linear-gradient(#e1f3b6 0%,#edf8da 34%,#fbfdf7 64%,#f4fbef 100%);
+/* Progress: a compact trip panel over a road the selected car drives. Signs are flow content (bottom-up,
+   lesson 1 lowest); path.ts measures where each sign's posts land and draws the road through those
+   heights, so wrapping or larger text never misaligns it. */
+.learning-path { scroll-padding-block:var(--path-panel,140px) 150px; }
+.learning-path .path-content { min-height:100dvh; padding:var(--path-panel,140px) 20px 0; outline:none; }
+
+/* Trip panel. path.ts measures its height into --path-panel, which varies with the notch inset and text size. */
+.path-dashboard { position:fixed; z-index:4; top:0; left:50%; transform:translateX(-50%); width:var(--app-width); display:grid; grid-template-columns:minmax(0,1fr) auto; grid-template-areas:"title chips" "trip trip"; align-items:center; column-gap:var(--sp-3); row-gap:var(--sp-1); padding:max(12px,env(safe-area-inset-top)) 20px var(--sp-4); background:var(--lane-page); border-bottom:1px solid var(--lane-line); }
+.path-dashboard h1 { grid-area:title; font-size:var(--fs-display); line-height:1.15; font-weight:var(--fw-bold); letter-spacing:-.02em; }
+.path-chips { grid-area:chips; display:flex; align-items:center; gap:var(--sp-1); }
+.home-preview .path-chip-button { display:grid; place-items:center; min-width:44px; min-height:44px; padding:0; border:0; background:transparent; }
+.path-chip-button .ui-chip { border-color:var(--lane-ink); }
+/* The ring hugs the chip rather than the larger touch target around it. */
+.home-preview .path-chip-button:focus-visible { outline:none; }
+.home-preview .path-chip-button:focus-visible .ui-chip { outline:3px solid var(--lane-accent-ink); outline-offset:3px; }
+.path-xp small { margin-left:2px; font-size:inherit; font-weight:var(--fw-regular); }
+.path-trip { grid-area:trip; }
+.learning-path .path-trip-label { display:flex; align-items:baseline; justify-content:space-between; gap:var(--sp-3); margin-bottom:var(--sp-2); font-size:var(--fs-caption); color:var(--lane-muted); font-variant-numeric:tabular-nums; }
+.path-trip-label strong { font-size:var(--fs-body); font-weight:var(--fw-bold); color:var(--lane-ink); }
+/* The whole unit at a glance: a track the car rides along, with each milestone pinned where it is earned. */
+/* The car's nose stops just short of the completion point, so the milestone pin it reaches stays in view. */
+.path-meter { --start:40px; --end:8px; --x:calc(var(--start) + var(--at,0) * (100% - var(--start) - var(--end))); position:relative; height:10px; margin-block:var(--sp-1); border-radius:5px; background:var(--lane-track); }
+.path-meter-fill { position:absolute; inset:0 auto 0 0; width:calc(var(--x) - 5px); border-radius:5px; background:var(--lane-accent); }
+.path-meter-pin { position:absolute; top:50%; left:calc(var(--start) + var(--pin) * (100% - var(--start) - var(--end))); width:10px; height:10px; margin:-5px 0 0 -5px; border:1.5px solid var(--lane-muted); border-radius:50%; background:var(--lane-surface); }
+.path-meter-pin.is-earned { border-color:var(--lane-surface); background:var(--lane-ink); }
+.path-meter-car { position:absolute; top:50%; left:calc(var(--x) - 5px); width:32px; height:18px; overflow:visible; transform:translate(-100%,-50%); filter:drop-shadow(0 1px 1px rgb(41 37 31 / .2)); }
+
+/* Road map. */
+.path-atlas { --road-x:68; --sign-left:124px; position:relative; display:flex; flex-direction:column-reverse; margin-inline:-20px; overflow:hidden; }
+.path-scene, .path-car-layer { position:absolute; top:0; left:0; pointer-events:none; }
+.path-scene svg { display:block; }
+.path-car-layer { z-index:1; overflow:visible; }
+.path-lessons { list-style:none; margin:0; padding:0; display:flex; flex-direction:column-reverse; }
+/* Each stop stacks bottom-up: its sign on posts, then any milestone it earns, then the finish once all are done. */
+.path-stop, .path-start, .path-roadwork { position:relative; z-index:2; display:flex; flex-direction:column-reverse; gap:var(--sp-3); padding:var(--sp-5) 20px 0 var(--sign-left); }
+.path-board { display:flex; flex-direction:column; }
+/* Room above for the lesson tab on the next sign and the finish sign. */
+.path-board:has(.path-sign-tab) { margin-top:26px; }
+.path-posts { display:flex; justify-content:space-between; height:12px; padding:0 18px; }
+.path-posts::before, .path-posts::after { content:''; width:4px; background:var(--lane-ink); }
+
+/* Lesson signs: light while ahead, green once complete, and one dark sign for the next stop (Home's sign). */
+.home-preview .path-sign { --sign:var(--lane-surface); --sign-rule:var(--lane-soft); position:relative; display:flex; flex-direction:column; gap:6px; width:100%; min-height:64px; margin:0; padding:var(--sp-3) 14px 14px; border:1.5px solid var(--lane-ink); border-radius:var(--radius-md); background:var(--sign); color:var(--lane-ink); text-align:left; box-shadow:inset 0 0 0 3px var(--sign), inset 0 0 0 4.5px var(--sign-rule), var(--shadow-soft); }
+.path-sign-meta { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:var(--sp-2); min-height:20px; font-size:var(--fs-caption); color:var(--lane-muted); }
+.path-sign-status { display:inline-flex; align-items:center; gap:var(--sp-1); font-weight:var(--fw-bold); color:var(--lane-accent-ink); white-space:nowrap; }
+.path-sign-status>svg { width:13px; height:13px; color:var(--lane-accent); }
+.path-sign-title { font-size:var(--fs-body); line-height:1.3; font-weight:var(--fw-bold); text-wrap:pretty; }
+.path-sign-check { display:grid; place-items:center; width:18px; height:18px; border-radius:50%; background:var(--lane-success); color:var(--lane-surface); }
+.path-sign-check svg { width:11px; height:11px; }
+.home-preview .is-done .path-sign { --sign:var(--lane-success-soft); --sign-rule:color-mix(in srgb,var(--lane-success) 22%,transparent); border-color:var(--lane-success); box-shadow:inset 0 0 0 3px var(--sign), inset 0 0 0 4.5px var(--sign-rule); }
+.is-done .path-sign-meta, .is-done .path-sign-status { color:var(--lane-success); }
+.home-preview :is(.is-next,.path-finish) .path-sign { --sign:var(--lane-hero); --sign-rule:var(--lane-accent); gap:var(--sp-3); padding:var(--sp-4) var(--sp-4) var(--sp-4); color:var(--lane-surface); box-shadow:inset 0 0 0 3px var(--sign), inset 0 0 0 5px var(--sign-rule), var(--shadow-raised); }
+.path-sign-tab { position:absolute; bottom:calc(100% - 1.5px); right:20px; padding:5px 12px 4px; border:1.5px solid var(--lane-ink); border-bottom:0; border-radius:10px 10px 0 0; background:var(--sign); color:var(--lane-surface); font-size:var(--fs-caption); font-weight:var(--fw-bold); }
+.path-sign-tags { display:flex; flex-wrap:wrap; align-items:center; gap:var(--sp-2); }
+.path-sign-next { display:inline-flex; align-items:center; gap:var(--sp-1); padding:4px 10px; border-radius:var(--radius-sm); background:var(--lane-accent); color:var(--lane-ink); font-size:var(--fs-caption); font-weight:var(--fw-bold); }
+.path-sign-next svg { width:14px; height:14px; }
+.path-sign-reward { display:inline-flex; align-items:center; gap:var(--sp-1); padding:4px 10px; border:1px solid color-mix(in srgb,var(--lane-surface) 35%,transparent); border-radius:var(--radius-sm); color:var(--lane-accent-soft); font-size:var(--fs-caption); font-weight:var(--fw-bold); }
+.path-sign-reward svg { width:13px; height:13px; color:var(--lane-accent); }
+:is(.is-next,.path-finish) .path-sign-title { font-size:var(--fs-title); line-height:1.2; letter-spacing:-.01em; text-wrap:balance; }
+.path-sign-topic { margin-top:calc(-1 * var(--sp-2)); font-size:var(--fs-caption); color:var(--lane-soft); }
+.home-preview .path-sign-go { min-height:48px; margin-top:var(--sp-1); }
+.path-sign-go svg { width:20px; height:20px; }
+.home-preview .path-sign:active .path-sign-go { transform:translateY(1px); box-shadow:inset 0 1px 0 rgb(255 250 240 / .35); }
+@media (hover:hover) and (pointer:fine) {
+  .home-preview .is-ahead .path-sign:hover { --sign:var(--lane-glow); }
+  .home-preview :is(.is-next,.path-finish) .path-sign:hover { --sign:var(--lane-hero-glow); }
 }
-.learning-path .path-content { position:relative; isolation:isolate; min-height:100dvh; padding:max(24px,env(safe-area-inset-top)) 16px calc(138px + env(safe-area-inset-bottom)); outline:none; }
-.path-toolbar { display:flex; align-items:center; justify-content:space-between; gap:12px; }
-.path-toolbar h1 { flex:1; text-align:center; font-size:24px; font-weight:400; letter-spacing:-.6px; line-height:1.2; }
-.path-back { display:grid; place-items:center; width:52px; height:52px; flex:none; border-radius:50%; background:#faffedcc; border:1px solid #ffffffb8; }
-.path-back svg { width:22px; height:22px; }
-.path-xp { display:flex; align-items:center; gap:6px; min-height:52px; padding:8px 14px; border-radius:30px; background:#faffedcc; font-size:20px; }
-.path-xp>svg { width:23px; height:23px; color:#d99c25; }
-.path-xp>span { display:flex; flex-direction:column; align-items:center; line-height:1.1; overflow-wrap:anywhere; }
-.path-xp small { font-size:10px; letter-spacing:.7px; margin-top:3px; color:#596140; }
-.path-unit { display:flex; margin-top:24px; min-height:88px; overflow:hidden; border-radius:24px; background:radial-gradient(ellipse at 110% 100%,#28580f,transparent 55%),#193610; color:#fff; }
-.path-unit button { border:0; background:transparent; color:#f9fff1; }
-.path-unit-select { flex:1; min-width:0; text-align:left; padding:18px 18px; }
-.path-unit-select>span { display:flex; align-items:center; gap:12px; font-size:21px; }
-.path-unit-select svg { width:18px; height:18px; }
-.path-unit-select small { display:block; margin-top:6px; font-size:13px; color:#e2ecd8; }
-.path-unit .path-unit-summary { flex:none; width:64px; border-left:2px dashed #cce7a5; }
-.path-unit-summary svg { width:31px; height:31px; }
-.path-unit button:hover { background:#ffffff0b; }
-.path-unit button:focus-visible { outline-offset:-5px; outline-color:#e2fdb7; }
-.path-map { position:relative; }
-.path-lessons { list-style:none; padding:0; margin:52px 0 0; position:relative; z-index:1; }
-.path-step { position:relative; width:76px; height:96px; margin-left:calc(50% - 38px); }
-.path-step:nth-child(1) { left:5px; }
-.path-step:nth-child(2) { left:-30px; }
-.path-step:nth-child(3) { left:-26px; }
-.path-step:nth-child(4) { left:14px; }
-.path-step:nth-child(5) { left:34px; }
-.path-step.is-next:not(:first-child) { margin-top:28px; }
-.path-node { position:relative; display:grid; place-items:center; width:66px; height:62px; margin:auto; color:#fff !important; border-radius:50%; border:1px solid #ffffff20; background:linear-gradient(135deg,#6eae36,#529523); box-shadow:0 7px 0 #347217,inset 0 2px 0 #ffffff13; transition:transform .15s,box-shadow .15s; }
-.path-node>svg { width:32px; height:32px; filter:drop-shadow(0 2px 0 #315c2633); }
-.path-node img { width:61px; height:61px; object-fit:contain; }
-.path-node:hover { background:linear-gradient(135deg,#7bbd43,#5a9f2b); }
-.learning-path .path-node:active { transform:translateY(4px); box-shadow:0 3px 0 #347217; }
-.is-next .path-node::before { content:''; position:absolute; inset:-8px -8px -15px; border:3px solid #fff; outline:3px solid #dce7d6; border-radius:50%; pointer-events:none; }
-.path-start { position:absolute; bottom:calc(100% + 15px); left:50%; transform:translateX(-50%); z-index:2; padding:6px 18px; min-width:78px; border:1.5px solid #4c8e26; border-radius:11px; background:#fdfff9; color:#347719; font-size:18px; text-align:center; box-shadow:0 2px 0 #e9f1e2; }
-.path-start::after { content:''; position:absolute; width:10px; height:10px; bottom:-6px; left:calc(50% - 5px); border-right:1.5px solid #4c8e26; border-bottom:1.5px solid #4c8e26; background:#fdfff9; transform:rotate(45deg); }
-.path-node-label { position:absolute; top:72px; left:50%; width:220px; transform:translateX(-50%); padding:5px 10px; border-radius:10px; background:#f9fff3f5; color:#244f17; text-align:center; font-size:12px; opacity:0; pointer-events:none; z-index:3; }
-.path-step:has(:focus-visible) .path-node-label, .path-step:hover .path-node-label { opacity:1; }
-.path-cloud { position:absolute; pointer-events:none; width:106px; height:18px; border-radius:50%; background:#f5fbe9; box-shadow:0 6px 0 #deefd24d; opacity:.8; }
-.path-cloud::before,.path-cloud::after { content:''; position:absolute; bottom:3px; border-radius:50%; background:inherit; }
-.path-cloud::before { width:48px; height:36px; left:17px; }.path-cloud::after { width:43px; height:28px; right:8px; }
-.path-cloud-one { top:85px; left:-18px; transform:scale(.95); }
-.path-cloud-two { top:215px; right:22px; transform:scale(1.4); opacity:.65; }
-.path-cloud-three { top:393px; left:-20px; transform:scale(1.2); opacity:.6; }
-.path-upcoming { position:relative; z-index:1; text-align:center; }
-.path-divider { display:flex; align-items:center; gap:18px; color:#697263; font-size:13px; }
-.path-divider::before,.path-divider::after { content:''; height:1px; background:#dce4d7; flex:1; }
-.path-locked { display:grid; place-items:center; width:62px; height:58px; margin:23px auto 18px; background:#d0d3ca; border-radius:50%; color:#9da497; box-shadow:0 5px 0 #aeb4a7; }
-.path-locked svg { width:29px; height:29px; }
-.learning-path .path-upcoming p { font-size:14px; color:#59644f; }
-.path-upcoming>small { display:block; margin-top:5px; color:#65725a; font-size:12px; }
-.path-landscape { position:fixed; z-index:-1; bottom:0; left:50%; transform:translateX(-50%); width:min(100%,430px); height:160px; pointer-events:none; }
-.learning-path .home-nav { bottom:max(16px,env(safe-area-inset-bottom)); }
-.path-dialog { width:min(380px,calc(100% - 32px)); max-height:calc(100dvh - 48px); padding:26px 22px; border:0; border-radius:28px; background:#f6fbed; color:#193610; font:400 15px/1.45 Plex,Arial,sans-serif; }
-.path-dialog::backdrop { background:#18331066; backdrop-filter:blur(4px); }
-.path-dialog-close { position:absolute; top:8px; right:10px; width:44px; height:44px; border:0; border-radius:50%; background:transparent; font-size:28px !important; }
-.path-dialog .path-dialog-eyebrow { font-size:12px; color:#58674a; margin:12px 30px 6px 0; }
-.path-dialog h2 { font-size:25px; font-weight:400; margin-bottom:10px; }
-.path-dialog p { font-size:14px; color:#4d5d41; }
-.path-completion { margin:20px 0 12px; font-size:12px; }
-.path-completion progress { display:block; width:100%; height:8px; margin-top:8px; accent-color:#5b9e30; }
-.path-dialog ol { list-style:none; margin:0; padding:0; }
-.path-dialog li+li { border-top:1px solid #dce6d2; }
-.path-dialog li a { display:flex; gap:12px; align-items:center; padding:13px 0; min-height:64px; }
-.path-list-number { display:grid; place-items:center; flex:none; width:32px; height:32px; background:#e0eece; border-radius:50%; }
-.path-list-number svg { width:18px; height:18px; }
-.path-dialog li a>span:nth-child(2) { flex:1; font-size:14px; }
-.path-dialog li small { display:block; margin-top:3px; font-size:12px; color:#58674a; }
-.path-dialog li a>svg { width:16px; height:16px; transform:rotate(-90deg); flex:none; }
-@media (max-width:350px) { .path-toolbar { gap:8px; }.path-toolbar h1 { font-size:21px; }.path-back { width:44px; height:44px; }.path-xp { min-height:44px; padding:6px 10px; font-size:18px; }.path-unit-select { padding:16px 14px; }.path-unit-select>span { font-size:19px; }.path-unit .path-unit-summary { width:54px; }.path-node-label { width:175px; } }
-@media (prefers-reduced-motion:reduce) { .path-node { transition:none; } }
+
+/* Milestones stand by the road at the lesson that earns them. */
+.home-preview .path-mile { display:flex; align-items:center; gap:var(--sp-3); width:100%; min-height:56px; padding:var(--sp-1) 0; border:0; border-radius:var(--radius-md); background:transparent; text-align:left; }
+.path-mile-medal { display:grid; place-items:center; flex:none; width:44px; height:48px; border:1.5px dashed var(--lane-muted); border-radius:14px 14px 22px 22px; background:var(--lane-page); color:var(--lane-muted); }
+.path-mile-medal svg { width:22px; height:22px; }
+.path-mile.is-earned .path-mile-medal { border:1.5px solid var(--lane-accent-ink); background:var(--lane-accent-soft); color:var(--lane-accent-ink); box-shadow:inset 0 0 0 3px var(--lane-surface), var(--shadow-soft), var(--glow-accent); }
+.path-mile-text { flex:1; min-width:0; display:flex; flex-direction:column; gap:2px; }
+.path-mile-text small { font-size:var(--fs-caption); color:var(--lane-muted); }
+.path-mile-text strong { font-size:var(--fs-body); line-height:1.25; font-weight:var(--fw-bold); }
+.path-mile-status { display:flex; align-items:center; gap:var(--sp-1); margin-top:2px; font-size:var(--fs-caption); font-weight:var(--fw-bold); color:var(--lane-muted); }
+.path-mile-status svg { width:13px; height:13px; }
+.path-mile.is-earned .path-mile-status { color:var(--lane-success); }
+
+/* The unit begins at a painted start line; the road runs on under the navigation and Find my car. */
+.path-start { padding-bottom:calc(150px + env(safe-area-inset-bottom)); }
+.path-unit-sign { display:flex; flex-direction:column; gap:2px; }
+.path-unit-sign span { font-size:var(--fs-caption); font-weight:var(--fw-bold); letter-spacing:.06em; text-transform:uppercase; color:var(--lane-accent-ink); }
+.path-unit-sign strong { font-size:var(--fs-title); line-height:1.2; font-weight:var(--fw-bold); }
+.path-unit-sign small { font-size:var(--fs-caption); color:var(--lane-muted); }
+.path-start-line { display:block; height:0; order:-1; margin-top:var(--sp-1); }
+/* Past the last lesson the road is still being built. */
+.path-roadwork { flex-direction:column; padding-top:96px; }
+.path-roadwork-sign { display:flex; flex-direction:column; gap:2px; padding:var(--sp-3) var(--sp-4) 14px; border:1.5px solid var(--lane-ink); border-radius:var(--radius-md); background:var(--lane-work); color:var(--lane-ink); box-shadow:inset 0 0 0 3px var(--lane-work), inset 0 0 0 4.5px var(--lane-ink), var(--shadow-soft); }
+.path-roadwork-sign span { font-size:var(--fs-caption); font-weight:var(--fw-bold); letter-spacing:.06em; text-transform:uppercase; }
+.path-roadwork-sign strong { font-size:var(--fs-body); line-height:1.25; font-weight:var(--fw-bold); }
+.path-roadwork-sign small { font-size:var(--fs-caption); }
+
+.path-road-map path { fill:none; }
+.road-tree circle { fill:var(--lane-tree); stroke:var(--lane-ink); stroke-width:1; }
+.road-tree .road-tree-light { fill:var(--lane-tree-light); stroke:none; }
+.road-tree .road-tree-shade { fill:var(--lane-ink); stroke:none; opacity:.14; }
+.road-verge { stroke:var(--lane-lawn); }
+.road-sidewalk-edge { stroke:var(--lane-line); }
+.road-sidewalk { stroke:var(--lane-soft); }
+.road-curb { stroke:var(--lane-ink); }
+.road-asphalt { stroke:var(--lane-road); }
+.road-edge-line { stroke:var(--lane-page); stroke-width:1.5; opacity:.7; }
+/* Dashed yellow centre line: two-way traffic, as on a real two-lane street. */
+.road-center-line { stroke:var(--lane-accent); stroke-width:2; stroke-dasharray:12 10; }
+.road-checkpoint { stroke:var(--lane-page); stroke-width:4; }
+.road-checkpoint.is-next { stroke:var(--lane-accent); }
+.road-start { fill:url(#road-start-check); }
+.road-check { fill:var(--lane-ink); }
+.road-check-light, .road-stripe-light { fill:var(--lane-surface); }
+.road-stripe { fill:var(--lane-work); }
+.road-planned { stroke:var(--lane-ink); stroke-width:1.5; stroke-dasharray:4 7; opacity:.35; }
+.road-cone circle:first-child { fill:var(--lane-work); stroke:var(--lane-ink); }
+.road-cone circle:last-child { fill:var(--lane-surface); }
+.road-barricade rect { stroke:var(--lane-ink); stroke-width:1.5; }
+/* Breadcrumb dots over the lane already driven: road paint is never dotted, so it cannot read as a lane marking. */
+.path-trail { fill:none; stroke:var(--lane-accent); stroke-width:4; stroke-linecap:round; stroke-dasharray:0 11; }
+
+/* Find my car only appears once the car is out of sight; it sits over the road, never over a sign. */
+.home-preview .path-locate { position:fixed; z-index:3; bottom:calc(76px + env(safe-area-inset-bottom)); left:max(16px,calc(50% - var(--app-width) / 2 + 16px)); display:grid; place-items:center; width:56px; height:56px; padding:0; border:1.5px solid var(--lane-ink); border-radius:50%; background:var(--lane-surface); box-shadow:var(--shadow-raised); }
+.home-preview .path-locate[hidden] { display:none; }
+.path-locate-car { width:22px; height:38px; overflow:visible; }
+.path-locate-arrow { position:absolute; top:-5px; right:-5px; display:grid; place-items:center; width:24px; height:24px; border:1.5px solid var(--lane-ink); border-radius:50%; background:var(--lane-accent); color:var(--lane-ink); }
+.path-locate-arrow svg { width:14px; height:14px; stroke-width:2.6; }
+/* The arrival message drops over the trip panel, so it never covers the road, the parked car or a sign,
+   and taps pass through it. It is a polite live region that stays in the accessibility tree. */
+.learning-path .path-arrival { position:fixed; z-index:6; top:max(8px,env(safe-area-inset-top)); left:50%; display:flex; align-items:center; gap:var(--sp-3); width:calc(var(--app-width) - 32px); padding:10px var(--sp-3); border:1.5px solid var(--lane-ink); border-radius:var(--radius-md); background:var(--lane-surface); color:var(--lane-ink); box-shadow:var(--shadow-raised); transform:translateX(-50%); pointer-events:none; }
+.learning-path .path-arrival:not(.is-visible) { width:1px; height:1px; padding:0; border:0; overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
+.path-arrival.is-visible { animation:path-arrive 450ms var(--ease-spring) both; }
+.path-arrival-icon { display:grid; place-items:center; flex:none; width:36px; height:36px; border:1.5px solid var(--lane-ink); border-radius:50%; background:var(--lane-accent); }
+.path-arrival-icon svg { width:20px; height:20px; }
+.path-arrival strong { display:block; font-size:var(--fs-body); line-height:1.2; font-weight:var(--fw-bold); }
+.path-arrival small { display:block; margin-top:2px; font-size:var(--fs-caption); color:var(--lane-support); }
+
+/* Lesson details sheet (shared spring sheet). */
+.path-sheet .home-sheet-head h2 { text-wrap:balance; }
+.learning-path .path-sheet-meta { margin-top:calc(-1 * var(--sp-2)); font-size:var(--fs-caption); color:var(--lane-muted); }
+.learning-path .path-sheet-chips { display:flex; flex-wrap:wrap; gap:var(--sp-2); margin-top:var(--sp-3); }
+.learning-path .path-sheet-summary { margin-top:var(--sp-4); font-size:var(--fs-body); line-height:1.5; color:var(--lane-support); }
+.learning-path .path-sheet-result { margin-top:var(--sp-4); font-size:var(--fs-body); color:var(--lane-support); }
+.home-preview .path-sheet-action { margin-top:var(--sp-5); }
+.home-preview .path-sheet-action + .path-sheet-action { margin-top:var(--sp-3); }
+.path-sheet-action svg { width:20px; height:20px; }
+.path-sheet-action small { font-size:var(--fs-caption); font-weight:var(--fw-regular); color:var(--lane-muted); }
+
+/* Milestone collection sheet. */
+.path-medals { list-style:none; padding:8px 0 0; margin:0; }
+.path-medals li { display:flex; align-items:center; gap:var(--sp-4); padding:var(--sp-4) 0; }
+.path-medals li+li { border-top:1px solid var(--lane-line); }
+.path-medal { display:grid; place-items:center; width:64px; height:72px; flex:none; border:1.5px dashed var(--lane-muted); border-radius:18px 18px 28px 28px; color:var(--lane-muted); }
+.path-medal svg { width:32px; height:32px; }
+.is-earned .path-medal { border:1.5px solid var(--lane-accent-ink); background:var(--lane-accent-soft); color:var(--lane-accent-ink); box-shadow:inset 0 0 0 4px var(--lane-surface), var(--shadow-soft), var(--glow-accent); }
+.path-medals h3 { font-size:var(--fs-body); font-weight:var(--fw-bold); }
+.learning-path .path-medals p { margin-top:2px; font-size:var(--fs-caption); color:var(--lane-support); }
+.path-medals strong { display:flex; align-items:center; gap:var(--sp-1); margin-top:var(--sp-2); font-size:var(--fs-caption); font-weight:var(--fw-bold); color:var(--lane-muted); }
+.path-medals strong svg { width:12px; height:12px; }
+.path-medals .is-earned strong { color:var(--lane-success); }
+
+/* Returning after a completed lesson: the new green sign and any new badge pop once, after the car parks. */
+.path-sign.is-new, .path-mile.is-new .path-mile-medal, .path-meter-pin.is-new { animation:ui-pop 560ms var(--ease-spring) both; }
+@keyframes path-arrive { from { opacity:0; transform:translate(-50%,-12px); } to { opacity:1; transform:translate(-50%,0); } }
+
+@media (max-width:350px) {
+  .learning-path .path-content { padding-inline:16px; }
+  .path-dashboard { padding-inline:16px; }
+  .path-dashboard h1 { font-size:23px; }
+  .path-atlas { --road-x:56; --sign-left:108px; margin-inline:-16px; }
+  .path-stop, .path-start, .path-roadwork { padding-right:16px; }
+  .home-preview .path-sign { padding-inline:12px; }
+  .home-preview :is(.is-next,.path-finish) .path-sign { padding-inline:14px; }
+  /* Long titles would otherwise run to six lines and push the car below the tab bar. */
+  :is(.is-next,.path-finish) .path-sign-title { font-size:17px; text-wrap:pretty; }
+}
+/* Short screens (landscape phones) fold the trip panel into one row so the next sign and the car fit. */
+@media (max-height:500px) {
+  .path-dashboard { grid-template-columns:auto minmax(0,1fr) auto; grid-template-areas:"title trip chips"; padding-top:max(4px,env(safe-area-inset-top)); padding-bottom:4px; }
+  .path-dashboard h1 { font-size:var(--fs-title); }
+  .learning-path .path-trip-label { display:none; }
+  .home-preview .path-locate { bottom:calc(72px + env(safe-area-inset-bottom)); }
+  /* One line, so the message fits over the one-row panel. */
+  .learning-path .path-arrival { top:max(4px,env(safe-area-inset-top)); padding-block:6px; }
+  .path-arrival-icon { width:30px; height:30px; }
+  .path-arrival-icon svg { width:17px; height:17px; }
+  .path-arrival>span:last-child { display:flex; align-items:baseline; gap:var(--sp-2); min-width:0; }
+  .path-arrival small { margin-top:0; white-space:nowrap; }
+  /* The next sign keeps its lesson tab, title and action; the tags and topic stay in the lesson itself. */
+  :is(.is-next,.path-finish) :is(.path-sign-tags,.path-sign-topic) { display:none; }
+  .home-preview :is(.is-next,.path-finish) .path-sign { gap:var(--sp-2); padding-block:14px; }
+  :is(.is-next,.path-finish) .path-sign-title { font-size:var(--fs-body); }
+  .home-preview .path-sign-go { min-height:44px; margin-top:0; }
+}
+@media (prefers-reduced-motion:reduce) { .path-arrival.is-visible, .path-sign.is-new, .path-mile.is-new .path-mile-medal, .path-meter-pin.is-new { animation:none; } }

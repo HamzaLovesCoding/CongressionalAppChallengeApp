@@ -1,0 +1,70 @@
+/* Shared motion: easing, screen transitions, and dialog presentation. Screen-specific motion
+   stays in each screen's stylesheet. Durations stay under ~300ms so the app never waits on itself. */
+:root {
+  --ease-out: cubic-bezier(.23,1,.32,1);
+  --ease-in-out: cubic-bezier(.77,0,.175,1);
+  /* iOS sheet curve: quick start, long soft settle. */
+  --ease-drawer: cubic-bezier(.32,.72,0,1);
+  /* Slight overshoot for rewards only: a correct answer, a completed lesson, an unlocked badge. */
+  --ease-spring: cubic-bezier(.34,1.56,.64,1);
+}
+
+/* Feedback keyframes shared by quizzes, practice and rewards. Each screen disables them under reduced motion. */
+@keyframes ui-pop { 0% { transform:scale(.6); opacity:0; } 60% { transform:scale(1.08); opacity:1; } 100% { transform:scale(1); } }
+@keyframes ui-ray { 0% { opacity:0; transform:rotate(calc(var(--ray) * 45deg)) translateY(-26px) scaleY(.4); } 40% { opacity:1; } 100% { opacity:0; transform:rotate(calc(var(--ray) * 45deg)) translateY(-46px) scaleY(1); } }
+@keyframes ui-bump { 0% { transform:scale(1); } 40% { transform:scale(1.03); } 100% { transform:scale(1); } }
+@keyframes ui-shake { 0%,100% { transform:translateX(0); } 20% { transform:translateX(-6px); } 40% { transform:translateX(5px); } 60% { transform:translateX(-3px); } 80% { transform:translateX(2px); } }
+@keyframes ui-rise { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+@keyframes ui-float-up { 0% { opacity:0; transform:translateY(6px) scale(.9); } 25% { opacity:1; transform:translateY(0) scale(1.05); } 70% { opacity:1; transform:translateY(-6px) scale(1); } 100% { opacity:0; transform:translateY(-14px); } }
+
+/* Screen transitions (main.ts sets data-nav). Old and new share one duration and curve so the
+   cross-fade sums to full opacity and the page never flashes the canvas behind it. */
+::view-transition-group(root) { animation-duration:280ms; animation-timing-function:var(--ease-out); }
+::view-transition-old(root), ::view-transition-new(root) { animation-duration:inherit; animation-timing-function:inherit; }
+:root[data-nav="push"]::view-transition-old(root) { animation-name:vt-recede; }
+:root[data-nav="push"]::view-transition-new(root) { animation-name:vt-rise; }
+:root[data-nav="pop"]::view-transition-old(root) { animation-name:vt-sink; }
+:root[data-nav="pop"]::view-transition-new(root) { animation-name:vt-return; }
+:root[data-nav="next"]::view-transition-old(root) { animation-name:vt-out-left; }
+:root[data-nav="next"]::view-transition-new(root) { animation-name:vt-in-right; }
+:root[data-nav="previous"]::view-transition-old(root) { animation-name:vt-out-right; }
+:root[data-nav="previous"]::view-transition-new(root) { animation-name:vt-in-left; }
+:root:is([data-nav="next"],[data-nav="previous"])::view-transition-group(root) { animation-duration:220ms; }
+
+/* Between tabs the bar stays put and only the painted lane dash glides to the new tab. */
+:root:is([data-nav="next"],[data-nav="previous"],[data-nav="fade"]) .home-nav { view-transition-name:lane-tabbar; }
+:root:is([data-nav="next"],[data-nav="previous"],[data-nav="fade"]) .home-nav-pill { view-transition-name:lane-tab-pill; }
+::view-transition-group(lane-tabbar) { animation-duration:220ms; }
+::view-transition-group(lane-tab-pill) { animation-duration:340ms; animation-timing-function:var(--ease-drawer); }
+
+@keyframes vt-recede { to { opacity:0; transform:scale(.97); } }
+@keyframes vt-rise { from { opacity:0; transform:translateY(28px); } }
+@keyframes vt-sink { to { opacity:0; transform:translateY(28px); } }
+@keyframes vt-return { from { opacity:0; transform:scale(.97); } }
+@keyframes vt-out-left { to { opacity:0; transform:translateX(-18px); } }
+@keyframes vt-in-right { from { opacity:0; transform:translateX(18px); } }
+@keyframes vt-out-right { to { opacity:0; transform:translateX(18px); } }
+@keyframes vt-in-left { from { opacity:0; transform:translateX(-18px); } }
+
+/* Dialogs grow from 96% rather than popping in. Center origin is right for a centered modal. */
+.home-preview dialog { opacity:0; scale:.96; transition:opacity 160ms var(--ease-out), scale 160ms var(--ease-out); }
+.home-preview dialog[open] { opacity:1; scale:1; transition-duration:240ms; }
+.home-preview dialog::backdrop { opacity:0; transition:opacity 160ms var(--ease-out); }
+.home-preview dialog[open]::backdrop { opacity:1; transition-duration:240ms; }
+@starting-style {
+  .home-preview dialog[open] { opacity:0; scale:.96; }
+  .home-preview dialog[open]::backdrop { opacity:0; }
+}
+/* Exit animation needs the dialog kept in the top layer while it fades. Without `overlay`
+   support it would drop back into the page mid-fade, so those browsers just close instantly. */
+@supports (overlay:auto) {
+  .home-preview dialog { transition-property:opacity, scale, overlay, display; transition-behavior:allow-discrete; }
+  .home-preview dialog::backdrop { transition-property:opacity, overlay, display; transition-behavior:allow-discrete; }
+}
+
+@media (prefers-reduced-motion:reduce) {
+  ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation:none !important; }
+  /* Keep the fade (it carries no motion), drop the growth. */
+  .home-preview dialog, .home-preview dialog[open] { scale:1; }
+  @starting-style { .home-preview dialog[open] { scale:1; } }
+}

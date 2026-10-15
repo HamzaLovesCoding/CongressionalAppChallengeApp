@@ -14,8 +14,10 @@ function serviceWorker(): Plugin {
     async closeBundle() {
       const outDir = path.resolve(config.root, config.build.outDir);
       const entries = await readdir(outDir, { recursive: true, withFileTypes: true });
+      // Lesson videos (~156 MB) are cached one at a time after they are watched, never on install.
       const files = entries
         .filter((entry) => entry.isFile() && entry.name !== 'sw.js')
+        .filter((entry) => !path.relative(outDir, entry.parentPath).split(path.sep).includes('videos'))
         .map((entry) => path.relative(outDir, path.join(entry.parentPath, entry.name)).split(path.sep).join('/'))
         .sort();
       const hash = createHash('sha256');

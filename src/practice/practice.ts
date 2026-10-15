@@ -1,4 +1,5 @@
 import './practice.css';
+import { icon } from '../home/icons';
 import type { View } from '../navigation';
 import { go } from '../navigation';
 import { homeNavigation } from '../home/tabs';
@@ -10,6 +11,16 @@ const targetPct = Math.round(bank.target * 100);
 const check = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg>';
 const cross = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M7 7l10 10M17 7 7 17"/></svg>';
 const plural = (count: number, word: string) => `${count} ${word}${count === 1 ? '' : 's'}`;
+// One small icon per bank topic so the list scans at a glance; an unknown topic falls back to the clipboard.
+const topicPaths: Record<string, string> = {
+  signs: '<path d="M12 2.5 21.5 12 12 21.5 2.5 12Z"/><path d="M12 8v5m0 3v.01"/>',
+  safe: '<path d="M3.5 16.5a8.5 8.5 0 0 1 17 0"/><path d="m12 16.5 4-5"/><circle cx="12" cy="16.5" r="1" fill="currentColor"/>',
+  lanes: '<path d="M7 21V12a4 4 0 0 1 4-4h8"/><path d="m16 5 3 3-3 3"/>',
+  yield: '<path d="M3 4.5h18L12 20Z"/>',
+  parking: '<rect x="4" y="3" width="16" height="18" rx="3"/><path d="M10 17V8h3a2.5 2.5 0 0 1 0 5h-3"/>',
+  duties: '<rect x="3" y="5" width="18" height="14" rx="3"/><circle cx="9" cy="11" r="2"/><path d="M6 16c1-2 5-2 6 0m3-6h3m-3 3h3"/>',
+};
+const topicIcon = (id: string) => `<span class="practice-topic-icon">${topicPaths[id] ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${topicPaths[id]}</svg>` : icon('practice')}</span>`;
 
 export function mountPractice(root: HTMLElement): View {
   const counts = new Map<string, number>();
@@ -18,16 +29,16 @@ export function mountPractice(root: HTMLElement): View {
   page.className = 'home-preview practice';
   page.innerHTML = `<div class="home-phone">
     <main class="practice-content" aria-labelledby="practice-title" tabindex="-1">
-      <header class="practice-heading"><h1 id="practice-title">Practice</h1><p>Get ready for the California written permit test.</p></header>
+      <header class="practice-heading ui-page-head"><h1 id="practice-title">Practice</h1><span class="ui-chip is-quiet">California</span></header>
       <section class="home-lesson practice-feature" aria-labelledby="practice-test-title">
-        <p class="home-eyebrow">Practice test</p>
-        <h2 id="practice-test-title">California permit test practice</h2>
-        <p class="home-lesson-detail">${plural(bank.questions.length, 'question')} · Aim for ${targetPct}%</p>
-        <a class="home-continue" href="#/practice/test">Start test</a>
+        <div class="practice-feature-top"><span class="practice-test-label">Written test</span><span class="practice-test-art" aria-hidden="true">${icon('practice')}</span></div>
+        <h2 id="practice-test-title">Put your knowledge<br>to the test.</h2>
+        <div class="practice-test-facts"><span><b>${bank.questions.length}</b> questions</span><span><b>${targetPct}%</b> target</span></div>
+        <a class="home-continue ui-button is-split" href="#/practice/test">Start test <span aria-hidden="true">→</span></a>
       </section>
       <section aria-labelledby="practice-topics-title">
         <div class="home-section-heading"><h2 id="practice-topics-title">What’s covered</h2></div>
-        <ul class="practice-list">${Object.entries(bank.topics).filter(([id]) => counts.has(id)).map(([id, label]) => `<li><b>${esc(label)}</b><span>${plural(counts.get(id)!, 'question')}</span></li>`).join('')}</ul>
+        <ul class="practice-list">${Object.entries(bank.topics).filter(([id]) => counts.has(id)).map(([id, label]) => `<li>${topicIcon(id)}<b>${esc(label)}</b><span>${plural(counts.get(id)!, 'question')}</span></li>`).join('')}</ul>
       </section>
       <p class="practice-note">You’ll see whether each answer is right as you go, then your score and the topics to review at the end. This is practice, not an official DMV test.</p>
     </main>
@@ -45,13 +56,13 @@ export function mountPracticeTest(root: HTMLElement): View {
   page.className = 'home-preview practice';
   page.innerHTML = `<div class="home-phone practice-quiet">
     <main class="pt" tabindex="-1"></main>
-    <dialog class="home-dialog pt-leave" aria-labelledby="pt-leave-title"><form method="dialog"><h2 id="pt-leave-title">Leave the practice test?</h2><div>Your answers so far won’t be saved.</div><button class="home-dialog-done" value="stay" autofocus>Keep going</button><button class="pt-dialog-leave" value="leave">Leave test</button></form></dialog>
+    <dialog class="home-dialog pt-leave" aria-labelledby="pt-leave-title"><form method="dialog"><h2 id="pt-leave-title">Leave the practice test?</h2><div>Your answers so far won’t be saved.</div><button class="home-dialog-done ui-button" value="stay" autofocus>Keep going</button><button class="pt-dialog-leave ui-button is-secondary" value="leave">Leave test</button></form></dialog>
   </div>`;
   root.append(page);
   const main = page.querySelector<HTMLElement>('main')!;
   const leave = page.querySelector<HTMLDialogElement>('.pt-leave')!;
   const top = (status: string) => `<header class="pt-top"><button class="home-circle pt-exit" type="button" aria-label="Leave practice test" data-exit>${cross}</button><span class="pt-title">${esc(bank.title)}</span><span class="pt-count">${status}</span></header>`;
-  const topicList = (topics: TopicResult[]) => `<ul class="practice-list">${topics.map(t => `<li><b>${esc(t.label)}</b></li>`).join('')}</ul>`;
+  const topicList = (topics: TopicResult[]) => `<ul class="practice-list">${topics.map(t => `<li>${topicIcon(t.id)}<b>${esc(t.label)}</b></li>`).join('')}</ul>`;
 
   function renderResults() {
     const result = summarize(bank, responses);
@@ -59,16 +70,16 @@ export function mountPracticeTest(root: HTMLElement): View {
     const limited = result.topics.filter(t => t.status === 'limited');
     main.innerHTML = `${top('Complete')}
       <p class="pt-eyebrow">Practice complete</p><h1 class="pt-results-title" tabindex="-1">Your results</h1>
-      <section class="home-lesson pt-score" aria-label="Score">
-        <p class="home-eyebrow">Score</p>
-        <p class="pt-score-value">${result.percentage}%</p>
-        <p class="home-lesson-detail">${result.correct} of ${result.total} correct</p>
-        <div class="pt-score-track" aria-hidden="true"><span style="width:${result.percentage}%"></span><i style="left:${targetPct}%"></i></div>
+      <section class="home-lesson pt-score${result.meetsTarget ? ' is-met' : ''}" aria-label="Score">
+        <div class="pt-score-main">
+          <div class="pt-score-ring" aria-hidden="true"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="52"/><circle class="pt-score-arc" cx="60" cy="60" r="52" pathLength="100" stroke-dasharray="${result.percentage} 100"/><line x1="103" y1="60" x2="119" y2="60" transform="rotate(${targetPct * 3.6} 60 60)"/></svg>${result.meetsTarget ? `<span class="pt-score-star">${icon('star')}</span>` : ''}</div>
+          <div><p class="home-eyebrow">Score</p><p class="pt-score-value">${result.percentage}%</p><p class="home-lesson-detail">${result.correct} of ${result.total} correct</p></div>
+        </div>
         <p class="pt-score-status">${result.meetsTarget ? `${check}<span>You reached the ${targetPct}% practice target.</span>` : `<span>Keep practicing to reach the ${targetPct}% target.</span>`}</p>
       </section>
       <section class="pt-section"><h2>Areas to improve</h2>${review.length ? topicList(review) : '<p class="pt-detail">No topics stood out for review in this attempt.</p>'}</section>
       ${limited.length ? `<section class="pt-section"><h2>More practice to assess</h2>${topicList(limited)}<p class="pt-detail">This test covers too few different rules in these topics to judge them yet.</p></section>` : ''}
-      <footer class="pt-bottom"><button class="pt-action" type="button" data-restart>Start again</button><a class="pt-secondary" href="#/practice">Back to practice</a><p class="pt-caption">Practice target: ${targetPct}%. This is practice, not an official DMV test.</p></footer>`;
+      <footer class="pt-bottom"><button class="pt-action ui-button" type="button" data-restart>Start again</button><a class="pt-secondary ui-button is-secondary" href="#/practice">Back to practice</a><p class="pt-caption">Practice target: ${targetPct}%. This is practice, not an official DMV test.</p></footer>`;
   }
 
   function renderQuestion() {
@@ -81,7 +92,7 @@ export function mountPracticeTest(root: HTMLElement): View {
         ${q.image ? `<div class="pt-sign"><img width="132" height="132" alt="${esc(q.image.alt)}"></div>` : ''}
         <fieldset aria-labelledby="pt-question">${q.choices.map(c => `<label class="pt-option"><input type="radio" name="answer" value="${esc(c.id)}"><span class="pt-option-text">${esc(c.text)}</span><span class="pt-option-status" aria-hidden="true"></span></label>`).join('')}</fieldset>
       </section>
-      <footer class="pt-bottom"><p class="pt-feedback" role="status" aria-live="polite" aria-atomic="true"></p><button class="pt-action" type="button" data-action disabled>Submit answer</button><p class="pt-caption">Choose one answer</p></footer>`;
+      <footer class="pt-bottom is-sticky"><p class="pt-feedback" role="status" aria-live="polite" aria-atomic="true"></p><button class="pt-action ui-button" type="button" data-action disabled>Submit answer</button><p class="pt-caption">Choose one answer</p></footer>`;
     const image = main.querySelector<HTMLImageElement>('.pt-sign img');
     if (image && q.image) {
       const action = main.querySelector<HTMLButtonElement>('[data-action]')!;
@@ -115,7 +126,9 @@ export function mountPracticeTest(root: HTMLElement): View {
     chosen.querySelector('.pt-option-status')!.innerHTML = correct ? check : cross;
     const feedback = main.querySelector<HTMLElement>('.pt-feedback')!;
     feedback.className = `pt-feedback ${correct ? 'is-good' : 'is-bad'}`;
-    feedback.innerHTML = correct ? `${check}<span><strong>Correct</strong></span>` : `${cross}<span><strong>Not quite.</strong> Keep going. You’ll see which topics to review at the end.</span>`;
+    // Consecutive correct answers ending with this one, from this attempt only; never stored.
+    const run = correct ? responses.length - 1 - responses.lastIndexOf(false) : 0;
+    feedback.innerHTML = correct ? `${check}<span><strong>Correct</strong></span>${run >= 2 ? `<span class="pt-run ui-chip is-accent">${icon('flame')}${run} in a row</span>` : ''}` :`${cross}<span><strong>Not quite.</strong> Keep going. You’ll see which topics to review at the end.</span>`;
     const action = main.querySelector<HTMLButtonElement>('[data-action]')!;
     action.textContent = index === bank.questions.length - 1 ? 'See results' : 'Next question';
     main.querySelector('.pt-caption')!.textContent = 'Answer recorded';
@@ -150,5 +163,6 @@ export function mountPracticeTest(root: HTMLElement): View {
   });
   leave.addEventListener('close', () => { if (leave.returnValue === 'leave') go('#/practice'); leave.returnValue = ''; });
   render(true);
+  main.classList.add('is-live');
   return { dispose() { page.remove(); } };
 }

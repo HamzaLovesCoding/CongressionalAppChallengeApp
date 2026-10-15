@@ -1,0 +1,51 @@
+/* Shared components used by every screen, so buttons, chips, tabs and headings look and respond the same
+   everywhere. Screens only add layout (width, margins) around them. Scoped to the two app shells so these
+   win over the shells' `button { font:inherit; color:inherit }` resets. */
+
+/* Buttons: one ochre primary per view, outlined secondary, dark for repeated actions in a grid. */
+:is(.home-preview,.rl) .ui-button { display:flex; align-items:center; justify-content:center; gap:var(--sp-3); width:100%; min-height:52px; padding:var(--sp-3) var(--sp-4); border:1.5px solid var(--lane-ink); border-radius:var(--radius-md); background:var(--lane-accent); color:var(--lane-ink); box-shadow:var(--shadow-cta); font:var(--fw-bold) var(--fs-body)/1.25 Plex,Arial,sans-serif; text-align:center; text-decoration:none; -webkit-tap-highlight-color:transparent; transition:transform 140ms var(--ease-out), box-shadow 140ms var(--ease-out), background-color 160ms; }
+:is(.home-preview,.rl) .ui-button.is-split { justify-content:space-between; }
+:is(.home-preview,.rl) .ui-button:active { transform:translateY(1px) scale(.985); box-shadow:inset 0 1px 0 rgb(255 250 240 / .35), 0 4px 10px -6px rgb(120 81 25 / .5); }
+:is(.home-preview,.rl) .ui-button.is-secondary { background:transparent; box-shadow:none; }
+:is(.home-preview,.rl) .ui-button.is-dark { background:var(--lane-ink); color:var(--lane-surface); box-shadow:var(--shadow-soft); }
+:is(.home-preview,.rl) .ui-button.is-quiet { min-height:44px; border-color:transparent; background:transparent; box-shadow:none; color:var(--lane-support); font-weight:var(--fw-regular); }
+:is(.home-preview,.rl) .ui-button:is(:disabled,[aria-disabled="true"]) { border-color:var(--lane-line); background:var(--lane-soft); color:var(--lane-muted); box-shadow:none; transform:none; cursor:default; }
+@media (hover:hover) and (pointer:fine) { :is(.home-preview,.rl) .ui-button:not(:disabled,[aria-disabled="true"],.is-secondary,.is-quiet,.is-dark):hover { background:color-mix(in srgb,var(--lane-accent) 88%,var(--lane-surface)); } }
+
+/* Chips: compact real values (streak, XP, status). Never decorative counts. */
+:is(.home-preview,.rl) .ui-chip { display:inline-flex; align-items:center; gap:var(--sp-1); min-height:28px; padding:var(--sp-1) 10px; border:1px solid var(--lane-line); border-radius:var(--radius-sm); background:var(--lane-surface); color:var(--lane-ink); font-size:var(--fs-caption); font-weight:var(--fw-bold); line-height:1.2; white-space:nowrap; font-variant-numeric:tabular-nums; }
+:is(.home-preview,.rl) .ui-chip svg { width:16px; height:16px; flex:none; }
+:is(.home-preview,.rl) .ui-chip.is-accent { border-color:color-mix(in srgb,var(--lane-accent-ink) 35%,transparent); background:var(--lane-accent-soft); color:var(--lane-accent-ink); }
+:is(.home-preview,.rl) .ui-chip.is-success { border-color:color-mix(in srgb,var(--lane-success) 30%,transparent); background:var(--lane-success-soft); color:var(--lane-success); }
+:is(.home-preview,.rl) .ui-chip.is-dark { border-color:var(--lane-ink); background:var(--lane-ink); color:var(--lane-surface); }
+:is(.home-preview,.rl) .ui-chip.is-quiet { background:transparent; color:var(--lane-support); }
+
+/* Segmented tabs: a soft track with the selected option raised on it. */
+:is(.home-preview,.rl) .ui-segmented { display:flex; gap:var(--sp-1); padding:var(--sp-1); border:1px solid var(--lane-line); border-radius:var(--radius-md); background:var(--lane-soft); }
+:is(.home-preview,.rl) .ui-segmented [role="tab"] { flex:1; display:flex; align-items:center; justify-content:center; gap:var(--sp-2); min-width:0; min-height:44px; padding:var(--sp-2) var(--sp-3); border:1px solid transparent; border-radius:10px; background:transparent; color:var(--lane-support); font-size:var(--fs-caption); font-weight:var(--fw-bold); }
+:is(.home-preview,.rl) .ui-segmented [role="tab"][aria-selected="true"] { border-color:var(--lane-ink); background:var(--lane-surface); color:var(--lane-ink); box-shadow:var(--shadow-soft); }
+:is(.home-preview,.rl) .ui-count { display:inline-grid; place-items:center; min-width:22px; height:22px; padding:0 6px; border-radius:6px; background:var(--lane-page); color:var(--lane-ink); font-size:var(--fs-caption); font-variant-numeric:tabular-nums; }
+:is(.home-preview,.rl) [aria-selected="true"] .ui-count { background:var(--lane-accent-soft); }
+
+/* Page and section headings: one size each, everywhere. */
+:is(.home-preview,.rl) .ui-page-head { display:flex; align-items:center; justify-content:space-between; gap:var(--sp-3); min-height:56px; margin-bottom:var(--sp-5); }
+:is(.home-preview,.rl) .ui-page-head h1 { margin:0; font-size:var(--fs-display); line-height:1.15; font-weight:var(--fw-bold); letter-spacing:-.02em; }
+:is(.home-preview,.rl) .ui-chips { display:flex; align-items:center; gap:var(--sp-2); }
+:is(.home-preview,.rl) .ui-section-head { display:flex; align-items:center; justify-content:space-between; gap:var(--sp-3); margin:var(--sp-6) 0 var(--sp-3); }
+:is(.home-preview,.rl) .ui-section-head h2 { margin:0; font-size:var(--fs-title); line-height:1.2; font-weight:var(--fw-bold); letter-spacing:-.01em; }
+:is(.home-preview,.rl) .ui-section-head>:not(h2) { font-size:var(--fs-caption); color:var(--lane-muted); }
+
+/* Celebration emblem shared by lesson completion and practice results: a badge with radiating rays. */
+:is(.home-preview,.rl) .ui-burst { position:relative; display:grid; place-items:center; width:88px; height:88px; margin:var(--sp-2) auto var(--sp-4); }
+:is(.home-preview,.rl) .ui-burst>div { position:relative; z-index:1; display:grid; place-items:center; width:64px; height:64px; border:1.5px solid var(--lane-ink); border-radius:var(--radius-lg); background:var(--lane-accent); color:var(--lane-ink); box-shadow:var(--shadow-cta), var(--glow-accent); animation:ui-pop 520ms var(--ease-spring) both; }
+:is(.home-preview,.rl) .ui-burst>div svg { width:32px; height:32px; fill:none; stroke:currentColor; stroke-width:2.4; stroke-linecap:round; stroke-linejoin:round; }
+:is(.home-preview,.rl) .ui-burst>i { position:absolute; left:50%; top:50%; width:4px; height:14px; margin:-7px 0 0 -2px; border-radius:2px; background:var(--lane-accent); transform:rotate(calc(var(--ray) * 45deg)) translateY(-40px); opacity:0; animation:ui-ray 640ms 140ms var(--ease-out) both; }
+:is(.home-preview,.rl) .ui-burst>i:nth-child(odd) { background:var(--lane-accent-ink); height:10px; }
+
+@media (prefers-reduced-motion:reduce) {
+  :is(.home-preview,.rl) .ui-button { transition:none; }
+  :is(.home-preview,.rl) .ui-button:active { transform:none; }
+  :is(.home-preview,.rl) .ui-burst>div { animation:none; }
+  /* Without motion the rays simply stay visible around the badge. */
+  :is(.home-preview,.rl) .ui-burst>i { animation:none; opacity:1; }
+}
