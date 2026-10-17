@@ -46,7 +46,8 @@ const route = () => {
   else if (name === 'lesson-progress') view = mountProgress(root);
   else if (name === 'review') view = lazy(() => import('./pages/review').then(m => m.mountReview));
   else if (name === 'settings') view = lazy(() => import('./pages/settings').then(m => m.mountSettings));
-  else if (name === 'buddies') view = lazy(() => import('./pages/buddies').then(m => m.mountBuddies));
+  // Streak buddies were removed (owner, 2026-10-17); old links land on Home, where the Group board is.
+  else if (name === 'buddies') { go('#/home', true); return; }
   else if (name === 'credits') view = lazy(() => import('./pages/legal').then(m => m.mountCredits));
   else if (name === 'privacy') view = lazy(() => import('./pages/legal').then(m => m.mountPrivacy));
   else if (name === 'terms') view = lazy(() => import('./pages/legal').then(m => m.mountTerms));

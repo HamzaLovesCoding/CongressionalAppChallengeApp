@@ -34,7 +34,7 @@ export function mountSettings(root: HTMLElement): View {
     <form class="sub-field" data-alias-form>
       <label for="alias">Username</label>
       <div class="sub-field-row"><input id="alias" type="text" maxlength="20" autocomplete="off" autocapitalize="off" spellcheck="false" value="${esc(current.displayAlias ?? '')}"><button class="ui-button" type="submit">Save</button></div>
-      <p class="sub-note">Friends add you as a streak buddy with this name, and it shows on leaderboards. Skip your real name. Use 3–20 letters, numbers, - or _.</p>
+      <p class="sub-note">It shows on leaderboards. Skip your real name. Use 3–20 letters, numbers, - or _.</p>
       <p class="sub-status" role="status" data-alias-status></p>
     </form>
     <section class="sub-field" aria-labelledby="sync-title">

@@ -12,10 +12,12 @@ export type VideoCredit = {
 export const VIDEO_CREDITS: VideoCredit[] = VIDEO_LESSONS.map(lesson => ({
   lessonId: lesson.id, lessonTitle: lesson.title,
   sourceTitle: lesson.lesson!.credit.title, sourceUrl: lesson.lesson!.credit.url,
-  // Owner confirmed Creative Commons status for clips 1–19 on 2026-10-13; the source link is the recorded credit (owner, 2026-10-16).
-  creator: null, license: 'Creative Commons (confirmed by the project owner)', licenseVariant: null,
+  // Owner confirmed CC BY 3.0 for clips 1–19 (2026-10-17); creator is the uploading channel, read from YouTube.
+  creator: lesson.lesson!.credit.creator, license: 'Creative Commons', licenseVariant: 'CC BY 3.0',
   localFile: lesson.video!,
 }));
+
+export const CC_BY_3 = 'https://creativecommons.org/licenses/by/3.0/';
 
 export const LEARNING_SOURCES = [
   { title: 'California Quick Reference Driver’s Handbook (DL 600X, 2025)', publisher: 'California Department of Motor Vehicles', use: 'Rules, corrections and handbook page citations in every lesson and check.', url: 'https://www.dmv.ca.gov/portal/handbook/california-driver-handbook/' },

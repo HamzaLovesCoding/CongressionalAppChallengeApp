@@ -13,7 +13,6 @@ export type SyncStatus =
   | { state: 'synced'; lastSyncedAt: string }
   | { state: 'error'; reason: 'offline' | 'unauthorized' | 'server'; lastSyncedAt: string | null };
 export type RemoteRow = { rank: number; alias: string | null; car_id: string | null; xp: number; is_you: boolean };
-export type BuddyRow = { link_id: string; username: string; car_id: string | null; relation: 'buddy' | 'incoming' | 'outgoing'; duo_streak: number; you_today: boolean; them_today: boolean; weekly_xp: number };
 export type UsernameResult = 'ok' | 'taken' | 'invalid' | 'offline';
 // A lesson comment as the server returns it; author is null for a learner without a username (shown as Anonymous).
 export type CommentRow = { id: string; author: string | null; body: string; created_at: string; score: number; my_vote: -1 | 1 | null; is_mine: boolean };
@@ -23,7 +22,6 @@ export type ActionResult = 'ok' | 'refused' | 'offline';
 export type GroupRow = { code: string; name: string; members: number; is_owner: boolean };
 export type CreateGroupResult = { status: 'ok'; code: string } | { status: 'need-username' | 'limit' | 'offline' };
 export type JoinResult = 'joined' | 'already' | 'not-found' | 'need-username' | 'limit' | 'full' | 'invalid' | 'offline';
-export type RequestResult = 'sent' | 'accepted' | 'already' | 'not-found' | 'self' | 'need-username' | 'limit' | 'invalid' | 'offline';
 
 const AUTH_KEY = 'lane-auth';
 // pendingUsername: chosen while the server was unreachable; claimed on the next backup.
@@ -141,11 +139,6 @@ export function createSync(client: SupabaseClient | null, lessonIds: string[], s
       if (!client) return null;
       try { return await call<RemoteRow[]>('weekly_leaderboard', { max_rows: 10 }); } catch { return null; }
     },
-    // The learner and their accepted streak buddies, by weekly XP.
-    async groupLeaderboard(): Promise<RemoteRow[] | null> {
-      if (!client) return null;
-      try { return await call<RemoteRow[]>('group_leaderboard', {}); } catch { return null; }
-    },
     // Code groups: make one (the server returns its code), join by code, leave, and read one group's board.
     async groups(): Promise<GroupRow[] | null> {
       if (!client) return null;
@@ -187,24 +180,6 @@ export function createSync(client: SupabaseClient | null, lessonIds: string[], s
       const result = await this.setUsername(name);
       if (result === 'taken' || result === 'invalid') store.setDisplayAlias(null);
       return result;
-    },
-    // Syncs first, so practice days and XP are current before streaks are read.
-    async buddies(): Promise<BuddyRow[] | null> {
-      if (!client) return null;
-      await this.sync();
-      try { return await call<BuddyRow[]>('my_buddies', {}); } catch { return null; }
-    },
-    async requestBuddy(username: string): Promise<RequestResult> {
-      if (!client) return 'offline';
-      try { return await call<RequestResult>('request_buddy', { username }); } catch { return 'offline'; }
-    },
-    async respondBuddy(linkId: string, accept: boolean) {
-      if (!client) return false;
-      try { return await call<boolean>('respond_buddy', { link_id: linkId, accept }); } catch { return false; }
-    },
-    async removeBuddy(linkId: string) {
-      if (!client) return false;
-      try { return await call<boolean>('remove_buddy', { link_id: linkId }); } catch { return false; }
     },
     // Lesson comments: read, post, vote (1, -1, or 0 to clear) and delete your own. No editing.
     async comments(lessonId: string): Promise<CommentRow[] | null> {

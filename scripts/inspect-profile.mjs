@@ -44,7 +44,7 @@ try {
     await page.waitForFunction(() => document.activeElement?.matches('[data-reward-item]'));
     // The gear menu lives on Home and Profile only.
     await page.getByRole('button', {name:'Settings and more',exact:true}).click();
-    assert.deepEqual(await page.getByRole('navigation', {name:'Menu',exact:true}).getByRole('link').allInnerTexts(), ['Streak buddies', 'Settings', 'Credits & sources']);
+    assert.deepEqual(await page.getByRole('navigation', {name:'Menu',exact:true}).getByRole('link').allInnerTexts(), ['Settings', 'Credits & sources']);
     await page.waitForTimeout(450); await shot('gear-menu');
     await page.getByRole('button', {name:'Close menu'}).click();
     await page.waitForTimeout(450);

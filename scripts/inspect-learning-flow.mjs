@@ -50,7 +50,7 @@ assert.ok(typeof data.topics['road-awareness'].mastery === 'number', 'topic evid
 await page.goto(base + '#/home', { waitUntil: 'load' });
 assert.equal(await page.locator('.home-review-row').count(), 0, 'automatic picks are not listed as saved');
 await page.click('[data-menu]');
-assert.deepEqual(await page.locator('.home-menu-links a').allInnerTexts(), ['Streak buddies', 'Settings', 'Credits & sources']);
+assert.deepEqual(await page.locator('.home-menu-links a').allInnerTexts(), ['Settings', 'Credits & sources']);
 await page.waitForTimeout(500);
 await shot('03b-gear-menu');
 await page.goto(base + '#/review', { waitUntil: 'load' });

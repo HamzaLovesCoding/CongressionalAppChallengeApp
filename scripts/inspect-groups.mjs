@@ -1,4 +1,4 @@
-// Code groups end to end, with the real database (the same PGlite harness as inspect-buddies.mjs).
+// Code groups end to end, with the real database (PGlite running every migration).
 // Two learners finish onboarding (the username is required), A makes a group on Home, B joins with
 // its code, both see the group's weekly board, and B leaves. Screenshots: artifacts/groups/.
 //

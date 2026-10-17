@@ -14,7 +14,6 @@ const paths = {
   clock: '<circle cx="12" cy="12" r="10"/><path d="M12 6v7l4 3"/>',
   star: '<path d="m12 2.5 2.9 5.9 6.5.9-4.7 4.6 1.1 6.5-5.8-3.1-5.8 3.1 1.1-6.5-4.7-4.6 6.5-.9Z" fill="currentColor" stroke="none"/>',
   tick: '<path d="m6 12.5 4 4 8-9" stroke-width="2.4"/>',
-  buddies: '<circle cx="8.5" cy="8" r="3.5"/><circle cx="16.5" cy="9.5" r="2.8"/><path d="M2 20c.6-3.6 3.2-5.6 6.5-5.6s5.9 2 6.5 5.6M14.5 14.6c.6-.2 1.3-.3 2-.3 2.7 0 4.7 1.7 5.2 4.7"/>',
   chevron: '<path d="m9 5 7 7-7 7"/>',
   wifi: '<path d="M2 8a16 16 0 0 1 20 0M6 12a10 10 0 0 1 12 0m-8 4a4 4 0 0 1 4 0"/><circle cx="12" cy="20" r="1" fill="currentColor"/>',
 };

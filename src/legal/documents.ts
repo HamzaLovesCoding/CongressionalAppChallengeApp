@@ -30,23 +30,22 @@ export const PRIVACY: LegalDocument = {
       'A sign-in token for that anonymous account is kept on this device so it can sync again later.',
       'Like any hosting provider, Supabase may process technical information such as your IP address to deliver the service.',
     ] },
-    { heading: 'Leaderboards, groups and streak buddies', body: [
-      'Leaderboards and streak buddies work when backup is on. Once you have earned XP in a week, other learners see you on the global weekly leaderboard with your selected car and that week’s XP. You choose a username when you start, and it is shown there; if your account has none (for example, someone else claimed it first), you appear as Anonymous. Don’t use your real name.',
+    { heading: 'Leaderboards and groups', body: [
+      'Leaderboards work when backup is on. Once you have earned XP in a week, other learners see you on the global weekly leaderboard with your selected car and that week’s XP. You choose a username when you start, and it is shown there; if your account has none (for example, someone else claimed it first), you appear as Anonymous. Don’t use your real name.',
       'You can make a group leaderboard, which gives you a 6-character code, or join one by typing a friend’s code. Lane has no search or list of groups, and a username is needed to make or join one. Members of a group see each other’s username, selected car and that week’s XP. You can leave a group at any time; the last member to leave deletes it.',
-      'A friend can send you a streak-buddy request only by typing your exact username; Lane has no search or list of learners. Nothing is shared until you accept. A streak buddy can see your username, selected car, weekly XP, whether you practiced today and your shared streak. Lane has no private messages or chat. You can decline a request or remove a buddy at any time.',
     ] },
     { heading: 'Links and sharing', body: [
       'Each lesson links to its original video on YouTube. Opening that link takes you to YouTube, whose own privacy policy applies. The Share button uses your device’s share sheet or copies a lesson link; Lane does not see what you share or with whom.',
     ] },
     { heading: 'Your choices', body: [
       'You can change or clear your permit test date and username at any time in Settings. You can remove all progress on this device by clearing this site’s data in your browser settings.',
-      'When backup is on, Settings includes Delete backed-up data, which removes your learning records, group memberships and streak buddies from the server. To remove the anonymous account itself or ask about your data, use the contact below.',
+      'When backup is on, Settings includes Delete backed-up data, which removes your learning records, and group memberships from the server. To remove the anonymous account itself or ask about your data, use the contact below.',
     ] },
     { heading: 'Teens and families', body: [
       'Lane is designed for teens preparing for a learner’s permit. The age policy and any parent or guardian consent process will be set by the operator before public release.',
     ] },
     { heading: 'Security and retention', body: [
-      'Server data is protected by access rules that let each learner read only their own records; buddies see only the details listed above. No system is perfectly secure. How long backed-up data is kept will be stated here before public release.',
+      'Server data is protected by access rules that let each learner read only their own records; group members see only the details listed above. No system is perfectly secure. How long backed-up data is kept will be stated here before public release.',
     ] },
     { heading: 'Changes and contact', body: [
       'If this policy changes, the version and effective date above will change too.',
@@ -67,7 +66,7 @@ export const TERMS: LegalDocument = {
       'Never use Lane while driving or while supervising a driver. Lane is not an emergency service. In an emergency, call 911.',
     ] },
     { heading: 'Fair use', body: [
-      'Don’t try to change XP, streaks or leaderboard results by tampering with the app, its storage or its server, and don’t interfere with the service or other learners. Usernames must not be offensive, include personal information or impersonate someone. Only add people you know as streak buddies.',
+      'Don’t try to change XP, streaks or leaderboard results by tampering with the app, its storage or its server, and don’t interfere with the service or other learners. Usernames must not be offensive, include personal information or impersonate someone. Only share a group code with people you know.',
     ] },
     { heading: 'Content and credits', body: [
       'Lesson videos come from their original creators and are listed in Credits & sources with links to the originals. Where a video differs from California law, the lesson’s California rule applies. If you believe content in Lane infringes your rights, use the contact below and it will be reviewed.',

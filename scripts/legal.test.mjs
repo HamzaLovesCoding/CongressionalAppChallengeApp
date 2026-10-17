@@ -39,8 +39,9 @@ test('credits cover every lesson video with its recorded source, and nothing is 
     const lesson = VIDEO_LESSONS.find(item => item.id === credit.lessonId);
     assert.equal(credit.sourceUrl, lesson.lesson.credit.url);
     assert.match(credit.sourceUrl, /^https:\/\/www\.youtube\.com\//);
-    assert.equal(credit.creator, null, 'creator not yet recorded');
-    assert.equal(credit.licenseVariant, null, 'license variant not yet recorded');
+    assert.equal(credit.creator, lesson.lesson.credit.creator);
+    assert.ok(['Trubicars', 'CRUDE Ultimate Driving Education'].includes(credit.creator), `${credit.lessonId} creator is a recorded channel`);
+    assert.equal(credit.licenseVariant, 'CC BY 3.0');
   }
 });
 

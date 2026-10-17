@@ -2,7 +2,7 @@ import { icon } from './icons';
 import { bottomSheet, sheetMarkup, type Sheet } from './sheet';
 import { MENU_LINKS } from './content';
 
-// The gear menu (Streak buddies, Settings, Credits & sources). It sits on Home and Profile only.
+// The gear menu (Settings, Credits & sources). It sits on Home and Profile only.
 export const menuButton = () => `<button class="home-circle" aria-label="Settings and more" data-menu>${icon('settings')}</button>`;
 
 export const menuSheetMarkup = () => sheetMarkup('home-menu-sheet', 'home-menu-title', 'Menu', 'Close menu',

@@ -1,6 +1,6 @@
 # Supabase backend
 
-Lane works fully on one device without this. With it, progress is backed up, the weekly Global leaderboard shows real, server-validated XP, learners can add each other as streak buddies (duo streaks and the Group leaderboard), and lessons have comments.
+Lane works fully on one device without this. With it, progress is backed up, the weekly Global leaderboard shows real, server-validated XP, and friends can compete on a code-group leaderboard.
 
 ## Lane's project
 
@@ -39,7 +39,7 @@ After that, run the Supabase security advisor (Dashboard → Advisors) and repea
   - `set_username(name)` claims a username: 3–20 letters, numbers, `-` or `_`, unique ignoring case; returns `ok`, `taken` or `invalid`. Sync never sets it.
   - `weekly_leaderboard(max_rows)` returns only rank, username, car ID, weekly XP (Monday 00:00 Pacific) and is-you. A learner appears to others once they have XP that week: their username (required at onboarding), or Anonymous if the account has none, such as an older save or a name claimed first by someone else.
   - `delete_my_data()` erases the caller's rows, including buddy links and practice days (the anonymous auth user itself needs the service role).
-- **Streak buddies:** `buddy_links` (one row per pair, `pending` or `accepted`), readable only by the two learners in it.
+- **Streak buddies (no longer used by the app since 2026-10-17; the code-group leaderboard replaced them):** `buddy_links` (one row per pair, `pending` or `accepted`), readable only by the two learners in it.
   - `request_buddy(username)` by exact name only (no search); returns `sent`, `accepted` (they had asked you), `already`, `not-found`, `self`, `need-username`, `limit` or `invalid`. Limits: 20 pending requests, 50 buddies.
   - `respond_buddy(link_id, accept)`, `remove_buddy(link_id)`.
   - `my_buddies()` returns username, car, relation, duo streak (consecutive Pacific days both practiced), whether each practiced today, and the buddy's weekly XP. Pending requests show only the username.

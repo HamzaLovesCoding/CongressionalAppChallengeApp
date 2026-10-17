@@ -117,7 +117,7 @@ test('simultaneous calls share one renewal, and a session renewed in another tab
     async rpc(session, fn) { calls.push(fn + ':' + session.accessToken); return []; },
   };
   const app = sync.createSync(client, [], progress);
-  await Promise.all([app.comments('a'), app.leaderboard(), app.groupLeaderboard()]);
+  await Promise.all([app.comments('a'), app.leaderboard(), app.groups()]);
   assert.deepEqual(calls.filter(call => call.startsWith('refresh')), ['refresh:r1'], 'one renewal for three calls');
   assert.ok(calls.filter(call => !call.startsWith('refresh')).every(call => call.endsWith(':a2')));
   // Another tab renews and saves; this tab, holding the old session, picks up the saved one.
@@ -149,25 +149,6 @@ test('the fetch client sends the publishable key and bearer token, never anythin
   assert.equal(seen[1].init.headers.Authorization, 'Bearer t');
   const failing = createClient({ url: 'https://x.supabase.co', key: 'pub' }, async () => { throw new TypeError('offline'); });
   await assert.rejects(failing.signInAnonymously(), error => error.reason === 'offline');
-});
-
-test('buddy calls use the validated functions and fail quietly without a connection', async () => {
-  const { sync } = await setup();
-  const calls = [];
-  const client = {
-    async signInAnonymously() { return { accessToken: 't', refreshToken: 'r', expiresAt: Date.now() + 3600_000, userId: 'u' }; },
-    async refresh(session) { return session; },
-    async rpc(_session, fn, args) { calls.push([fn, args]); if (fn === 'sync_learner') return { syncedAt: new Date().toISOString() }; if (fn === 'request_buddy') return 'sent'; if (fn === 'set_username') return 'taken'; if (fn === 'my_buddies') return []; return true; },
-  };
-  const instance = sync.createSync(client, ['a']);
-  assert.equal(await instance.setUsername('Road_Runner'), 'taken');
-  assert.equal(await instance.requestBuddy('Brake_Light'), 'sent');
-  assert.deepEqual(await instance.buddies(), []);
-  assert.deepEqual(calls.map(([fn]) => fn), ['set_username', 'request_buddy', 'sync_learner', 'my_buddies'], 'buddies syncs first so streaks are current');
-  assert.deepEqual(calls[1][1], { username: 'Brake_Light' });
-  const local = sync.createSync(null, ['a']);
-  assert.equal(await local.requestBuddy('x'), 'offline');
-  assert.equal(await local.buddies(), null);
 });
 
 test('comment calls use the validated functions and fail quietly without a connection', async () => {

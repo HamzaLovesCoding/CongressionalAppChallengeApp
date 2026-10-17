@@ -30,7 +30,8 @@ export type Clip = {
     californiaRule: string;
     handbook: string;
     local: string;
-    credit: { title: string; url: string };
+    /** creator is the YouTube channel name, required by the clip's CC BY 3.0 license. */
+    credit: { title: string; url: string; creator: string };
   };
 };
 

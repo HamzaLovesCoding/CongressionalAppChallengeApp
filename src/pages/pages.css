@@ -42,14 +42,6 @@
 .lane-sub .review-band { flex:none; display:flex; gap:4px; }
 .lane-sub .review-band i { width:14px; height:14px; border:1.5px solid var(--lane-ink); border-radius:4px; background:var(--lane-surface); }
 .lane-sub .review-band i.is-on { background:var(--lane-accent); }
-/* Streak buddies. */
-.lane-sub .buddy-row { gap:var(--sp-3); }
-.lane-sub .buddy-actions { display:flex; gap:var(--sp-2); flex:none; }
-.lane-sub .buddy-row .ui-button { width:auto; min-height:44px; padding-inline:var(--sp-4); }
-.lane-sub .buddy-streak { display:inline-flex; align-items:center; gap:4px; font-size:var(--fs-caption); font-weight:var(--fw-bold); color:var(--lane-muted); }
-.lane-sub .buddy-streak.is-lit { color:var(--lane-accent-ink); }
-.lane-sub .buddy-streak svg { width:16px; height:16px; fill:currentColor; }
-@media (max-width:380px) { .lane-sub .buddy-row { flex-wrap:wrap; } .lane-sub .buddy-actions { width:100%; } .lane-sub .buddy-actions .ui-button { flex:1; } }
 /* Onboarding (#/welcome) */
 .lane-sub .welcome-title { margin:var(--sp-2) 0 var(--sp-4); font-size:var(--fs-display); line-height:1.15; font-weight:var(--fw-bold); letter-spacing:-.02em; }
 .lane-sub .welcome-doc { border-bottom:1px solid var(--lane-line); }

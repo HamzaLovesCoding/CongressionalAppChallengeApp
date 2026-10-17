@@ -134,6 +134,22 @@ export function readiness(topicMasteries: number[], lessons: { completed: number
 // readiness score (an estimate from practice in Lane; the disclaimer is in Settings and Terms).
 export type GoalKind = 'permit' | 'driver' | 'other';
 export const driverClass = (score: number) => score >= 90 ? 'Class A+' : score >= 80 ? 'Class A' : score >= 65 ? 'Class B' : score >= 45 ? 'Class C' : 'Learner';
+// Score thresholds where each label starts, lowest first. Home's gauge draws these as ticks.
+export const DRIVER_CLASS_STEPS = [[45, 'Class C'], [65, 'Class B'], [80, 'Class A'], [90, 'Class A+']] as const;
+export const STATUS_STEPS = [[50, 'Developing'], [70, 'Permit Test Ready'], [85, 'Highway Confident']] as const;
+export type ReadinessStep = { label: string; points: number; topics: 0 } | { label: string; points: 0; topics: number };
+// The next label above where the learner is now, or null at the top. Highway Confident also needs 80% of
+// topics strong (readiness() above), so past 85 points the step counts strong topics instead of points.
+export function nextReadinessStep(goal: GoalKind, result: { score: number; status: ReadinessStatus; strongTopics: number; topics: number }): ReadinessStep | null {
+  if (goal === 'driver') {
+    const next = DRIVER_CLASS_STEPS.find(([at]) => result.score < at);
+    return next ? { label: next[1], points: next[0] - result.score, topics: 0 } : null;
+  }
+  if (result.status === 'Highway Confident') return null;
+  const next = STATUS_STEPS.find(([at]) => result.score < at);
+  if (next) return { label: next[1], points: next[0] - result.score, topics: 0 };
+  return { label: 'Highway Confident', points: 0, topics: Math.max(1, Math.floor(result.topics * 0.8) - result.strongTopics) };
+}
 export function goalReadiness(goal: GoalKind, result: { score: number; status: ReadinessStatus }) {
   if (goal === 'permit') return { title: 'Permit test readiness', value: `${result.score}%`, detail: result.status, score: result.score };
   if (goal === 'driver') return { title: 'Driver class', value: driverClass(result.score), detail: `Readiness ${result.score}`, score: result.score };

@@ -79,7 +79,7 @@ test('review priority favors weak, forgotten, skipped, safety-critical topics', 
   assert.ok(reviewPriority({ mastery: 0.5, daysSincePractice: 2, skips: 2, safety: 1 }) > reviewPriority({ mastery: 0.5, daysSincePractice: 2, skips: 0, safety: 1 }), 'skips raise priority');
 });
 
-import { goalReadiness, driverClass, readiness as readinessOf } from '../src/learning/scoring.ts';
+import { goalReadiness, driverClass, nextReadinessStep, readiness as readinessOf } from '../src/learning/scoring.ts';
 test('the Home goal words one readiness score three ways', () => {
   const result = readinessOf([0.9, 0.7, 0.5, 0], { completed: 12, total: 24 });
   assert.equal(result.score, 51);
@@ -127,4 +127,27 @@ test('each new completion raises readiness even within an already-practiced topi
   assert.equal(readinessOf([0.599], { completed: 12, total: 24 }).score, 52, 'round once after blending');
   assert.equal(readinessOf([1, 1, 1, 1, 0], { completed: 24, total: 24 }).status, 'Highway Confident');
   assert.equal(readinessOf([0, 0, 0, 0, 0], { completed: 24, total: 24 }).status, 'Permit Test Ready', 'the highest label still requires strong topics');
+});
+
+test('the next readiness step names the next label and the real distance to it', () => {
+  const at = (score, status, strongTopics = 0, topics = 10) => ({ score, status, strongTopics, topics });
+  assert.deepEqual(nextReadinessStep('permit', at(42, 'Needs Foundation')), { label: 'Developing', points: 8, topics: 0 });
+  assert.deepEqual(nextReadinessStep('other', at(50, 'Developing')), { label: 'Permit Test Ready', points: 20, topics: 0 });
+  assert.deepEqual(nextReadinessStep('permit', at(84, 'Permit Test Ready')), { label: 'Highway Confident', points: 1, topics: 0 });
+  // 90 points but only 5 of the 8 needed strong topics: the step counts topics, not points.
+  assert.deepEqual(nextReadinessStep('permit', at(90, 'Permit Test Ready', 5)), { label: 'Highway Confident', points: 0, topics: 3 });
+  assert.equal(nextReadinessStep('permit', at(95, 'Highway Confident', 9)), null);
+  assert.deepEqual(nextReadinessStep('driver', at(0, 'Needs Foundation')), { label: 'Class C', points: 45, topics: 0 });
+  assert.deepEqual(nextReadinessStep('driver', at(65, 'Developing')), { label: 'Class A', points: 15, topics: 0 });
+  assert.equal(nextReadinessStep('driver', at(90, 'Permit Test Ready')), null);
+  // Every driver step agrees with driverClass at its threshold.
+  for (const score of [44, 45, 64, 65, 79, 80, 89]) {
+    const step = nextReadinessStep('driver', at(score, 'Developing'));
+    assert.equal(driverClass(score + step.points), step.label);
+  }
+  // Every status step agrees with readiness() at its threshold.
+  const real = readinessOf([1, 1, 1, 1, 1], { completed: 13, total: 24 });
+  const step = nextReadinessStep('permit', real);
+  assert.equal(real.status, 'Developing');
+  assert.deepEqual(step, { label: 'Permit Test Ready', points: 70 - real.score, topics: 0 });
 });

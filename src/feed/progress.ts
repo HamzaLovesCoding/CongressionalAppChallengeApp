@@ -236,8 +236,8 @@ export function completeFirstSession(now = new Date()) {
 }
 
 // Letters, numbers, spaces, hyphens and underscores only; never a requirement to use a real name.
-// A username: 3–20 English letters, numbers, hyphens or underscores (the server's rule, so a name
-// that works here also works for streak buddies). Spaces become underscores; anything else is dropped.
+// A username: 3–20 English letters, numbers, hyphens or underscores (the server's rule).
+// Spaces become underscores; anything else is dropped.
 export function cleanAlias(value: string) {
   const alias = value.normalize('NFKC').trim().replace(/\s+/g, '_').replace(/[^A-Za-z0-9_-]/g, '').slice(0, ALIAS_MAX);
   return alias.length >= 3 ? alias : null;
@@ -407,7 +407,7 @@ function resolveReviewIn(itemId: string, at: string) {
   data.reviewLater = reviewList().map(item => item.itemId === itemId && !item.resolvedAt ? { ...item, resolvedAt: at } : item);
 }
 
-// Days with earned XP in the last 60 days (local calendar days), for streaks shared with buddies.
+// Days with earned XP in the last 60 days (local calendar days).
 export function activeDays(now = new Date()) {
   const oldest = new Date(now); oldest.setDate(oldest.getDate() - 60);
   return Object.entries(data.daily).filter(([day, xp]) => xp > 0 && day >= dayKey(oldest) && day <= dayKey(now)).map(([day]) => day).sort().reverse();

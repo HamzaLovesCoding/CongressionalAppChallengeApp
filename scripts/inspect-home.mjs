@@ -105,7 +105,7 @@ try {
     await nav().getByRole('link', { name: 'Home', exact: true }).click();
     await page.getByRole('button', { name: 'Settings and more', exact: true }).click();
     const menu = page.getByRole('navigation', { name: 'Menu', exact: true });
-    assert.deepEqual(await menu.getByRole('link').allInnerTexts(), ['Streak buddies', 'Settings', 'Credits & sources']);
+    assert.deepEqual(await menu.getByRole('link').allInnerTexts(), ['Settings', 'Credits & sources']);
     await menu.getByRole('link', { name: 'Settings', exact: true }).click();
     await page.getByRole('heading', { name: 'Settings', level: 1 }).waitFor();
     // Settings changes the main goal, and Home rewords the readiness goal to match.

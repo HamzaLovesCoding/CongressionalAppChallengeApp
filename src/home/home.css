@@ -23,18 +23,34 @@ body:has(.home-preview) { touch-action:auto; }
 .home-lesson-detail { margin-top:var(--sp-2)!important; font-size:var(--fs-caption); color:var(--lane-soft); }
 .home-continue { margin-top:var(--sp-5); }
 .home-goal-summary { display:flex; flex-direction:column; gap:var(--sp-3); padding-top:var(--sp-5); margin-top:var(--sp-5); border-top:1px solid var(--lane-line); text-align:left; }
-.home-goal-heading, .home-goal-result { display:flex; align-items:center; justify-content:space-between; gap:var(--sp-3); }
-.home-goal-result { flex-wrap:wrap; }
-.home-goal-heading { font-weight:var(--fw-bold); }
-.home-goal-heading small { flex:none; font-size:var(--fs-caption); font-weight:var(--fw-regular); color:var(--lane-muted); }
-.home-goal-value { display:flex; align-items:baseline; gap:var(--sp-2); white-space:nowrap; font-variant-numeric:tabular-nums; }
+.home-goal-heading { display:flex; align-items:baseline; justify-content:space-between; gap:var(--sp-3); font-size:var(--fs-title); font-weight:var(--fw-bold); letter-spacing:-.01em; }
+.home-goal-heading small { flex:none; font-size:var(--fs-caption); font-weight:var(--fw-regular); letter-spacing:0; color:var(--lane-muted); }
+/* Readiness dial: a speedometer on the page itself, lit from behind by a soft ochre glow instead of a card. */
+.home-dial-wrap { position:relative; display:block; width:min(100%,280px); margin:0 auto; background:radial-gradient(closest-side,rgb(209 151 53 / .24),rgb(209 151 53 / 0) 78%); }
+.home-dial { display:block; width:100%; height:auto; overflow:visible; }
+.home-dial path { fill:none; stroke-linecap:round; }
+.home-dial-track { stroke:var(--lane-track); stroke-width:14; }
+.home-dial-fill { stroke:url(#home-dial-fill); stroke-width:14; }
+.home-dial stop { stop-color:var(--lane-accent); }
+.home-dial stop:nth-child(3) { stop-color:var(--lane-olive); }
+.home-dial stop:last-child { stop-color:var(--lane-success); }
+.home-dial-tick { stroke:var(--lane-line); stroke-width:3; }
+.home-dial-tick.is-passed { stroke:var(--lane-ink); }
+.home-dial-knob { fill:var(--lane-surface); stroke:var(--lane-ink); stroke-width:4; }
+.home-dial-readout { position:absolute; inset:32% 0 auto; display:flex; flex-direction:column; align-items:center; gap:var(--sp-2); }
+.home-goal-value { display:flex; align-items:baseline; gap:var(--sp-1); white-space:nowrap; font-variant-numeric:tabular-nums; }
 .home-goal-value strong { font-size:var(--fs-hero); line-height:1; font-weight:var(--fw-bold); letter-spacing:-.04em; }
 .home-goal-value>span { color:var(--lane-muted); font-size:var(--fs-body); }
-.home-goal-status { display:flex; align-items:center; justify-content:flex-end; gap:var(--sp-2); margin-left:auto; color:var(--lane-support); font-size:var(--fs-caption); text-align:right; }
-.home-goal-status svg { width:20px; height:20px; }
-.home-readiness-track { display:block; height:8px; overflow:hidden; border-radius:var(--radius-sm); background:var(--lane-track); }
-.home-readiness-track>span { display:block; height:100%; border-radius:inherit; background:var(--lane-accent-ink); }
+.home-goal-status { display:inline-flex; align-items:center; min-height:28px; padding:var(--sp-1) var(--sp-3); border-radius:999px; font-size:var(--fs-caption); font-weight:var(--fw-bold); white-space:nowrap; }
+.home-goal-status.is-start { background:var(--lane-accent-soft); color:var(--lane-accent-ink); }
+.home-goal-status.is-build { background:var(--lane-accent); color:var(--lane-ink); }
+.home-goal-status.is-ready { background:var(--lane-success-soft); color:var(--lane-success); box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--lane-success) 35%,transparent); }
+.home-goal-status.is-top { background:var(--lane-success); color:var(--lane-surface); }
+.home-goal-next { margin-top:calc(-1 * var(--sp-1)); color:var(--lane-accent-ink); font-weight:var(--fw-bold); text-align:center; text-wrap:balance; }
 .home-goal-completed { color:var(--lane-support); font-size:var(--fs-caption); }
+.home-goal-footer { display:flex; align-items:center; justify-content:space-between; gap:var(--sp-3); }
+.home-goal-more { display:inline-flex; align-items:center; gap:2px; flex:none; font-weight:var(--fw-bold); }
+.home-goal-more svg { width:18px; height:18px; }
 .home-shortcut { display:flex; align-items:center; gap:12px; min-height:69px; width:100%; padding:14px 0; border:0; border-bottom:1px solid var(--lane-line); background:transparent; text-align:left; }
 .home-shortcut-icon { display:grid; place-items:center; width:40px; height:40px; color:var(--lane-ink); border:1px solid var(--lane-ink); border-radius:12px; background:var(--lane-surface); }
 .home-shortcut-icon svg { width:21px; height:21px; }
@@ -91,22 +107,28 @@ body:has(.home-preview) { touch-action:auto; }
 /* Weekly activity and all-time readiness share the page, with space to read each independently. */
 .home-week { padding-bottom:var(--sp-5); border-bottom:1px solid var(--lane-line); }
 .home-week .home-section-heading { margin-top:var(--sp-6); margin-bottom:var(--sp-5); }
-.home-streak { display:flex; align-items:center; gap:var(--sp-3); }
-.home-streak-emblem { display:grid; place-items:center; flex:none; width:48px; height:56px; border-radius:var(--radius-md); background:var(--lane-accent-soft); color:var(--lane-accent-ink); }
-.home-streak-emblem svg { width:28px; height:28px; }
-.home-streak.is-lit .home-streak-emblem svg { fill:var(--lane-accent); }
-.home-streak-title { font-size:var(--fs-title); font-weight:var(--fw-bold); line-height:1.2; letter-spacing:-.01em; }
-.home-streak-detail { margin-top:var(--sp-1)!important; font-size:var(--fs-caption); color:var(--lane-support); }
+/* Streak: a bold state, not a status line. The emblem and today's marker share one color story:
+   ochre to act on today, a filled flame once today counts, green for days already earned. */
+.home-week-count { flex:none; color:var(--lane-muted); font-size:var(--fs-body); font-variant-numeric:tabular-nums; }
+.home-week-count b { color:var(--lane-ink); font-weight:var(--fw-bold); }
+.home-streak { display:flex; align-items:center; gap:var(--sp-4); }
+.home-streak-emblem { display:grid; place-items:center; flex:none; width:64px; height:64px; border-radius:var(--radius-lg); background:var(--lane-accent-soft); color:var(--lane-accent-ink); }
+.home-streak-emblem svg { width:38px; height:38px; fill:none; stroke:currentColor; stroke-width:1.75; stroke-linejoin:round; }
+.home-streak-emblem .home-flame-inner { opacity:.55; }
+.home-streak.is-risk .home-streak-emblem { background:var(--lane-accent); color:var(--lane-ink); }
+.home-streak.is-lit .home-streak-emblem { background:var(--lane-ink); box-shadow:var(--shadow-soft); }
+.home-streak.is-lit .home-flame-outer { fill:var(--lane-accent); stroke:var(--lane-accent); }
+.home-streak.is-lit .home-flame-inner { fill:var(--lane-accent-soft); stroke:none; opacity:1; }
+.home-streak-title { font-size:var(--fs-display); font-weight:var(--fw-bold); line-height:1.15; letter-spacing:-.02em; }
+.home-streak-detail { margin-top:var(--sp-1)!important; font-size:var(--fs-body); color:var(--lane-support); text-wrap:pretty; }
+.home-streak.is-risk .home-streak-detail { color:var(--lane-accent-ink); font-weight:var(--fw-bold); }
 .home-week-bars { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:var(--sp-2); margin:var(--sp-5) 0 0; padding:0; list-style:none; }
-.home-week-bars li { display:flex; flex-direction:column; align-items:center; gap:var(--sp-2); font-size:var(--fs-caption); color:var(--lane-muted); }
-.home-week-bar { display:grid; place-items:center; width:100%; height:40px; border:1px solid var(--lane-line); border-radius:var(--radius-sm); background:var(--lane-soft); }
-.home-week-bar svg { width:20px; height:20px; }
-.home-week-dot { width:6px; height:6px; border-radius:50%; background:var(--lane-accent-ink); }
-.home-week-bars .is-done .home-week-bar { background:var(--lane-ink); border-color:var(--lane-ink); color:var(--lane-surface); }
-.home-week-bars .is-today { color:var(--lane-ink); font-weight:var(--fw-bold); }
-.home-week-bars .is-today .home-week-bar { border:1.5px solid var(--lane-accent-ink); background:var(--lane-accent-soft); color:var(--lane-ink); }
-.home-week-bars .is-today.is-done .home-week-bar { background:var(--lane-accent); }
-.home-week-bars .is-ahead .home-week-bar { background:transparent; border-style:dashed; }
+.home-week-bars li { display:block; }
+.home-week-bar { display:grid; place-items:center; width:100%; height:48px; border-radius:var(--radius-md); background:var(--lane-soft); color:var(--lane-muted); font-size:var(--fs-body); font-weight:var(--fw-bold); }
+.home-week-bars .is-done .home-week-bar { background:var(--lane-success); color:var(--lane-surface); }
+.home-week-bars .is-today .home-week-bar { background:var(--lane-accent); color:var(--lane-ink); box-shadow:var(--glow-accent); }
+.home-week-bars .is-today.is-done .home-week-bar { background:var(--lane-success); color:var(--lane-surface); box-shadow:var(--glow-success); }
+.home-week-bars .is-ahead .home-week-bar { background:transparent; border:1.5px dashed var(--lane-line); }
 
 .home-chevron { width:20px; height:20px; margin-left:auto; color:var(--lane-support); }
 @media(prefers-reduced-motion:reduce){.home-preview :is(button,a){transition:none}}
@@ -117,4 +139,4 @@ body:has(.home-preview) { touch-action:auto; }
 .home-review-row b { font-size:var(--fs-body); }
 .home-review-row small { font-size:var(--fs-caption); color:var(--lane-support); }
 .home-review-row svg { flex:none; width:20px; height:20px; }
-@media(max-width:350px){.home-content{padding-inline:16px}.home-preview .home-sign-face{padding:20px 16px 16px}.home-sign-title{font-size:24px}.home-week-bars{gap:var(--sp-1)}.home-lesson h2{font-size:24px}}
+@media(max-width:350px){.home-content{padding-inline:16px}.home-preview .home-sign-face{padding:20px 16px 16px}.home-sign-title{font-size:24px}.home-week-bars{gap:6px}.home-streak-title{font-size:23px}.home-streak-emblem{width:56px;height:56px}.home-lesson h2{font-size:24px}}

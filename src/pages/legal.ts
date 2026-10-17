@@ -1,4 +1,4 @@
-import { LEARNING_SOURCES, OPEN_SOURCE, ORIGINAL_MATERIALS, VIDEO_CREDITS } from '../legal/credits';
+import { CC_BY_3, LEARNING_SOURCES, OPEN_SOURCE, ORIGINAL_MATERIALS, VIDEO_CREDITS } from '../legal/credits';
 import { OWNER_PLACEHOLDER, PRIVACY, TERMS, type LegalDocument } from '../legal/documents';
 import type { View } from '../navigation';
 import { subpage } from './subpage';
@@ -23,8 +23,8 @@ export function mountCredits(root: HTMLElement): View {
   const view = subpage(root, { title: 'Credits & sources', back: '#/settings', backLabel: 'Back to settings', className: 'legal-page' });
   view.body.innerHTML = `
     <h2>Lesson videos</h2>
-    <p class="sub-note">Each video is used under Creative Commons, as confirmed by the project owner.</p>
-    <ul class="sub-list">${VIDEO_CREDITS.map(credit => row(credit.sourceUrl, credit.lessonTitle, `Original: ${esc(credit.sourceTitle)}${credit.creator ? ` · ${esc(credit.creator)}` : ''}${credit.licenseVariant ? ` · ${esc(credit.licenseVariant)}` : ''}`)).join('')}</ul>
+    <p class="sub-note">Each video is by the creator named below and is used under the <a href="${CC_BY_3}" target="_blank" rel="noopener">Creative Commons Attribution 3.0 license (CC BY 3.0)</a>. Lane re-encoded the videos for phones and shows them with its own titles and California rule notes. The creators do not endorse Lane.</p>
+    <ul class="sub-list">${VIDEO_CREDITS.map(credit => row(credit.sourceUrl, credit.lessonTitle, `“${esc(credit.sourceTitle)}” by ${esc(credit.creator ?? 'unknown creator')}${credit.licenseVariant ? ` · ${esc(credit.licenseVariant)}` : ''}`)).join('')}</ul>
     <h2>Learning sources</h2>
     <ul class="sub-list">${LEARNING_SOURCES.map(source => row(source.url, source.title, `${esc(source.publisher)}. ${esc(source.use)}`)).join('')}</ul>
     <p class="sub-note">Lane is not affiliated with or endorsed by the California DMV or the Office of Traffic Safety.</p>

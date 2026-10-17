@@ -5,16 +5,23 @@ export const homeContent = {
   unitTab: 'Unit 1',
   week: 'This week',
   streak: (days: number) => days ? `${days}-day streak` : 'Start a streak today',
-  streakPending: 'Finish a lesson today to keep it going.',
-  streakStart: 'One lesson starts your first day.',
-  streakToday: 'Today’s done. Keep it going tomorrow.',
+  // A streak survives until the end of the day after the last practice (stats() in progress.ts).
+  streakPending: 'Finish a lesson by midnight to keep it.',
+  streakStart: 'Finish one lesson to light day one.',
+  streakToday: (nextDay: number) => `Today’s done. Day ${nextDay} starts tomorrow.`,
   streakComplete: 'Every lesson completed',
   allLessonsDone: 'You’ve completed all the lessons in Lane.',
   weekActivity: 'XP earned each day this week',
+  weekCountLabel: (days: number) => `${days} of 7 days practiced this week`,
   readiness: 'Driver readiness',
   allTime: 'All time',
   outOf100: 'out of 100',
   viewReadiness: 'View readiness and review',
+  review: 'Review',
+  nextStep: ({ label, points, topics }: { label: string; points: number; topics: number }) => points
+    ? `${points} ${points === 1 ? 'point' : 'points'} to ${label}`
+    : `${topics} more strong ${topics === 1 ? 'topic' : 'topics'} to ${label}`,
+  topStep: 'Top level in Lane reached',
   lessonCount: (done: number, total: number) => `${done} of ${total} lessons completed`,
   days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
   reviewTitle: 'Review later',
@@ -23,7 +30,6 @@ export const homeContent = {
 
 // The Home menu reaches screens that have no tab of their own.
 export const MENU_LINKS = [
-  { href: '#/buddies', icon: 'buddies', label: 'Streak buddies' },
   { href: '#/settings', icon: 'settings', label: 'Settings' },
   { href: '#/credits', icon: 'book', label: 'Credits & sources' },
 ] as const;

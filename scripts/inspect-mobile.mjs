@@ -244,7 +244,6 @@ for (const phone of PHONES) {
       await open('#/feed/school-bus'); await capture('feed-text-lesson', { reach: true });
       await page.locator('.is-current [data-comments]').click(); await page.locator('.lane-comments[open]').waitFor(); await capture('feed-comments', { reach: true });
       await page.keyboard.press('Escape'); await page.waitForTimeout(300);
-      await open('#/buddies'); await capture('buddies', { reach: true });
       await open('#/feed/sim/four-way-stop'); await capture('feed-challenge-card', { reach: true });
       await page.locator('.is-current [data-sim-start]').click(); await page.locator('[data-start]').waitFor({ timeout: 20000 }); await page.waitForTimeout(600); await capture('feed-challenge-running');
       await open('#/review'); await capture('review', { reach: true });

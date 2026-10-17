@@ -28,7 +28,7 @@ export const VIDEO_LESSONS: Clip[] = [
       californiaRule: 'Keep your eyes moving and scan at least 10 seconds ahead; the video’s “two blocks” changes with speed and block length. Before moving over, signal, check mirrors and over your shoulder, and change lanes only with enough space.',
       handbook: 'Section 6, “Scan Your Surroundings,” p. 44',
       local: LOCAL.general,
-      credit: { title: 'How to Navigate and be Aware of Hazards and Changes', url: shorts('Y_WfR2eIQHo') },
+      credit: { title: 'How to Navigate and be Aware of Hazards and Changes', url: shorts('Y_WfR2eIQHo'), creator: 'Trubicars' },
     },
   },
   {
@@ -45,7 +45,7 @@ export const VIDEO_LESSONS: Clip[] = [
       californiaRule: 'The video’s $5,000 police threshold is not California’s rule. Call 911 right away if anyone is hurt. If no one is hurt, move out of traffic, then call 911.',
       handbook: '“What to Do if You Are in a Collision,” p. 59',
       local: LOCAL.general,
-      credit: { title: 'How to Deal with a Crash', url: shorts('VEz6_4xEDf0') },
+      credit: { title: 'How to Deal with a Crash', url: shorts('VEz6_4xEDf0'), creator: 'Trubicars' },
     },
   },
   {
@@ -62,7 +62,7 @@ export const VIDEO_LESSONS: Clip[] = [
       californiaRule: 'A basic emergency kit is a smart idea, and California law doesn’t require one. If your car has trouble, use your flashers, pull off the road if you can, call for help, and stay in the vehicle.',
       handbook: 'Section 3, “Using Your Emergency Flashers,” p. 5',
       local: LOCAL.general,
-      credit: { title: 'Pack an Emergency Kit', url: shorts('YwktUIc6SzE') },
+      credit: { title: 'Pack an Emergency Kit', url: shorts('YwktUIc6SzE'), creator: 'Trubicars' },
     },
   },
   {
@@ -79,7 +79,7 @@ export const VIDEO_LESSONS: Clip[] = [
       californiaRule: 'The mirror trick only fits one car and seat setup. Use it as a practice cue for your own car. Keep looking around, yield to people, and check curb colors and signs.',
       handbook: 'Parking — “Parallel Parking,” p. 18',
       local: LOCAL.vulnerable,
-      credit: { title: 'Parking Tips', url: shorts('p7ZyEO5YtdQ') },
+      credit: { title: 'Parking Tips', url: shorts('p7ZyEO5YtdQ'), creator: 'Trubicars' },
     },
   },
   {
@@ -96,7 +96,7 @@ export const VIDEO_LESSONS: Clip[] = [
       californiaRule: 'When a traffic light isn’t working, stop as if there are STOP signs in all directions. First to stop goes first; if you arrive together, yield to the right. Go when safe.',
       handbook: 'Section 5, “Traffic Light Not Working,” p. 25',
       local: LOCAL.general,
-      credit: { title: 'How to Handle a Traffic Light Outage', url: shorts('qTuNCIlZKmM') },
+      credit: { title: 'How to Handle a Traffic Light Outage', url: shorts('qTuNCIlZKmM'), creator: 'Trubicars' },
     },
   },
   {
@@ -113,7 +113,7 @@ export const VIDEO_LESSONS: Clip[] = [
       californiaRule: 'For any emergency vehicle using a siren and red lights, drive to the right edge and stop until it passes. If you’re already in an intersection, clear it first.',
       handbook: '“Emergency Vehicles,” p. 35',
       local: LOCAL.general,
-      credit: { title: 'Emergency Vehicle Right of Way', url: shorts('W_OS3ZtmeZQ') },
+      credit: { title: 'Emergency Vehicle Right of Way', url: shorts('W_OS3ZtmeZQ'), creator: 'Trubicars' },
     },
   },
   {
@@ -130,7 +130,7 @@ export const VIDEO_LESSONS: Clip[] = [
       californiaRule: 'This clip shows left-hand traffic. Don’t copy its left-side pull-over. In California, safely drive to the right edge of the road and stop until the emergency vehicle passes.',
       handbook: '“Emergency Vehicles,” p. 35',
       local: LOCAL.general,
-      credit: { title: 'Right of Way with Emergency Vehicles', url: shorts('EAX-BfaXnNA') },
+      credit: { title: 'Right of Way with Emergency Vehicles', url: shorts('EAX-BfaXnNA'), creator: 'CRUDE Ultimate Driving Education' },
     },
   },
   {
@@ -147,7 +147,7 @@ export const VIDEO_LESSONS: Clip[] = [
       californiaRule: 'At an intersection without STOP or YIELD signs, whoever arrives first goes first. If you arrive together, yield to the vehicle, pedestrian or bicyclist on your right. Going straight doesn’t break a tie.',
       handbook: 'Section 5, “Right-of-Way Rules: Who Goes First?” p. 27',
       local: LOCAL.vulnerable,
-      credit: { title: 'Right of Way', url: shorts('mVRobcWCxFU') },
+      credit: { title: 'Right of Way', url: shorts('mVRobcWCxFU'), creator: 'Trubicars' },
     },
   },
   {
@@ -164,7 +164,7 @@ export const VIDEO_LESSONS: Clip[] = [
       californiaRule: 'High beams are allowed on open country roads or dark city streets when safe and legal. Dim them for oncoming drivers. Use low beams in rain, fog or heavy smoke.',
       handbook: 'Section 6, “Understand the Road Conditions: Darkness,” p. 46',
       local: LOCAL.general,
-      credit: { title: 'High Beam Usage', url: shorts('aTbYpaOgYxU') },
+      credit: { title: 'High Beam Usage', url: shorts('aTbYpaOgYxU'), creator: 'Trubicars' },
     },
   },
   {
@@ -181,7 +181,7 @@ export const VIDEO_LESSONS: Clip[] = [
       californiaRule: 'California’s standard is at least 3 feet when passing a bicyclist. The video’s 1 meter is about 3.3 feet. If you can’t give 3 feet, don’t pass; slow down and wait.',
       handbook: 'Section 5, “Bicycles” and “Passing a Bicyclist,” pp. 36–37',
       local: LOCAL.vulnerable,
-      credit: { title: 'How to Share the Road with a Cyclist', url: shorts('4BWgFvgGiEw') },
+      credit: { title: 'How to Share the Road with a Cyclist', url: shorts('4BWgFvgGiEw'), creator: 'Trubicars' },
     },
   },
   {
@@ -198,7 +198,7 @@ export const VIDEO_LESSONS: Clip[] = [
       californiaRule: 'Freeway traffic has the right-of-way. Enter at or near traffic speed, yield, and merge only into a space large enough to join safely. Don’t cross solid lines, and don’t stop unless absolutely necessary.',
       handbook: 'Section 4, “Merging and Exiting — Merging,” pp. 15–16',
       local: LOCAL.speed,
-      credit: { title: 'How to enter a ramp on the highway', url: shorts('yVxIoBMzeoo') },
+      credit: { title: 'How to enter a ramp on the highway', url: shorts('yVxIoBMzeoo'), creator: 'Trubicars' },
     },
   },
   {
@@ -215,7 +215,7 @@ export const VIDEO_LESSONS: Clip[] = [
       californiaRule: 'Traffic already on the highway has the right-of-way. Yield, and merge only into a space large enough for your car. Once in, leave three seconds behind the car ahead.',
       handbook: 'Section 4, “Merging and Exiting — Merging,” pp. 15–16',
       local: LOCAL.speed,
-      credit: { title: 'Common Mistakes when Merging Onto a Highway', url: shorts('Oc7FD511OA8') },
+      credit: { title: 'Common Mistakes when Merging Onto a Highway', url: shorts('Oc7FD511OA8'), creator: 'Trubicars' },
     },
   },
   {
@@ -232,7 +232,7 @@ export const VIDEO_LESSONS: Clip[] = [
       californiaRule: 'Glancing at mirrors isn’t enough; mirrors don’t show blind spots. Signal, check mirrors and traffic beside and behind you, look over your shoulder, and move only when there’s enough space.',
       handbook: 'Section 4, “Changing Lanes,” p. 8',
       local: LOCAL.general,
-      credit: { title: 'Driving Test Tips', url: shorts('PqXkWiuHRBA') },
+      credit: { title: 'Driving Test Tips', url: shorts('PqXkWiuHRBA'), creator: 'Trubicars' },
     },
   },
   {
@@ -249,7 +249,7 @@ export const VIDEO_LESSONS: Clip[] = [
       californiaRule: 'This demo car is right-hand drive. In California, look over both your right and left shoulders out the side windows, turning only your head. The exact viewing angle in the video isn’t a rule.',
       handbook: 'Section 6, “Blind Spots,” p. 45',
       local: LOCAL.vulnerable,
-      credit: { title: 'How to Identify and Reduce Blind Spots', url: shorts('f6fzDN3xroc') },
+      credit: { title: 'How to Identify and Reduce Blind Spots', url: shorts('f6fzDN3xroc'), creator: 'CRUDE Ultimate Driving Education' },
     },
   },
   {
@@ -266,7 +266,7 @@ export const VIDEO_LESSONS: Clip[] = [
       californiaRule: 'This footage uses left-hand traffic. Don’t copy its road position. In California, stay on the right side of the road and slow to a speed that’s safe for what you can see.',
       handbook: 'Section 6, “Manage Your Speed,” p. 52',
       local: LOCAL.speed,
-      credit: { title: 'How to Adapt to the Conditions', url: shorts('MEiEuxfxB4s') },
+      credit: { title: 'How to Adapt to the Conditions', url: shorts('MEiEuxfxB4s'), creator: 'CRUDE Ultimate Driving Education' },
     },
   },
   {
@@ -283,7 +283,7 @@ export const VIDEO_LESSONS: Clip[] = [
       californiaRule: 'This clip is from a country that drives on the left, so “keep to the left” means staying on your own side. In California your side is the right: stay right, slow down, and be ready to stop within the space you can see.',
       handbook: '“Pedestrians,” p. 32',
       local: LOCAL.speed,
-      credit: { title: 'How to Adapt to the Conditions, Poor Visibility', url: shorts('6yk-USG8gL0') },
+      credit: { title: 'How to Adapt to the Conditions, Poor Visibility', url: shorts('6yk-USG8gL0'), creator: 'CRUDE Ultimate Driving Education' },
     },
   },
   {
@@ -300,7 +300,7 @@ export const VIDEO_LESSONS: Clip[] = [
       californiaRule: 'If a vehicle merges too closely ahead, take your foot off the accelerator to create space, then get back to at least a three-second following distance. Don’t speed up to block a merge.',
       handbook: 'Sharing the Road — “Blind Spots (the No Zone),” “Braking,” and “Maneuvering,” pp. 32–33',
       local: LOCAL.speed,
-      credit: { title: 'Leaving Space for Larger Vehicles, Correctly', url: shorts('qMWo4bs6_WI') },
+      credit: { title: 'Leaving Space for Larger Vehicles, Correctly', url: shorts('qMWo4bs6_WI'), creator: 'CRUDE Ultimate Driving Education' },
     },
   },
   {
@@ -317,7 +317,7 @@ export const VIDEO_LESSONS: Clip[] = [
       californiaRule: 'This test uses km/h: 40 km/h is about 25 mph and 60 km/h is about 37 mph. The demo only compares the two speeds. Use the three-second rule to keep a safe following distance.',
       handbook: 'Section 6, “Tailgating (Following Too Closely),” p. 44',
       local: LOCAL.speed,
-      credit: { title: 'Car Stopping Distance Demonstration', url: shorts('gHtV3oKT7Yc') },
+      credit: { title: 'Car Stopping Distance Demonstration', url: shorts('gHtV3oKT7Yc'), creator: 'CRUDE Ultimate Driving Education' },
     },
   },
   {
@@ -334,7 +334,7 @@ export const VIDEO_LESSONS: Clip[] = [
       californiaRule: 'Three seconds is California’s basic following distance at any speed. Add more space when conditions or hazards reduce your margin, and when someone is tailgating you.',
       handbook: 'Section 6, “Tailgating (Following Too Closely),” p. 44',
       local: LOCAL.speed,
-      credit: { title: 'How to Measure Safe Following Distance in Timing', url: shorts('qmI6rG2oUik') },
+      credit: { title: 'How to Measure Safe Following Distance in Timing', url: shorts('qmI6rG2oUik'), creator: 'CRUDE Ultimate Driving Education' },
     },
   },
 ];
