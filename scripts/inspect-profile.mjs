@@ -37,6 +37,11 @@ try {
     await page.keyboard.press('Home');
     assert.equal(await page.locator('#profile-tab-liked').getAttribute('aria-selected'), 'true');
     await layout(); await shot('empty');
+    assert.equal(await page.locator('.profile-next-track').getAttribute('aria-valuenow'), '0');
+    await page.locator('[data-reward-item]').click();
+    assert.equal(await page.locator('[data-item-action]').isDisabled(), true);
+    await page.keyboard.press('Escape');
+    await page.waitForFunction(() => document.activeElement?.matches('[data-reward-item]'));
     // The gear menu lives on Home and Profile only.
     await page.getByRole('button', {name:'Settings and more',exact:true}).click();
     assert.deepEqual(await page.getByRole('navigation', {name:'Menu',exact:true}).getByRole('link').allInnerTexts(), ['Streak buddies', 'Settings', 'Credits & sources']);
@@ -88,7 +93,7 @@ try {
     await shot('saved-from-feed');
     const beforeUnsave = await saved();
     await page.getByRole('button', {name:'Remove Scanning Ahead for Lane-End Warnings from saved lessons'}).click();
-    assert.deepEqual(await saved(), {...beforeUnsave, saved:[]}, 'Removing a save preserves other progress');
+    assert.deepEqual(await saved(), {...beforeUnsave, saved:[], reviewLater: beforeUnsave.reviewLater ?? []}, 'Removing a save preserves other progress');
     assert.equal(await page.locator('#profile-tab-saved').evaluate(el=>el===document.activeElement), true);
     assert.equal(await page.locator('[data-library-count="saved"]').innerText(), '0');
     await page.evaluate(() => {
@@ -101,6 +106,8 @@ try {
     assert.equal(await page.locator('[data-profile-streak]').innerText(), '2');
     assert.equal(await page.locator('[data-profile-days]').innerText(), '2');
     assert.equal(await page.locator('[data-profile-accuracy]').innerText(), '67%');
+    assert.equal(await page.locator('.profile-next-track').getAttribute('aria-valuenow'), '15');
+    assert.match(await page.locator('[data-reward-item]').innerText(), /Ready to buy/);
     assert.equal(await page.locator('.profile-likes li').count(), 2);
     await shot('active');
     await page.locator('[data-jump]').click(); await shot('garage');
@@ -111,13 +118,17 @@ try {
     assert.equal(await page.locator('[data-item-action]').evaluate(el => el === document.activeElement), true);
     await page.keyboard.press('Escape');
     await page.waitForFunction(() => document.activeElement?.matches('[data-car="sedan"]'));
-    await page.locator('[data-car="sedan"]').click();
+    await page.locator('[data-reward-item="sedan"]').click();
     await page.locator('[data-item-action]').click(); await shot('purchase');
     await page.locator('[data-confirm]').click();
     await page.waitForFunction(() => !document.querySelector('.profile-item-sheet').open);
     assert.equal((await saved()).spentXp,15);
     assert.equal((await saved()).selectedCar,'sedan');
     assert.equal(await page.locator('[data-available]').innerText(),'15');
+    assert.equal(await page.locator('[data-reward-item]').getAttribute('data-reward-item'), 'wagon');
+    assert.equal(await page.locator('.profile-next-track').getAttribute('aria-valuenow'), '15');
+    assert.equal(await page.locator('.profile-next-track').getAttribute('aria-valuemax'), '25');
+    await page.waitForFunction(() => document.activeElement?.matches('[data-reward-item="wagon"]'));
     const {spentXp, ownedCars, selectedCar, ...after} = await saved();
     assert.deepEqual(after, learningBefore, 'Buying preserves every learning record');
     assert.deepEqual(ownedCars,['hatchback','sedan']);
@@ -163,6 +174,7 @@ try {
     assert.equal((await saved()).xp,240);
     assert.equal(await page.locator('[data-garage-count]').innerText(),'6 / 6 owned');
     assert.equal(await page.locator('[data-next-unlock]').innerText(),'Collection complete');
+    assert.equal(await page.locator('.profile-next-track, [data-reward-item]').count(), 0);
     await page.locator('[data-jump]').click(); await shot('complete-garage');
     await page.locator('#profile-tab-saved').click();
     assert.equal(await page.locator('.profile-likes li a').getAttribute('href'),'#/feed/roundabout');

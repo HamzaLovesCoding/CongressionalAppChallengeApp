@@ -4,8 +4,54 @@
     {
       "name": "preview",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "preview"],
+      "runtimeArgs": [
+        "run",
+        "preview"
+      ],
       "port": 4173
+    },
+    {
+      "name": "backend-preview",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": [
+        "vite",
+        "preview",
+        "--outDir",
+        "artifacts/dist-backend",
+        "--port",
+        "4174",
+        "--strictPort",
+        "--host",
+        "0.0.0.0"
+      ],
+      "port": 4174
+    },
+    {
+      "name": "dev",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "dev",
+        "--",
+        "--port",
+        "5173",
+        "--strictPort"
+      ],
+      "port": 5173
+    },
+    {
+      "name": "fake-backend",
+      "runtimeExecutable": "env",
+      "runtimeArgs": [
+        "VITE_SUPABASE_URL=https://fake-lane.supabase.co",
+        "VITE_SUPABASE_PUBLISHABLE_KEY=test",
+        "npx",
+        "vite",
+        "--port",
+        "5175",
+        "--strictPort"
+      ],
+      "port": 5175
     }
   ]
 }

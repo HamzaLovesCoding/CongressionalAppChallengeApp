@@ -85,5 +85,7 @@
 .practice .pt-detail { font-size:var(--fs-body); line-height:1.5; color:var(--lane-muted); }
 .practice .pt-top+.pt-eyebrow { margin-top:var(--sp-6); }
 .practice .pt-dialog-leave { margin-top:var(--sp-3); }
+.practice .pt-lessons li { padding:0; }
+.practice .pt-lessons a { display:flex; flex:1; align-items:center; gap:var(--sp-3); min-height:64px; padding:var(--sp-3) 0; color:inherit; text-decoration:none; }
 @media(max-width:350px){.practice .practice-content,.practice .pt{padding-inline:16px}.practice .practice-feature{padding:20px}.practice .practice-feature h2{font-size:24px}.practice .practice-list li{gap:var(--sp-2)}.practice .pt-score-main{gap:var(--sp-4)}.practice .pt-score-ring{width:92px;height:92px}}
 @media(prefers-reduced-motion:reduce){.practice .pt-progress span,.practice .pt-option{transition:none}.practice :is(.pt-option.is-right,.pt-option.is-wrong,.pt-option-status,.pt-feedback,.pt-run,.pt-score-arc,.pt-score-star){animation:none!important}}

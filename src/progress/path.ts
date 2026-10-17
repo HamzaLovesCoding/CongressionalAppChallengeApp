@@ -12,9 +12,7 @@ import { roadScene, trailPath } from './scenery';
 import { bottomSheet, sheetMarkup } from '../home/sheet';
 import { milestones, completionChange } from './milestones';
 import { SCENARIOS } from '../simulation/registry';
-import { nextLessonId, PLAN_LESSONS } from '../feed/plan';
-import { readiness } from '../learning/scoring';
-import { topicRecord } from '../feed/progress';
+import { currentReadiness, nextLessonId } from '../feed/plan';
 
 const esc = (value: string) => value.replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]!);
 const ease = (t: number) => t < .5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2;
@@ -85,11 +83,7 @@ function sheetBody(clip: Clip, index: number, state: Stop) {
 
 export function mountLearningPath(root: HTMLElement): View {
   const progress = lessonProgress(CLIPS, record, nextLessonId());
-  // Driver readiness (owner formula) over every lesson topic; a topic not practiced yet counts as 0,
-  // so two good lessons can't read as ready for the whole test.
-  const masteries = [...new Set(PLAN_LESSONS.map(lesson => lesson.topicId))].map(id => topicRecord(id).mastery);
-  const scored = masteries.filter(value => value !== null);
-  const ready = readiness(masteries.map(value => value ?? 0));
+  const ready = currentReadiness();
   // Road position: the index of the lesson the car waits at, or CLIPS.length once it has parked past the last one.
   const position = progress.allDone ? CLIPS.length : CLIPS.indexOf(progress.next);
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -122,7 +116,7 @@ export function mountLearningPath(root: HTMLElement): View {
             ${badges.map(badge => `<i class="path-meter-pin${badge.earned ? ' is-earned' : ''}" data-count="${badge.count}" style="--pin:${badge.count / total}"></i>`).join('')}
             <svg class="path-meter-car" viewBox="-16 -9 32 18" aria-hidden="true" focusable="false"><g transform="rotate(90) scale(.68)">${carArt(car)}</g></svg>
           </div>
-          <a class="path-readiness" href="#/review">${scored.length ? copy.readiness(ready.score, ready.status) : copy.readinessEmpty}</a>
+          <a class="path-readiness" href="#/review">${ready.score || progress.completed ? copy.readiness(ready.score, ready.status) : copy.readinessEmpty}</a>
         </div>
       </header>
       <div class="path-atlas">

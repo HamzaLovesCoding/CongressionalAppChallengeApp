@@ -118,11 +118,12 @@ export function reviewPriority({ mastery, daysSincePractice, skips, safety }: Pr
 
 export type ReadinessStatus = 'Needs Foundation' | 'Developing' | 'Permit Test Ready' | 'Highway Confident';
 
-// Driver readiness (owner engine): the average topic mastery out of 100. Labels are the owner's;
-// Settings and Terms state that it is a study signal, not a prediction of passing.
-export function readiness(topicMasteries: number[]): { score: number; status: ReadinessStatus; strongTopics: number; topics: number } {
-  if (!topicMasteries.length) return { score: 0, status: 'Needs Foundation', strongTopics: 0, topics: 0 };
-  const score = Math.round(topicMasteries.reduce((sum, value) => sum + clamp01(value), 0) / topicMasteries.length * 100);
+// Owner-approved October 17: completion drives 80% of readiness; topic mastery supplies 20%.
+// Round only the final score. This changes no mastery or routing values, and stores no new data.
+export function readiness(topicMasteries: number[], lessons: { completed: number; total: number }): { score: number; status: ReadinessStatus; strongTopics: number; topics: number } {
+  const completion = lessons.total > 0 ? clamp01(lessons.completed / lessons.total) : 0;
+  const mastery = topicMasteries.length ? topicMasteries.reduce((sum, value) => sum + clamp01(value), 0) / topicMasteries.length : 0;
+  const score = lessons.total > 0 ? Math.round(80 * completion + 20 * mastery) : 0;
   const strongTopics = topicMasteries.filter(value => value >= 0.7).length;
   const status: ReadinessStatus = score >= 85 && strongTopics >= Math.floor(topicMasteries.length * 0.8) ? 'Highway Confident'
     : score >= 70 ? 'Permit Test Ready' : score >= 50 ? 'Developing' : 'Needs Foundation';

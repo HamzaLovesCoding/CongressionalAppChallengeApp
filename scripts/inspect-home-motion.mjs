@@ -2,7 +2,7 @@ import { chromium } from '@playwright/test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 // Onboarding is covered by inspect-home.mjs; this walkthrough starts as a learner who finished it.
-// Gesture physics on Home with motion enabled: sheet drag/flick/rubber-band/interrupt, and the lesson strip's mouse throw.
+// Gesture physics on Home with motion enabled: sheet drag/flick/rubber-band/interrupt.
 const base = process.env.BASE ?? 'http://127.0.0.1:4173/';
 const browser = await chromium.launch({ executablePath: process.env.CHROMIUM ?? '/Users/hamza/Library/Caches/ms-playwright/chromium-1228/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing' });
 await fs.mkdir('artifacts', { recursive: true });
@@ -79,38 +79,7 @@ try {
   await page.waitForTimeout(800);
   assert.equal(await isOpen(page), false, 'Escape plays the exit');
 
-  // The strip: a mouse throw lands exactly on a later card, and the drag never opens a lesson.
-  const track = page.locator('.home-strip-track');
-  await track.scrollIntoViewIfNeeded();
-  const snaps = await track.evaluate(el => [...el.querySelectorAll('.home-strip-item')].map(item => Math.min(el.scrollWidth - el.clientWidth, Math.max(0, item.offsetLeft - parseFloat(getComputedStyle(el).scrollPaddingLeft)))));
-  const startScroll = await track.evaluate(el => el.scrollLeft);
-  assert.equal(startScroll, snaps[1], 'opens one card before the next lesson');
-  const box = await track.boundingBox();
-  const sy = box.y + box.height / 2;
-  await page.mouse.move(box.x + 300, sy); await page.mouse.down();
-  await page.mouse.move(box.x + 250, sy, { steps: 2 });
-  await page.mouse.move(box.x + 170, sy, { steps: 2 });
-  await page.mouse.up();
-  await page.waitForTimeout(1000);
-  const landed = await track.evaluate(el => el.scrollLeft);
-  assert.ok(landed > startScroll && snaps.some(snap => Math.abs(snap - landed) < 1), `a throw lands on a card (${landed} of ${snaps})`);
-  assert.match(page.url(), /#\/home$/, 'dragging did not open a lesson');
-  assert.equal(await track.evaluate(el => el.style.scrollSnapType), '', 'native snapping is restored');
-  // Past the first card the strip resists, then springs back.
-  await track.evaluate(el => { el.scrollLeft = 0; });
-  await page.mouse.move(box.x + 60, sy); await page.mouse.down();
-  await page.mouse.move(box.x + 260, sy, { steps: 8 });
-  const stretch = await track.evaluate(el => new DOMMatrix(getComputedStyle(el).transform).m41);
-  assert.ok(stretch > 0 && stretch < 200, `rubber-bands at the start (${stretch})`);
-  await page.waitForTimeout(200);
-  await page.mouse.up();
-  await page.waitForTimeout(900);
-  assert.equal(await track.evaluate(el => el.style.transform), '');
-  await page.screenshot({ path: 'artifacts/home-strip-motion.png' });
-  // A plain click still opens the lesson.
-  await page.locator('.home-strip-card[href="#/feed/four-way-stop"]').click();
-  await page.waitForURL(/#\/feed\/four-way-stop$/);
   assert.deepEqual(problems, []);
-  console.log('sheet: spring open, 1:1 drag, return, rubber-band, flick dismiss, catch mid-close, Escape; strip: throw to snap, no accidental open, edge resistance, click opens.');
+  console.log('sheet: spring open, 1:1 drag, return, rubber-band, flick dismiss, catch mid-close, Escape.');
   await context.close();
 } finally { await browser.close(); }

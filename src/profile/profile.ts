@@ -1,7 +1,7 @@
 import './profile.css';
 import type { View } from '../navigation';
 import { CLIPS } from '../feed/clips';
-import { carState, buyCar, marked, selectCar, stats, toggleMark } from '../feed/progress';
+import { carState, buyCar, marked, record, selectCar, stats, toggleMark } from '../feed/progress';
 import { homeNavigation } from '../home/tabs';
 import { icon } from '../home/icons';
 import { bottomSheet, sheetMarkup } from '../home/sheet';
@@ -17,24 +17,30 @@ const itemArt = (item: Item) => carPreview(item.id);
 
 export function mountProfile(root: HTMLElement): View {
   const s = stats();
+  const allLessonsDone = CLIPS.every(clip => record(clip.id)?.done);
   const page = document.createElement('div');
   page.className = 'home-preview profile-page';
   page.innerHTML = `<div class="home-phone"><main class="profile-content" aria-label="${copy.title}" tabindex="-1">
     <header class="profile-heading ui-page-head"><h1>${copy.title}</h1>${menuButton()}</header>
     <section class="profile-identity" aria-label="${copy.identityLabel}"><div class="profile-current-car" data-current-car></div><div><p>${copy.carLabel}</p><h2 data-car-name></h2><p class="profile-character-detail">${copy.onHighway}</p><a href="#profile-collection" data-jump="garage">${copy.changeCar} <span aria-hidden="true">↓</span></a></div></section>
     <section class="profile-stats" aria-labelledby="profile-stats-title"><h2 id="profile-stats-title">${copy.stats}</h2>
+      <div class="profile-streak${s.xpToday ? ' is-lit' : ''}">
+        <span class="profile-streak-flame" aria-hidden="true">${icon('flame')}</span>
+        <div><p class="profile-streak-value"><strong data-profile-streak>${s.streak}</strong><span>${copy.dayStreak(s.streak)}</span></p><p class="profile-streak-note">${allLessonsDone ? copy.streakComplete : s.xpToday ? copy.streakToday : s.streak ? copy.streakPending : copy.streakStart}</p></div>
+      </div>
+      <div class="profile-reward">
+        <p class="profile-wallet"><span>${copy.balanceLabel}</span><span><strong data-available></strong> <span>${copy.xpUnit}</span></span></p>
+        <div class="profile-next" data-next-unlock></div>
+      </div>
       <dl class="profile-metrics">
         <div><dt>${copy.totalXp}</dt><dd data-profile-xp>${s.xpTotal}</dd><dd class="profile-stat-note">${copy.earned}</dd></div>
-        <div><dt>${copy.balanceLabel}</dt><dd data-available></dd><dd class="profile-stat-note">${copy.available}</dd></div>
-        <div><dt>${copy.streak}</dt><dd data-profile-streak>${s.streak}</dd><dd class="profile-stat-note">${copy.days(s.streak)}</dd></div>
         <div><dt>${copy.daysPracticed}</dt><dd data-profile-days>${s.daysPracticed}</dd><dd class="profile-stat-note">${copy.daysNote}</dd></div>
+        <div><dt>${copy.accuracyShort}</dt><dd data-profile-accuracy${s.firstTryPercentage === null ? ` aria-label="${copy.noAttempts}"` : ''}>${s.firstTryPercentage === null ? '—' : `${s.firstTryPercentage}%`}</dd><dd class="profile-stat-note">${s.attempted ? copy.accuracyCount(s.firstTryRight, s.attempted) : copy.noAttempts}</dd></div>
       </dl>
-      <div class="profile-accuracy"><span class="profile-accuracy-icon">${icon('check')}</span><div><h3>${copy.accuracy}</h3><p>${s.attempted ? copy.attempts(s.firstTryRight, s.attempted) : copy.accuracyEmpty}</p></div><strong data-profile-accuracy${s.firstTryPercentage === null ? ` aria-label="${copy.noAttempts}"` : ''}>${s.firstTryPercentage === null ? '—' : `${s.firstTryPercentage}%`}</strong></div>
     </section>
     <section class="profile-collection" aria-labelledby="profile-collection" tabindex="-1">
       <div class="profile-section-heading"><h2 id="profile-collection">${copy.garage}</h2><span class="profile-garage-count" data-garage-count></span></div>
       <div id="profile-collection-panel">
-        <div class="profile-next" data-next-unlock></div>
         <ul class="profile-tiles" data-item-list></ul>
         <p class="profile-footnote">${copy.balanceNote}</p>
       </div>
@@ -52,6 +58,7 @@ export function mountProfile(root: HTMLElement): View {
   root.append(page);
   let library: 'liked' | 'saved' = 'liked';
   let detail: Item | undefined;
+  let detailFromReward = false;
   let pending: Item | undefined;
   const dialog = page.querySelector<HTMLDialogElement>('.profile-purchase')!;
   const detailDialog = page.querySelector<HTMLDialogElement>('.profile-item-sheet')!;
@@ -74,7 +81,10 @@ export function mountProfile(root: HTMLElement): View {
     const items = CARS;
     const upcoming = items.filter(item => !owns(item)).sort((a, b) => a.price - b.price)[0];
     const next = page.querySelector<HTMLElement>('[data-next-unlock]')!;
-    next.innerHTML = upcoming ? `<div><p><b>${esc(copy.nextUnlock(upcoming.name))}</b><span>${copy.nextProgress(Math.min(state.available, upcoming.price), upcoming.price)}</span></p><div class="profile-next-track" role="progressbar" aria-label="${esc(copy.nextUnlock(upcoming.name))}" aria-valuemin="0" aria-valuemax="${upcoming.price}" aria-valuenow="${Math.min(state.available, upcoming.price)}"><span style="width:${Math.min(1, state.available / upcoming.price) * 100}%"></span></div></div>` : `<p>${copy.collectionComplete}</p>`;
+    const shortfall = upcoming ? Math.max(0, upcoming.price - state.available) : 0;
+    next.innerHTML = upcoming ? `<div class="profile-reward-target"><span>${copy.nextCar}</span><b>${esc(upcoming.name)} <span>· ${copy.price(upcoming.price)}</span></b></div>
+      <div class="profile-next-track${shortfall ? '' : ' is-ready'}" role="progressbar" aria-label="${esc(copy.nextUnlock(upcoming.name))}" aria-valuemin="0" aria-valuemax="${upcoming.price}" aria-valuenow="${Math.min(state.available, upcoming.price)}" aria-valuetext="${copy.carProgress(state.available, upcoming.price)}"><span style="width:${Math.min(1, state.available / upcoming.price) * 100}%"></span></div>
+      <button class="profile-reward-action${shortfall ? '' : ' is-ready'}" data-reward-item="${upcoming.id}" aria-haspopup="dialog" aria-label="${esc(copy.viewCar(upcoming.name))}"><span>${shortfall ? copy.xpRemaining(shortfall) : `${icon('check')}${copy.readyToBuy}`}</span><span>${copy.viewCar(upcoming.name)}${icon('chevron')}</span></button>` : `<p class="profile-reward-complete">${icon('check')}${copy.collectionComplete}</p>`;
     page.querySelector('[data-item-list]')!.innerHTML = items.map(item => {
       const selected = state.selected === item.id;
       const owned = owns(item);
@@ -127,8 +137,11 @@ export function mountProfile(root: HTMLElement): View {
       { outline: '3px solid transparent', outlineOffset: '8px' },
     ], { duration: 650, easing: 'ease-out' }));
   }
-  // Rendering replaces the tile. Return focus to its new node once the native sheet closes.
-  detailDialog.addEventListener('close', () => { if (detail) tile(detail)?.focus({ preventScroll: true }); });
+  // Purchasing replaces the opener. Restore focus to the updated reward control or tile.
+  detailDialog.addEventListener('close', () => {
+    const target = detailFromReward ? page.querySelector<HTMLElement>('[data-reward-item]') ?? page.querySelector<HTMLElement>('.profile-collection') : detail ? tile(detail) : undefined;
+    target?.focus({ preventScroll: true });
+  });
   dialog.addEventListener('close', () => {
     pending = undefined;
     if (detailDialog.open) detailDialog.querySelector<HTMLButtonElement>('[data-item-action]')?.focus({ preventScroll: true });
@@ -149,9 +162,10 @@ export function mountProfile(root: HTMLElement): View {
       section.scrollIntoView({ block: 'start', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
       section.focus({ preventScroll: true });
     }
-    const id = event.target.closest<HTMLElement>('[data-item]')?.dataset.item;
+    const reward = event.target.closest<HTMLElement>('[data-reward-item]');
+    const id = reward?.dataset.rewardItem ?? event.target.closest<HTMLElement>('[data-item]')?.dataset.item;
     const item = id ? carById(id) : undefined;
-    if (item) { detail = item; renderDetail(item); sheet.open(); }
+    if (item) { detailFromReward = !!reward; detail = item; renderDetail(item); sheet.open(); }
     if (event.target.closest('[data-item-action]') && detail) {
       if (owns(detail)) {
         if (select(detail)) { renderCollection(); sheet.close(); feedback(detail, false); }

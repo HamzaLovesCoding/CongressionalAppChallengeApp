@@ -4,12 +4,23 @@ import type { View } from '../navigation';
 import { go } from '../navigation';
 import { homeNavigation } from '../home/tabs';
 import { PERMIT_BANK as bank } from './questions';
-import { summarize, type TopicResult } from './score';
+import { lessonsToRevisit, summarize, type TopicResult } from './score';
+import { CONCEPT_LESSONS } from './lessons';
+import { clipById } from '../feed/clips';
+import { topicRecord } from '../feed/progress';
+import { LEARNING, topicOf } from '../content/learning';
+import { reviewPriority, smoothMastery } from '../learning/scoring';
 
 const esc = (value: string | number) => String(value).replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]!);
 const targetPct = Math.round(bank.target * 100);
 const check = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg>';
 const cross = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M7 7l10 10M17 7 7 17"/></svg>';
+// This test's accuracy updates the lesson topic's mastery for ranking only; nothing is saved.
+const priorityOf = (id: string, accuracy: number) => {
+  const t = topicRecord(topicOf(id));
+  const days = t.lastPracticedAt ? (Date.now() - Date.parse(t.lastPracticedAt)) / 864e5 : 0;
+  return reviewPriority({ mastery: smoothMastery(t.mastery, accuracy), daysSincePractice: days, skips: t.skips, safety: LEARNING[id]?.safety ?? 0.5 });
+};
 const plural = (count: number, word: string) => `${count} ${word}${count === 1 ? '' : 's'}`;
 // One small icon per bank topic so the list scans at a glance; an unknown topic falls back to the clipboard.
 const topicPaths: Record<string, string> = {
@@ -29,7 +40,7 @@ export function mountPractice(root: HTMLElement): View {
   page.className = 'home-preview practice';
   page.innerHTML = `<div class="home-phone">
     <main class="practice-content" aria-labelledby="practice-title" tabindex="-1">
-      <header class="practice-heading ui-page-head"><h1 id="practice-title">Practice</h1><span class="ui-chip is-quiet">California</span></header>
+      <header class="practice-heading ui-page-head"><h1 id="practice-title">Practice</h1></header>
       <section class="home-lesson practice-feature" aria-labelledby="practice-test-title">
         <div class="practice-feature-top"><span class="practice-test-label">Written test</span><span class="practice-test-art" aria-hidden="true">${icon('practice')}</span></div>
         <h2 id="practice-test-title">Put your knowledge<br>to the test.</h2>
@@ -68,6 +79,7 @@ export function mountPracticeTest(root: HTMLElement): View {
     const result = summarize(bank, responses);
     const review = result.topics.filter(t => t.status === 'review');
     const limited = result.topics.filter(t => t.status === 'limited');
+    const picks = lessonsToRevisit(bank, responses, CONCEPT_LESSONS, priorityOf);
     main.innerHTML = `${top('Complete')}
       <p class="pt-eyebrow">Practice complete</p><h1 class="pt-results-title" tabindex="-1">Your results</h1>
       <section class="home-lesson pt-score${result.meetsTarget ? ' is-met' : ''}" aria-label="Score">
@@ -78,6 +90,7 @@ export function mountPracticeTest(root: HTMLElement): View {
         <p class="pt-score-status">${result.meetsTarget ? `${check}<span>You reached the ${targetPct}% practice target.</span>` : `<span>Keep practicing to reach the ${targetPct}% target.</span>`}</p>
       </section>
       <section class="pt-section"><h2>Areas to improve</h2>${review.length ? topicList(review) : '<p class="pt-detail">No topics stood out for review in this attempt.</p>'}</section>
+      ${picks.length ? `<section class="pt-section"><h2>Lessons to revisit</h2><ul class="practice-list pt-lessons">${picks.map(p => `<li><a href="#/feed/${esc(p.lessonId)}"><span class="practice-topic-icon">${icon('feed')}</span><b>${esc(clipById(p.lessonId)!.title)}</b><span>${p.missed} missed</span></a></li>`).join('')}</ul><p class="pt-detail">Picked from the questions you missed.</p></section>` : ''}
       ${limited.length ? `<section class="pt-section"><h2>More practice to assess</h2>${topicList(limited)}<p class="pt-detail">This test covers too few different rules in these topics to judge them yet.</p></section>` : ''}
       <footer class="pt-bottom"><button class="pt-action ui-button" type="button" data-restart>Start again</button><a class="pt-secondary ui-button is-secondary" href="#/practice">Back to practice</a><p class="pt-caption">Practice target: ${targetPct}%. These are Lane practice questions. The DMV test uses its own.</p></footer>`;
   }

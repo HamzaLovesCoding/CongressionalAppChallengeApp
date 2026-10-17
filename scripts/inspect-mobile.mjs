@@ -180,6 +180,7 @@ for (const phone of PHONES) {
       await scroller('.home-preview'); await capture('home-bottom');
       await page.locator('[data-menu]').click(); await capture('home-menu', { reach: true });
       await page.keyboard.press('Escape'); await page.waitForTimeout(300);
+      if (!process.env.HOME_ONLY) {
       if (state === 'fresh') {
         // Onboarding on a clean device: both steps fit the phone without sideways scrolling.
         const welcome = await (await browsers[phone.engine].newContext({ ...descriptor, viewport, reducedMotion: 'reduce', serviceWorkers: 'block' })).newPage();
@@ -289,6 +290,7 @@ for (const phone of PHONES) {
         await page.keyboard.press('Escape');
         await page.waitForFunction(() => !document.querySelector('.profile-item-sheet').open);
         await page.locator('[data-library-tab="saved"]').click(); await scroller('.home-preview'); await capture('profile-saved');
+      }
       }
       }
     } catch (error) {

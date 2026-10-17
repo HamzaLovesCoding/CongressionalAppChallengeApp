@@ -1,0 +1,39 @@
+# Legal drafts
+
+`terms-of-service.md` and `privacy-policy.md` are **drafts written October 15, 2026**. They aren't shown in the app and aren't in effect. They describe the app as it's built today: no accounts, and everything saved on the device. When the app's data handling changes, update these drafts in the same change.
+
+These drafts were written by an AI coding assistant, not a lawyer. Before publishing, have a parent, teacher or attorney review them, especially the items below.
+
+## Fill in the placeholders
+
+- [ ] Team name and contact email, ideally a team address rather than a personal one. Optionally a school or mailing address.
+- [ ] Effective and last-updated dates.
+- [ ] Hosting provider, what it logs (IP address, browser, pages) and for how long. Confirm it sets no cookies and serves Lane over HTTPS.
+- [ ] Software license for the code, if the team open-sources it.
+
+## Decide before accounts launch (planned step 5 in `CLAUDE.md`)
+
+- [ ] **Under-13 users.** Block accounts under 13, or get verifiable parental consent as COPPA requires. Recommended: block, and add an age check at sign-up.
+- [ ] **What sign-in collects.** For example, email only. `CLAUDE.md` says to store only what a feature needs and show only nicknames on leaderboards.
+- [ ] **Supabase region**, and a data-processing agreement with Supabase.
+- [ ] **Account deletion timeline** (privacy section 12).
+- [ ] **Nickname rules and moderation:** who reviews reported nicknames, and how.
+- [ ] **Class codes.** If schools use Lane through class codes, California's Student Online Personal Information Protection Act (SOPIPA) and federal FERPA may apply. Ask a teacher or the school how they handle student apps.
+- [ ] Rewrite privacy section 12 and terms section 11 into present-tense rules, and show a notice in the app before the change.
+
+## Questions for a reviewer
+
+These are areas where the assistant was unsure and didn't want to guess:
+
+- **Minors and contracts.** In California, minors can generally cancel contracts, so the terms ask a parent or guardian to agree for users under 18. Is that the right approach for a free app?
+- **Limits on responsibility (terms sections 14–15).** Are these appropriate and enforceable for a student project?
+- **California minors' privacy law** (Business and Professions Code §22580–22582: a minor's right to remove content they posted). Confirm how it applies once nicknames exist.
+- **CCPA/CPRA and CalOPPA** may not strictly apply to a noncommercial student project. The drafts follow their disclosure style anyway: what's collected, who it's shared with, Do Not Track, how changes are announced. Confirm nothing required is missing.
+
+## Keep the drafts true to the app
+
+- [ ] Check the data-deletion steps (privacy section 8) on a real iPhone and Android phone. Settings menus change between versions.
+- [ ] Record video **creator names and license types** (a `CLAUDE.md` TODO). Credits currently show each video's title and link but not the creator, and a CC-BY license requires naming the creator. The terms say videos are used "with permission or under their licenses."
+- [ ] Remove "Some questions are still being reviewed" (terms section 4) once a person approves the draft quiz content.
+- [ ] Add the "Never use Lane while driving" message inside the app. It's in the terms but not in the app yet (`CLAUDE.md`, Safety and honesty boundaries).
+- [ ] Decide where the app links to these pages (for example, Home's menu and a first-launch notice) when they're implemented.

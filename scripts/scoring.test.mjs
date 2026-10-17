@@ -81,11 +81,11 @@ test('review priority favors weak, forgotten, skipped, safety-critical topics', 
 
 import { goalReadiness, driverClass, readiness as readinessOf } from '../src/learning/scoring.ts';
 test('the Home goal words one readiness score three ways', () => {
-  const result = readinessOf([0.9, 0.7, 0.5, 0]);
-  assert.equal(result.score, 53);
-  assert.deepEqual(goalReadiness('permit', result), { title: 'Permit test readiness', value: '53%', detail: 'Developing', score: 53 });
-  assert.deepEqual(goalReadiness('driver', result), { title: 'Driver class', value: 'Class C', detail: 'Readiness 53', score: 53 });
-  assert.deepEqual(goalReadiness('other', result), { title: 'Driver readiness', value: '53', detail: 'Developing', score: 53 });
+  const result = readinessOf([0.9, 0.7, 0.5, 0], { completed: 12, total: 24 });
+  assert.equal(result.score, 51);
+  assert.deepEqual(goalReadiness('permit', result), { title: 'Permit test readiness', value: '51%', detail: 'Developing', score: 51 });
+  assert.deepEqual(goalReadiness('driver', result), { title: 'Driver class', value: 'Class C', detail: 'Readiness 51', score: 51 });
+  assert.deepEqual(goalReadiness('other', result), { title: 'Driver readiness', value: '51', detail: 'Developing', score: 51 });
   assert.deepEqual([95, 90, 89, 80, 79, 65, 64, 45, 44, 0].map(driverClass), ['Class A+', 'Class A+', 'Class A', 'Class A', 'Class B', 'Class B', 'Class C', 'Class C', 'Learner', 'Learner']);
 });
 
@@ -107,4 +107,24 @@ test('PDF worked examples: mastery, time quality and review priority formulas', 
   // C2 = C1, so A is 0.925 (the PDF's example used C2 = 0 for 0.675).
   close(accuracy({ firstCorrect: true }), 0.925, 'engine C2 rule');
   close(accuracy({ firstCorrect: false, correctionCorrect: true }), 0.325, 'wrong first, corrected');
+});
+
+
+test('readiness is driven by completed lessons with a bounded mastery contribution', () => {
+  assert.equal(readinessOf([0.6, 0.6], { completed: 12, total: 24 }).score, 52);
+  assert.equal(readinessOf([1, 1], { completed: 0, total: 24 }).score, 20, 'mastery alone supplies at most 20 points');
+  assert.equal(readinessOf([0, 0], { completed: 24, total: 24 }).score, 80, 'legacy completions still count without mastery records');
+  assert.equal(readinessOf([1, 1], { completed: 24, total: 24 }).score, 100);
+  assert.equal(readinessOf([], { completed: 0, total: 0 }).score, 0);
+  assert.equal(readinessOf([1], { completed: 0, total: 0 }).score, 0, 'an empty catalog has no readiness');
+  assert.equal(readinessOf([NaN, -1, Infinity], { completed: -1, total: 24 }).score, 0);
+  assert.equal(readinessOf([2], { completed: 99, total: 24 }).score, 100);
+});
+
+test('each new completion raises readiness even within an already-practiced topic', () => {
+  const scores = Array.from({ length: 25 }, (_, completed) => readinessOf([0.8, 0, 0], { completed, total: 24 }).score);
+  for (let i = 1; i < scores.length; i++) assert.ok(scores[i] > scores[i - 1]);
+  assert.equal(readinessOf([0.599], { completed: 12, total: 24 }).score, 52, 'round once after blending');
+  assert.equal(readinessOf([1, 1, 1, 1, 0], { completed: 24, total: 24 }).status, 'Highway Confident');
+  assert.equal(readinessOf([0, 0, 0, 0, 0], { completed: 24, total: 24 }).status, 'Permit Test Ready', 'the highest label still requires strong topics');
 });

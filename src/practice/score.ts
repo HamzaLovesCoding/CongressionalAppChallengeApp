@@ -45,3 +45,19 @@ export function summarize(bank: PermitBank, responses: boolean[]): PermitResult 
   // The raw fraction decides the target; the displayed percentage is only rounded for reading.
   return { correct, total: questions.length, percentage: Math.round(correct / questions.length * 100), target, meetsTarget: correct / questions.length >= target, topics };
 }
+
+export type LessonPick = { lessonId: string; missed: number; priority: number };
+
+// Lessons that teach a missed question. The learner model ranks them: priority gets each lesson's
+// accuracy on this test and returns its review priority (src/learning/scoring.ts).
+export function lessonsToRevisit(bank: PermitBank, responses: boolean[], links: Record<string, string[]>, priority: (lessonId: string, accuracy: number) => number, limit = 3): LessonPick[] {
+  const tally = new Map<string, { correct: number; total: number }>();
+  bank.questions.forEach((q, i) => (links[q.conceptId] ?? []).forEach(id => {
+    const t = tally.get(id) ?? { correct: 0, total: 0 };
+    t.total++; if (responses[i]) t.correct++;
+    tally.set(id, t);
+  }));
+  return [...tally].filter(([, t]) => t.correct < t.total)
+    .map(([lessonId, t]) => ({ lessonId, missed: t.total - t.correct, priority: priority(lessonId, t.correct / t.total) }))
+    .sort((a, b) => b.priority - a.priority).slice(0, limit);
+}

@@ -4,8 +4,7 @@ import { hasSafeRun, record, recordAttempt, resolveReview, simulations, topicRec
 import { learningFor, topicOf } from '../content/learning';
 import { pickChallenges, TOPIC_BANDS, topicBand, type SavedEntry } from '../learning/review';
 import { SCENARIOS } from '../simulation/registry';
-import { readiness } from '../learning/scoring';
-import { PLAN_LESSONS, savedEntries } from '../feed/plan';
+import { currentReadiness, PLAN_LESSONS, savedEntries } from '../feed/plan';
 import type { View } from '../navigation';
 import { subpage } from './subpage';
 import { TOPIC_NAMES } from './content';
@@ -32,7 +31,7 @@ export function mountReview(root: HTMLElement): View {
 
   // Topics with answers, weakest first: the band comes from mastery, the note from the actual answers.
   const topicIds = [...new Set(PLAN_LESSONS.map(lesson => lesson.topicId))];
-  const score = readiness(topicIds.map(id => topicRecord(id).mastery ?? 0));
+  const score = currentReadiness();
   const topics = topicIds.map(topicId => ({ topicId, record: topicRecord(topicId), title: TOPIC_NAMES[topicId] ?? topicId.replace(/-/g, ' ') }))
     .filter(entry => entry.record.mastery !== null).sort((a, b) => a.record.mastery! - b.record.mastery!);
   const topicRow = (entry: typeof topics[number]) => {

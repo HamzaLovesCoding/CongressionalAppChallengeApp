@@ -35,7 +35,7 @@ try {
       assert.ok(await page.locator('.home-live button, .home-live a').evaluateAll(elements => elements.filter(el => el.getClientRects().length).every(el => { const r = el.getBoundingClientRect(); return r.width >= 44 && r.height >= 44; })), 'Visible controls meet 44px target size');
     };
     const goalArea = () => page.locator('.home-goal-summary').innerText();
-    // A first launch starts with onboarding: an optional username and the Terms, then the main goal.
+    // A first launch starts with onboarding: a required username and the Terms, then the main goal.
     await page.goto(base, { waitUntil: 'networkidle' });
     await page.waitForURL(/#\/welcome$/);
     await page.getByRole('heading', { name: 'Welcome to Lane', level: 1 }).waitFor();
@@ -45,6 +45,9 @@ try {
     assert.match(await page.locator('.welcome-doc').first().innerText(), /Never use Lane while driving/);
     await page.getByLabel('I agree to the Terms of Service and Privacy Policy.').check();
     if (name === 'portrait') await page.screenshot({ path: 'artifacts/onboarding-1.png', fullPage: true });
+    await page.getByRole('button', { name: 'Continue', exact: true }).click();
+    assert.match(await page.locator('[data-status]').innerText(), /Choose a username/, 'the username is required');
+    await page.getByLabel('Username', { exact: true }).fill('Road_Runner');
     await page.getByRole('button', { name: 'Continue', exact: true }).click();
     await page.getByRole('heading', { name: 'What’s your main goal?', level: 1 }).waitFor();
     await page.getByRole('button', { name: 'Start Lane', exact: true }).click();
@@ -56,17 +59,17 @@ try {
     assert.ok(page.url().endsWith('#/home'));
     await page.evaluate(() => document.fonts.ready);
     assert.equal(await page.getByRole('heading', { name:'Lane', exact:true }).count(), 1);
-    assert.equal(await page.locator('[data-completed]').innerText(), `0 of ${TOTAL} done`);
     assert.equal(await page.locator('.home-sign-face').getAttribute('href'), '#/feed/lane-end-scan');
     assert.equal(await page.getByRole('link', { name: 'Start lesson: Scanning Ahead for Lane-End Warnings', exact: true }).count(), 1);
-    assert.equal(await page.locator('.home-strip-card').count(), TOTAL);
-    assert.equal(await page.locator('.home-strip-card.is-done').count(), 0);
+    assert.equal(await page.locator('.home-strip, .home-strip-card').count(), 0, 'the lesson strip is gone (Progress lists every lesson)');
     assert.equal(await page.locator('.home-week-bars li').count(), 7);
+    assert.equal(await page.getByRole('progressbar').getAttribute('aria-valuenow'), '0');
+    assert.match(await goalArea(), /0 of 24 lessons completed/);
     assert.equal(await page.locator('[data-streak]').innerText(), 'Start a streak today');
     const fresh = await stored();
     assert.equal(fresh.xp ?? 0, 0); assert.deepEqual(Object.keys(fresh.clips ?? {}), [], 'onboarding writes no progress');
-    assert.equal(fresh.settings.goal, 'permit'); assert.ok(fresh.settings.termsAcceptedAt); assert.equal(fresh.settings.displayAlias ?? null, null);
-    assert.match(await goalArea(), /Permit test readiness\s+0%\s+Needs Foundation/);
+    assert.equal(fresh.settings.goal, 'permit'); assert.ok(fresh.settings.termsAcceptedAt); assert.equal(fresh.settings.displayAlias, 'Road_Runner');
+    assert.match(await goalArea(), /Permit test readiness\s+All time\s+0\s*\/ 100\s+Needs Foundation/);
     assert.equal(await page.locator('.home-goal-summary').getAttribute('href'), '#/review');
     assert.equal(await page.locator('.home-goal-sheet, [data-goal]').count(), 0, 'the daily XP goal editor is gone');
     assert.equal(await page.locator('.home-mascot, .home-greeting, .home-stats, [data-saved], .home-library-sheet').count(), 0, 'Saved lessons live on Profile');
@@ -75,16 +78,16 @@ try {
     await page.screenshot({ path: `artifacts/home-${name}.png` });
 
     // Roundabout is a text lesson; going straight to its check returns to Home afterwards.
-    await page.locator('.home-strip-card[href="#/feed/roundabout"]').click();
+    await page.goto(`${base}#/feed/roundabout`);
     await page.locator('.is-current [data-post-choice]').first().waitFor();
     await page.goto(`${base}#/feed/roundabout/quiz`);
     await page.locator('[data-answer="0"]').click();
     await page.locator('[data-continue]').click();
     await home();
-    assert.equal(await page.locator('[data-completed]').innerText(), `1 of ${TOTAL} done`);
-    assert.match(await goalArea(), /Permit test readiness\s+[1-9]\d*%/, 'a right answer raises readiness');
-    assert.equal(await page.locator('.home-strip-card.is-done').count(), 1);
+    assert.match(await goalArea(), /Permit test readiness\s+All time\s+[1-9]\d*\s*\/ 100/, 'a right answer raises readiness');
     assert.equal(await page.locator('[data-streak]').innerText(), '1-day streak');
+    assert.equal(await page.locator('.home-week-bars .is-today.is-done').count(), 1);
+    assert.match(await goalArea(), /1 of 24 lessons completed/);
     assert.equal(await page.locator('.home-week-bars .is-today .home-sr-only').innerText().then(text => text.endsWith(': 10 XP')), true);
     await page.screenshot({ path: `artifacts/home-progress-${name}.png` });
 
@@ -111,7 +114,7 @@ try {
     assert.equal(await page.locator('[data-goal-status]').innerText(), 'Saved.');
     if (name === 'narrow') await page.screenshot({ path: 'artifacts/settings-goal-narrow.png', fullPage: true });
     await page.goto(`${base}#/home`); await page.locator('.home-live').waitFor();
-    assert.match(await goalArea(), /Driver class\s+(Learner|Class [A-C]\+?)/);
+    assert.match(await goalArea(), /Driver readiness\s+All time\s+\d+\s*\/ 100\s+(Learner|Class [A-C]\+?)/);
     await page.goto(`${base}#/settings`); await page.getByLabel('Prepare for the permit test, then for driving').check();
     await page.getByRole('button', { name: 'Save goal', exact: true }).click();
     await page.goto(`${base}#/home`);
@@ -173,11 +176,8 @@ try {
       localStorage.setItem('roadloop-progress', JSON.stringify(state));
     }, VIDEO_IDS);
     await page.reload({ waitUntil: 'load' });
-    assert.equal(await page.locator('[data-completed]').innerText(), `${TOTAL} of ${TOTAL} done`);
-    assert.equal(await page.locator('.home-strip-card.is-done').count(), TOTAL);
-    assert.equal(await page.locator('.home-strip-next').count(), 0);
     assert.equal(await page.locator('.home-sign-face').getAttribute('href'), '#/practice');
-    assert.match(await goalArea(), /Driver class\s+(Learner|Class [A-C]\+?)\s+Readiness \d+/, 'the driver goal shows a driver class');
+    assert.match(await goalArea(), /Driver readiness\s+All time\s+\d+\s*\/ 100\s+(Learner|Class [A-C]\+?)/, 'the driver goal shows a score out of 100 and its class');
     await page.screenshot({ path: `artifacts/home-complete-${name}.png` });
     await page.locator('.home-preview').evaluate(el => { el.scrollTop = el.scrollHeight; });
     await page.screenshot({ path: `artifacts/home-shortcuts-${name}.png` });
@@ -186,7 +186,7 @@ try {
     assert.ok(last.y + last.height <= bar.y, 'Leaderboard scrolls clear of navigation');
     assert.deepEqual(failed.filter(url => !url.includes('/videos/')), []);
     assert.deepEqual(problems.filter(problem => !/^Failed to load resource/.test(problem)), []);
-    console.log(`${name}: signpost, week row, lesson strip, onboarding, readiness goal, gear menu, leaderboard placement, quiz return, practice, navigation, completion, layout and offline passed.`);
+    console.log(`${name}: signpost, week row, onboarding, readiness goal, gear menu, leaderboard placement, quiz return, practice, navigation, completion, layout and offline passed.`);
     await context.close();
   }
 } finally { await browser.close(); }

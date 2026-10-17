@@ -42,7 +42,10 @@ export function savedEntries(now = new Date()) {
   });
 }
 
-// Driver readiness over every lesson topic; a topic not practiced yet counts as 0 (Home, Progress, Review).
+// One readiness score everywhere: only current catalog completions count; untouched topics contribute 0.
 export function currentReadiness() {
-  return readiness([...new Set(PLAN_LESSONS.map(lesson => lesson.topicId))].map(id => topicRecord(id).mastery ?? 0));
+  return readiness([...new Set(PLAN_LESSONS.map(lesson => lesson.topicId))].map(id => topicRecord(id).mastery ?? 0), {
+    completed: PLAN_LESSONS.filter(lesson => record(lesson.id)?.done).length,
+    total: PLAN_LESSONS.length,
+  });
 }
