@@ -195,10 +195,12 @@ export function createScene(container:HTMLElement):SceneHandle {
    const dt=s.worldTime-previousWorld;const position=new Vector3(x,0,z);let speed=dt>0&&previousPosition?clamp(Vector3.Distance(position,previousPosition)/dt/.025):previousSpeed;if(s.phase==='intro'||s.phase==='loading')speed=isMerge?.7:isTurn?.15:.45;previousPosition=position;previousWorld=s.worldTime;previousSpeed=speed;
    return lastFeedback={speed,impact,finished:resolving&&!!s.success&&r>=end};
   }
-  const redraw=()=>{if(!disposed){engine!.resize();renderKey='';update(lastState);}};
+  // Keep the rear camera aligned with the CSS frame's caption clearance.
+  const fitMirror=()=>{if(rearCamera)rearCamera.viewport.y=1-Math.max(.16,48/Math.max(1,container.clientHeight))-.23;};
+  const redraw=()=>{if(!disposed){engine!.resize();fitMirror();renderKey='';update(lastState);}};
   resize=new ResizeObserver(redraw);resize.observe(container);
   const lost=(event:Event)=>{event.preventDefault();contextLost=true;fallback();};canvas.addEventListener('webglcontextlost',lost);
-  container.dataset.renderer='webgl';engine.resize();
+  container.dataset.renderer='webgl';engine.resize();fitMirror();
   const ready=new Promise<void>(resolve=>scene!.executeWhenReady(()=>{if(!disposed){renderKey='';update(lastState);}resolve();}));
   return {update,ready,destroy(){if(disposed)return;disposed=true;resize?.disconnect();canvas.removeEventListener('webglcontextlost',lost);scene?.dispose();engine?.dispose();}};
  }catch{resize?.disconnect();scene?.dispose();engine?.dispose();fallback();return {update(s){if(s.phase!=='resolving')return {};return s.success?{finished:s.resolveTime>=2000}:s.resolveTime>=1100?{impact:{x:50,y:55,label:'RISK'}}:{};},destroy(){disposed=true;}};}

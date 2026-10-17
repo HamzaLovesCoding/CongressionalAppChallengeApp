@@ -117,8 +117,9 @@ export function createScene(container:HTMLElement):SceneHandle {
   const helmet=CreateSphere('helmet',{diameter:.33,segments:12},scene);helmet.position.set(0,1.59,.14);helmet.material=line;helmet.parent=cyclist;
   person.setEnabled(isTurn);cyclist.setEnabled(isTurn);
   let lamps:Array<{material:StandardMaterial}> = [];
-  if(!isMerge){box('signal pole',4.7,2.6,30,.18,5.2,.18,glass);box('signal arm',2.6,5.1,30,4.4,.15,.15,glass);box('signal housing',1.8,4.25,29,.62,1.6,.38,glass);
-   lamps=[0,1,2].map((i)=>{const mat=material('lamp '+i,['#C32F23','#F6B929','#329661'][i]);mat.emissiveColor=mat.diffuseColor;const lamp=CreateSphere('light '+i,{diameter:.35,segments:8},scene);lamp.position.set(1.8,4.75-i*.5,28.77);lamp.material=mat;return {material:mat};});
+  // A far-side signal stays in the driver's view after stopping at the near limit line.
+  if(!isMerge){box('signal pole',4.7,2.6,39,.18,5.2,.18,glass);box('signal arm',2.6,5.1,39,4.4,.15,.15,glass);box('signal housing',1.8,4.25,38,.62,1.6,.38,glass);
+   lamps=[0,1,2].map((i)=>{const mat=material('lamp '+i,['#C32F23','#F6B929','#329661'][i]);mat.emissiveColor=mat.diffuseColor;const lamp=CreateSphere('light '+i,{diameter:.35,segments:8},scene);lamp.position.set(1.8,4.75-i*.5,37.77);lamp.material=mat;return {material:mat};});
   }
   const lights=(color:number)=>lamps.forEach((l,i)=>{l.material.emissiveColor=i===color?l.material.diffuseColor:new Color3(.025,.025,.025);l.material.alpha=i===color?1:.3;});
   const skidMarks=[box('left skid',1.05,.115,24.8,.14,.02,3.4,glass),box('right skid',2.45,.115,24.8,.14,.02,3.4,glass)];skidMarks.forEach(m=>m.setEnabled(false));

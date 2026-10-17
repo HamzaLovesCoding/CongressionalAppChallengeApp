@@ -57,7 +57,6 @@ export const WELCOME_COPY = {
   needTerms: 'Agree to the Terms of Service and Privacy Policy to continue.',
   usernameRule: 'Use 3–20 letters, numbers, - or _.',
   taken: 'Someone already has that username. Try another.',
-  offline: 'Lane couldn’t connect. Check your connection and try again.',
   saving: 'Saving…',
   next: 'Continue',
   goalTitle: 'What’s your main goal?',

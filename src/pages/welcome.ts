@@ -69,7 +69,9 @@ export function mountWelcome(root: HTMLElement): View {
       status(copy.saving);
       void sync.setUsername(name).then(result => {
         if (result === 'ok') { setDisplayAlias(name); stepTwo(); return; }
-        status(result === 'taken' ? copy.taken : result === 'invalid' ? copy.usernameRule : copy.offline);
+        // No connection must not trap a new learner here; the name is claimed when backup next runs.
+        if (result === 'offline') { sync.claimLater(name); setDisplayAlias(name); stepTwo(); return; }
+        status(result === 'taken' ? copy.taken : copy.usernameRule);
       });
       return;
     }

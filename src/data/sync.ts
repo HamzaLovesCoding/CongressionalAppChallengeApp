@@ -26,7 +26,8 @@ export type JoinResult = 'joined' | 'already' | 'not-found' | 'need-username' | 
 export type RequestResult = 'sent' | 'accepted' | 'already' | 'not-found' | 'self' | 'need-username' | 'limit' | 'invalid' | 'offline';
 
 const AUTH_KEY = 'lane-auth';
-type AuthRecord = { session?: Session; lastSyncedAt?: string };
+// pendingUsername: chosen while the server was unreachable; claimed on the next backup.
+type AuthRecord = { session?: Session; lastSyncedAt?: string; pendingUsername?: string };
 
 // The store's validated readers; passed in so the boundary can be tested with any store instance.
 export type Store = Pick<typeof progress, 'activeDays' | 'attempts' | 'carState' | 'dailyGoal' | 'exportLearnerState' | 'reviewHistory' | 'settings' | 'simulations' | 'topicIds' | 'topicRecord' | 'videoRecord'>;
@@ -114,6 +115,12 @@ export function createSync(client: SupabaseClient | null, lessonIds: string[], s
     if (!client) return status;
     set({ state: 'syncing', lastSyncedAt: auth.lastSyncedAt ?? null });
     try {
+      if (auth.pendingUsername) {
+        // 'taken' or 'invalid' can't succeed on a retry; the learner picks another name in Settings.
+        await call<UsernameResult>('set_username', { new_name: auth.pendingUsername });
+        auth = { ...auth, pendingUsername: undefined };
+        writeAuth(auth);
+      }
       const result = await call<{ syncedAt: string }>('sync_learner', { payload: buildPayload(store, lessonIds) });
       auth = { ...auth, lastSyncedAt: result.syncedAt };
       writeAuth(auth);
@@ -158,6 +165,8 @@ export function createSync(client: SupabaseClient | null, lessonIds: string[], s
       if (!client) return null;
       try { return await call<RemoteRow[]>('code_group_leaderboard', { group_code: code }); } catch { return null; }
     },
+    // Onboarding can't wait on a connection: the name is kept here and claimed on the next backup.
+    claimLater(name: string) { auth = { ...auth, pendingUsername: name }; writeAuth(auth); },
     // Claims a username on the server; the store keeps it only once the server agrees.
     async setUsername(name: string | null): Promise<UsernameResult> {
       if (!client) return 'offline';

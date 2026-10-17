@@ -200,3 +200,18 @@ test('the fetch client reports a rejected renewal token as unauthorized', async 
   const client = createClient({ url: 'https://example.supabase.co', key: 'k' }, async () => new Response(JSON.stringify({ error: 'invalid_grant' }), { status: 400 }));
   await assert.rejects(client.refresh({ accessToken: 'a', refreshToken: 'used', expiresAt: 0, userId: 'u' }), error => error.reason === 'unauthorized');
 });
+
+test('a username chosen offline is claimed before the next backup, once', async () => {
+  const { progress, sync } = await setup({});
+  const calls = [];
+  const client = {
+    async signInAnonymously() { return { accessToken: 'a', refreshToken: 'r', expiresAt: Date.now() + 3600_000, userId: 'u1' }; },
+    async refresh() { throw new Error('unused'); },
+    async rpc(_session, fn, args) { calls.push(fn === 'set_username' ? `${fn}:${args.new_name}` : fn); return fn === 'sync_learner' ? { syncedAt: new Date().toISOString() } : 'ok'; },
+  };
+  const app = sync.createSync(client, [], progress);
+  app.claimLater('Road_Runner');
+  await app.sync();
+  await app.sync();
+  assert.deepEqual(calls, ['set_username:Road_Runner', 'sync_learner', 'sync_learner']);
+});

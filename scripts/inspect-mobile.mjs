@@ -8,7 +8,9 @@ import { CLIPS } from '../src/feed/clips.ts';
 import { LEARNING } from '../src/content/learning.ts';
 
 const BASE = process.env.BASE ?? 'http://127.0.0.1:4173/';
-const OUT = 'artifacts/mobile';
+const SIMULATIONS_ONLY = !!process.env.SIMULATIONS_ONLY;
+const OUT = process.env.OUT ?? 'artifacts/mobile';
+const simulationIds = SIMULATIONS_ONLY ? [...(await fs.readFile(new URL('../src/simulation/registry.ts', import.meta.url), 'utf8')).matchAll(/\{ id: '([a-z-]+)', number:/g)].map(match => match[1]) : [];
 const CHROMIUM = process.env.CHROMIUM ?? '/Users/hamza/Library/Caches/ms-playwright/chromium-1228/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing';
 const ONLY = process.env.PHONES?.split(',');
 const PHONES = [
@@ -107,17 +109,17 @@ async function reachability(page) {
 
 const report = {};
 const shots = {};
-const browsers = { webkit: await webkit.launch(), chromium: await chromium.launch({ executablePath: CHROMIUM, args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--autoplay-policy=no-user-gesture-required'] }) };
+const browsers = { webkit: await webkit.launch({ executablePath: process.env.WEBKIT }), chromium: await chromium.launch({ executablePath: CHROMIUM, args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--autoplay-policy=no-user-gesture-required'] }) };
 await fs.mkdir(OUT, { recursive: true });
 
 for (const phone of PHONES) {
   const descriptor = devices[phone.device];
   const viewport = phone.standalone ? { width: phone.standalone.width, height: phone.standalone.height } : descriptor.viewport;
-  for (const state of ['fresh', 'progressed']) {
+  for (const state of SIMULATIONS_ONLY ? ['fresh'] : ['fresh', 'progressed']) {
     const context = await browsers[phone.engine].newContext({ ...descriptor, viewport, reducedMotion: 'reduce', serviceWorkers: 'block', timezoneId: 'America/Los_Angeles' });
     if (phone.standalone) {
       // env() insets can't be emulated directly, so the stylesheet gets the iPhone's real values.
-      await context.route('**/*.css', async route => {
+      await context.route(/\.(css|js)(\?|$)/, async route => {
         const response = await route.fetch();
         const css = (await response.text()).replaceAll('env(safe-area-inset-top)', `${phone.standalone.top}px`).replaceAll('env(safe-area-inset-bottom)', `${phone.standalone.bottom}px`);
         await route.fulfill({ response, body: css });
@@ -127,6 +129,7 @@ for (const phone of PHONES) {
     // Onboarding has its own captures below; the walkthrough itself starts as a learner who finished it.
     await context.addInitScript((() => { if (!localStorage.getItem('roadloop-progress')) localStorage.setItem('roadloop-progress', JSON.stringify({ settings: { onboardedAt: '2026-10-16T00:00:00.000Z', termsAcceptedAt: '2026-10-16T00:00:00.000Z', goal: 'other' } })); }));
     const page = await context.newPage();
+    if (SIMULATIONS_ONLY) await page.clock.install();
     const errors = [];
     page.on('pageerror', error => errors.push(`page error: ${error.message}`));
     page.on('console', message => { if (message.type() === 'error' && !/videos\/|Failed to load resource/.test(message.text())) errors.push(`console: ${message.text()}`); });
@@ -145,6 +148,32 @@ for (const phone of PHONES) {
     const open = async hash => { await page.goto(`${BASE}${hash}`); await page.waitForSelector('#app > *'); await settle(); };
     const scroller = selector => page.evaluate(sel => { const el = document.querySelector(sel); el.scrollTop = el.scrollHeight; }, selector);
     try {
+      if (SIMULATIONS_ONLY) {
+        for (const id of simulationIds) {
+          await open(`#/feed/sim/${id}`);
+          await page.locator('.is-current [data-sim-start]').click();
+          await page.locator('[data-start]').waitFor({ timeout: 20000 });
+          await page.locator('[data-start]').click();
+          await page.clock.fastForward(1900);
+          await page.locator('[data-choice]').first().waitFor();
+          await capture(`sim-${id}`);
+          report[key].screens[`sim-${id}`] = await page.locator('.shell').evaluate(shell => {
+            const root = shell.getRootNode(), problems = [];
+            const scene = root.querySelector('.viewport').getBoundingClientRect(), panel = root.querySelector('.controls').getBoundingClientRect();
+            if (scene.bottom > panel.top + 1 && scene.right > panel.left + 1) problems.push('scene overlaps controls');
+            if (innerWidth > innerHeight && scene.height < 240) problems.push('landscape scene too short');
+            for (const button of root.querySelectorAll('button')) {
+              const b = button.getBoundingClientRect();
+              if (!b.height) continue;
+              if (b.width < 43.5 || b.height < 43.5) problems.push('small target: ' + button.textContent);
+              if (b.left < -1 || b.right > innerWidth + 1 || b.top < -1 || b.bottom > innerHeight + 1) problems.push('offscreen control: ' + button.textContent);
+              if (button.scrollWidth > button.clientWidth + 1) problems.push('clipped choice: ' + button.textContent);
+            }
+            return problems;
+          });
+          await page.locator('[data-exit]').click();
+        }
+      } else {
       await open('#/home');
       await capture('home', { reach: true });
       await page.evaluate(() => document.querySelector('.home-preview').scrollTop = 0);
@@ -261,12 +290,14 @@ for (const phone of PHONES) {
         await page.waitForFunction(() => !document.querySelector('.profile-item-sheet').open);
         await page.locator('[data-library-tab="saved"]').click(); await scroller('.home-preview'); await capture('profile-saved');
       }
+      }
     } catch (error) {
       errors.push(`walkthrough stopped: ${error.message.split('\n')[0]}`);
       await page.screenshot({ path: `${OUT}/${phone.name}-${state}-FAILED.png` }).catch(() => {});
     }
     report[key].errors = errors;
     await context.close();
+    await fs.writeFile(`${OUT}/report.json`, JSON.stringify(report, null, 2));
     console.log(`${key}: ${Object.values(report[key].screens).flat().length} layout notes, ${errors.length} errors`);
   }
 }
