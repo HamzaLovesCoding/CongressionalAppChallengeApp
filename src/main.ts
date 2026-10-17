@@ -85,9 +85,11 @@ route();
 const sync = appSync(CLIPS.map(clip => clip.id));
 if (sync.configured) {
   let pending = 0;
-  void sync.sync();
-  window.addEventListener(PROGRESS_EVENT, () => { clearTimeout(pending); pending = window.setTimeout(() => void sync.sync(), 10_000); });
-  document.addEventListener('visibilitychange', () => { if (document.hidden) { clearTimeout(pending); void sync.sync(); } });
+  // Nothing reaches the server before the learner has agreed to the Terms in onboarding.
+  const backup = () => { if (!needsOnboarding()) void sync.sync(); };
+  backup();
+  window.addEventListener(PROGRESS_EVENT, () => { clearTimeout(pending); pending = window.setTimeout(backup, 10_000); });
+  document.addEventListener('visibilitychange', () => { if (document.hidden) { clearTimeout(pending); backup(); } });
 }
 
 // Dev is left uncached so the service worker never serves a stale build while iterating.
@@ -99,7 +101,10 @@ if (import.meta.env.PROD && 'serviceWorker' in navigator) {
       // once into the new build; the hash keeps the same screen.
       // Registration can come back empty where service workers are blocked (some test browsers, embedded views).
       if (!registration?.waiting || !navigator.serviceWorker.controller) return;
-      navigator.serviceWorker.addEventListener('controllerchange', () => location.reload(), { once: true });
+      // Some browsers hand over only once the old worker is idle, which can be half a minute into a lesson;
+      // a reload that late would throw away an answer in progress, so the new build then waits for the next launch.
+      const asked = performance.now();
+      navigator.serviceWorker.addEventListener('controllerchange', () => { if (performance.now() - asked < 3000) location.reload(); }, { once: true });
       registration.waiting.postMessage('skip-waiting');
     });
   });

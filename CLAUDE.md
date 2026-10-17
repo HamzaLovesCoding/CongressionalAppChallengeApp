@@ -191,6 +191,7 @@ No new runtime dependencies without asking first. Babylon is already about 1 MB 
 | `src/sw.js` | Service worker template; `vite.config.ts` fills in the precache list at build time |
 | `scripts/inspect*.mjs` | Playwright walkthroughs that take screenshots |
 | `AppMaterial/` | Owner-supplied curriculum PDFs, plans, clip ZIP and logo files. See Source materials |
+| `docs/legal/` | Draft terms of service and privacy policy (October 15, 2026), not shown in the app or in effect; `README.md` lists placeholders and open decisions. Update them in the same change whenever what the app stores or sends changes |
 | `public/` | Icons, manifest, self-hosted IBM Plex/license, supplied logo, favicon (`favicon-32/64.png`, source `AppMaterial/lane_favicon_cac_logo.png`), avatar/sign art; retain provenance files |
 
 ## Rules

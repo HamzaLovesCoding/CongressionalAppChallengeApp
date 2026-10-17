@@ -8,6 +8,7 @@ import { readiness } from '../learning/scoring';
 import { PLAN_LESSONS, savedEntries } from '../feed/plan';
 import type { View } from '../navigation';
 import { subpage } from './subpage';
+import { TOPIC_NAMES } from './content';
 
 const esc = (value: string) => value.replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]!);
 const check = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg>';
@@ -32,7 +33,7 @@ export function mountReview(root: HTMLElement): View {
   // Topics with answers, weakest first: the band comes from mastery, the note from the actual answers.
   const topicIds = [...new Set(PLAN_LESSONS.map(lesson => lesson.topicId))];
   const score = readiness(topicIds.map(id => topicRecord(id).mastery ?? 0));
-  const topics = topicIds.map(topicId => ({ topicId, record: topicRecord(topicId), title: clipById(PLAN_LESSONS.find(lesson => lesson.topicId === topicId)!.id)!.lesson?.category ?? topicId }))
+  const topics = topicIds.map(topicId => ({ topicId, record: topicRecord(topicId), title: TOPIC_NAMES[topicId] ?? topicId.replace(/-/g, ' ') }))
     .filter(entry => entry.record.mastery !== null).sort((a, b) => a.record.mastery! - b.record.mastery!);
   const topicRow = (entry: typeof topics[number]) => {
     const band = topicBand(entry.record.mastery!), label = TOPIC_BANDS[band].label, filled = TOPIC_BANDS.length - band;

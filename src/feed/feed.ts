@@ -1,5 +1,5 @@
 import { CLIPS, clipById, type Clip } from './clips';
-import { addReviewLater, answer, completeFirstSession, marked, markSaved, onboarding, record, recordAttempt, recordHelp, recordMastery, recordSimulation, recordVideoSkip, recordWatch, resolveReview, setPosition, setSoundOff, soundOff, stats, toggleMark, topicRecord, XP_PER_CLIP, type AttemptKind } from './progress';
+import { addReviewLater, answer, completeFirstSession, isQueuedForReview, marked, markSaved, onboarding, record, recordAttempt, recordHelp, recordMastery, recordSimulation, recordVideoSkip, recordWatch, resolveReview, setPosition, setSoundOff, soundOff, stats, toggleMark, topicRecord, XP_PER_CLIP, type AttemptKind } from './progress';
 import { learningFor, topicOf, SAFETY_GATE } from '../content/learning';
 import { CONTENT_CARDS, glossaryById, type ContentCard } from '../content/cards';
 import { rangesFrom, watchSummary } from '../learning/watch';
@@ -121,7 +121,9 @@ export function mountFeed(root: HTMLElement, target: FeedTarget = {}): View {
   let kind: Kind = 'primary', checkKind: CheckKind = 'quiz', questionShownAt = 0, activityPicked = -1, activityThen: 'question' | 'next' = 'question';
   let pendingTarget: number | null = null, savedStage = '';
   // "Watch the important part": the clip plays only its key segment, then the check comes back.
-  let keyStop: number | null = null, afterKey: 'question' | 'stage' = 'question';
+  let keyStop: number | null = null, afterKey: 'question' | 'stage' = 'question', keyReturn = '';
+  // Misses this session, so a retry never re-asks a question whose answer was just explained or labels it a first try.
+  const missedPrimary = new Set<string>(), triedHarder = new Set<string>();
   // A running simulation locks the feed so a vertical swipe can't skip its decision.
   let simHandle: ScenarioHandle | null = null, simLeave: (() => void) | null = null;
   // Only a finished lesson (or one without learning data) can be closed; an open check cannot.
@@ -307,6 +309,8 @@ export function mountFeed(root: HTMLElement, target: FeedTarget = {}): View {
     const nextIndex = Math.max(0, Math.min(items.length - 1, index));
     if (simHandle) { feed.scrollTo({ top: panel().offsetTop, behavior: 'instant' }); return; }
     if (nextIndex > active && needsGate()) { openGate(nextIndex); return; }
+    // Leaving during the important part of an open check brings the check back instead of passing it by.
+    if (nextIndex > active && isLesson() && keyStop !== null && checked.has(current().id) && !record(current().id)?.done) { keyPartDone(); return; }
     if (nextIndex !== active && isLesson()) {
       const clip = current();
       saveWatch(active);
@@ -415,7 +419,7 @@ export function mountFeed(root: HTMLElement, target: FeedTarget = {}): View {
     questionShownAt = performance.now();
   }
   function renderMenu() {
-    const know = kind === 'primary' && !record(current().id)?.done;
+    const know = kind === 'primary' && !record(current().id)?.done && !missedPrimary.has(current().id) && !triedHarder.has(current().id);
     showStage(`${header(copy.menuTitle, 'none')}<h2 class="lane-question" tabindex="-1">${copy.menuPrompt}</h2><div class="lane-menu">
       ${know ? `<button class="lane-menu-item" data-know><b>${copy.knowIt}</b><small>${copy.knowItDetail}</small></button>` : ''}
       <button class="lane-menu-item" data-review-later><b>${copy.reviewLater}</b><small>${copy.reviewLaterDetail}</small></button>
@@ -482,7 +486,7 @@ export function mountFeed(root: HTMLElement, target: FeedTarget = {}): View {
     scoreVisit(); resolveReview(clip.id); completeFirstSession(); gatePassed.add(clip.id); checked.add(clip.id);
     sheet.classList.add('is-round-complete');
     const upcoming = nextPreview();
-    const quizzed = checkKind === 'quiz';
+    const quizzed = checkKind === 'quiz' && kind !== 'harder';
     content.innerHTML = `${header('COMPLETE', 'close')}<div class="lane-clear-emblem ui-burst" aria-hidden="true"><div>${check}</div>${Array.from({ length: 8 }, (_, i) => `<i style="--ray:${i}"></i>`).join('')}</div><p class="lane-clear-kicker">${reviewing() || checkKind === 'glossary' ? 'REVIEW COMPLETE' : quizzed && firstTryCount === questions().length ? 'ALL CHECKS COMPLETE' : 'LESSON COMPLETE'}</p><h2 class="lane-result" tabindex="-1">${reviewing() || checkKind === 'glossary' ? 'Nice refresher.' : 'Lesson complete.'}</h2><div class="lane-round-stats"><div><strong>${earnedXP ? `+${earnedXP}` : '✓'}<small>${earnedXP ? ' XP' : ''}</small></strong><span>${earnedXP ? 'XP EARNED' : record(clip.id)?.done ? 'ALREADY EARNED' : 'SAVED'}</span></div>${quizzed ? `<div><strong>${firstTryCount}<small> / ${questions().length}</small></strong><span>RIGHT FIRST TRY</span></div>` : ''}</div>${todaySummary()}${upcoming.html}<button class="lane-sheet-action ui-button is-split" data-next>${upcoming.label} <span aria-hidden="true">→</span></button>`;
     sheet.scrollTop = 0;
     content.querySelector<HTMLElement>('.lane-result')?.focus({ preventScroll: true });
@@ -532,7 +536,13 @@ export function mountFeed(root: HTMLElement, target: FeedTarget = {}): View {
     checkKind = checkKindFor(clip.id);
     if (checkKind === 'recall' && learning()?.recall) renderRecall('check');
     else if (checkKind === 'glossary' && glossaryById(learning()?.glossary)) renderGlossaryCheck();
-    else { if (checkKind !== 'review-quiz') checkKind = 'quiz'; renderQuestion(); }
+    else {
+      if (checkKind !== 'review-quiz') checkKind = 'quiz';
+      // A miss saved before a reload gets the similar question, not the one whose answer was already shown.
+      const before = record(clip.id);
+      if (checkKind === 'quiz' && before && !before.done && before.tries > 0 && !before.firstTry && learning()?.similar) { missedPrimary.add(clip.id); kind = 'similar'; }
+      renderQuestion();
+    }
     openSheet();
   }
   function choose(index: number) {
@@ -544,6 +554,9 @@ export function mountFeed(root: HTMLElement, target: FeedTarget = {}): View {
     const correct = index === q.answer;
     const activeMs = performance.now() - questionShownAt;
     const wasComplete = record(clip.id)?.done;
+    // A miss earlier this session or before a reload (stored tries without a first-try) rules out "first try".
+    const firstTry = kind === 'primary' && !missedPrimary.has(clip.id) && !questionMissed && (record(clip.id)?.tries ?? 0) === 0;
+    if (kind === 'harder') triedHarder.add(clip.id);
     // "I already know this" proves the whole lesson; otherwise the last check completes it.
     const finishing = kind === 'harder' || questionIndex === questions().length - 1;
     answer(clip.id, correct, correct && finishing);
@@ -555,6 +568,7 @@ export function mountFeed(root: HTMLElement, target: FeedTarget = {}): View {
     const answerAction = content.querySelector<HTMLElement>('.lane-answer-action')!;
     if (!correct) {
       questionMissed = true; button.classList.add('is-wrong');
+      if (kind === 'primary') missedPrimary.add(clip.id);
       button.querySelector('.lane-choice-status')!.textContent = '×';
       if (kind === 'similar' || !learning()) { renderRecovery(); return; }
       feedback.className = 'lane-feedback is-retry';
@@ -562,13 +576,13 @@ export function mountFeed(root: HTMLElement, target: FeedTarget = {}): View {
       // A similar, not identical, question follows the explanation; a missed harder check returns to the lesson check.
       answerAction.innerHTML = kind === 'harder' ? action(copy.backToCheck, 'data-back-to-check') : action(copy.trySimilar, 'data-similar');
     } else {
-      if (!questionMissed && kind === 'primary') firstTryCount++;
+      if (firstTry) firstTryCount++;
       if (!wasComplete && record(clip.id)?.done) earnedXP = XP_PER_CLIP;
       button.classList.add('is-right');
       button.querySelector('.lane-choice-status')!.innerHTML = check;
       paintCheckpoints();
-      const title = kind === 'harder' ? copy.provedIt : kind === 'similar' ? 'Nice recovery.' : 'Nailed it.';
-      const tag = kind === 'harder' ? 'SKIP EARNED' : kind === 'similar' ? 'CHECK CLEARED' : 'FIRST TRY';
+      const title = kind === 'harder' ? copy.provedIt : firstTry ? 'Nailed it.' : 'Nice recovery.';
+      const tag = kind === 'harder' ? 'SKIP EARNED' : firstTry ? 'FIRST TRY' : 'CHECK CLEARED';
       feedback.className = 'lane-feedback is-correct';
       feedback.innerHTML = `<strong>${title}<small>${tag}</small>${earnedXP ? `<span class="lane-xp-pop ui-chip is-accent">+${earnedXP} XP</span>` : ''}</strong><span>${esc(q.explanation)}</span>${q.source ? `<small class="lane-source">${esc(q.source)}</small>` : ''}`;
       answerAction.innerHTML = action(finishing ? 'Finish lesson' : 'Next check', `data-continue${finishing ? ' data-finish' : ''}`);
@@ -620,7 +634,7 @@ export function mountFeed(root: HTMLElement, target: FeedTarget = {}): View {
   function playKeyPart(then: 'question' | 'stage') {
     const segment = learning()?.keySegment, media = video();
     if (!segment || !media) { replay(); return; }
-    if (then === 'stage') savedStage = content.innerHTML;
+    if (then === 'stage') keyReturn = content.innerHTML;
     afterKey = then;
     closeSheet();
     media.currentTime = segment.start;
@@ -631,7 +645,7 @@ export function mountFeed(root: HTMLElement, target: FeedTarget = {}): View {
   function keyPartDone() {
     keyStop = null;
     setPlaying(false); paintTime();
-    if (afterKey === 'stage' && savedStage) { content.innerHTML = savedStage; openSheet(); content.querySelector<HTMLElement>('.lane-question')?.focus({ preventScroll: true }); }
+    if (afterKey === 'stage' && keyReturn) { content.innerHTML = keyReturn; openSheet(); content.querySelector<HTMLElement>('.lane-question')?.focus({ preventScroll: true }); }
     else { checked.add(current().id); kind = 'primary'; questionIndex = 0; if (checkKind !== 'review-quiz') checkKind = 'quiz'; renderQuestion(); openSheet(); }
   }
   // Simulations run inside their feed card. The package draws its own countdown, choices, Retry,
@@ -646,7 +660,8 @@ export function mountFeed(root: HTMLElement, target: FeedTarget = {}): View {
       simHandle?.destroy(); simHandle = null; simLeave = null;
       stage.innerHTML = ''; stage.hidden = true; body.hidden = false;
       shell.classList.remove('is-sim-active');
-      status.textContent = outcome === 'continue' ? copy.simDone : copy.simSaved;
+      // Exiting only queues the challenge when it has no safe run yet (recordSimulation), so say what really happened.
+      status.textContent = outcome === 'continue' ? copy.simDone : isQueuedForReview(`sim:${scenario.id}`) ? copy.simSaved : copy.simClosed;
       if (outcome === 'continue') next();
     };
     const callbacks = scenarioCallbacks(scenario, recordSimulation, { continued: () => finish('continue'), exited: () => finish('exit') });
@@ -708,7 +723,7 @@ export function mountFeed(root: HTMLElement, target: FeedTarget = {}): View {
     }
     if (target.closest('[data-take-quiz]')) { kind = 'primary'; questionIndex = 0; checkKind = 'quiz'; renderQuestion(); return; }
     if (target.closest('[data-similar]')) { visit(current().id).correctionAssigned = true; kind = 'similar'; renderQuestion(); return; }
-    if (target.closest('[data-back-to-check]')) { kind = 'primary'; questionIndex = 0; renderQuestion(); return; }
+    if (target.closest('[data-back-to-check]')) { kind = missedPrimary.has(current().id) ? 'similar' : 'primary'; questionIndex = 0; renderQuestion(); return; }
     if (target.closest('[data-menu]')) { savedStage = content.innerHTML; renderMenu(); return; }
     if (target.closest('[data-know]')) {
       if (target.closest('[data-from-gate]')) { gatePassed.add(current().id); checked.add(current().id); pendingTarget = null; checkKind = 'quiz'; }
@@ -738,7 +753,7 @@ export function mountFeed(root: HTMLElement, target: FeedTarget = {}): View {
       return;
     }
     const keyButton = target.closest<HTMLElement>('[data-key]');
-    if (keyButton) { if (pendingTarget !== null) { gatePassed.add(current().id); pendingTarget = null; } playKeyPart(keyButton.dataset.then === 'stage' ? 'stage' : 'question'); return; }
+    if (keyButton) { pendingTarget = null; playKeyPart(keyButton.dataset.then === 'stage' ? 'stage' : 'question'); return; }
     if (target.closest('[data-next]')) { next(); return; }
     if (target.closest('[data-rewatch]')) { pendingTarget = null; replay(); return; }
     if (target.closest('[data-sound]')) {

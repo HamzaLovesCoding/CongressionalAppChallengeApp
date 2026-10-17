@@ -69,3 +69,13 @@ export const WELCOME_COPY = {
   needGoal: 'Choose a goal to continue.',
   start: 'Start Lane',
 } as const;
+
+// One name per learning topic, so the review list never shows two rows with the same title.
+export const TOPIC_NAMES: Record<string, string> = {
+  'right-of-way': 'Right-of-way', 'night-and-weather': 'Night and weather', 'sharing-the-road': 'Sharing the road',
+  'space-and-speed': 'Space and speed', 'railroad-crossing-clearance': 'Railroad crossings', parking: 'Parking',
+  licensing: 'Licensing', freeway: 'Freeways', distraction: 'Distraction', 'speed-and-visibility': 'Speed and visibility',
+  signals: 'Signals and lights', 'rules-and-laws': 'Rules and laws', 'road-awareness': 'Road awareness',
+  emergencies: 'Emergencies', 'drive-test': 'Drive test', 'car-readiness': 'Car readiness', 'blind-spots': 'Blind spots',
+  'alcohol-and-drugs': 'Alcohol and drugs',
+};

@@ -96,6 +96,12 @@ export function markSaved(id: string) {
 export function toggleMark(list: 'liked' | 'saved', id: string) {
   const on = !marked(list, id);
   data[list] = on ? [...data[list], id] : data[list].filter(item => item !== id);
+  // Unsaving also clears the learner's own Review later save, so Home and Review agree with Profile.
+  // Missed answers stay queued: those weren't the learner's choice to save.
+  if (list === 'saved' && !on) {
+    const at = isoNow(new Date());
+    data.reviewLater = reviewList().map(item => item.itemId === id && !item.resolvedAt && (item.reason === 'menu' || item.reason === 'skip') ? { ...item, resolvedAt: at } : item);
+  }
   save();
   return on;
 }

@@ -48,6 +48,7 @@ try {
     assert.equal(await page.locator('.pt-option.is-right').count(), 1);
     assert.equal(await page.getByRole('radio').first().isDisabled(), true, 'Submitted answers are locked');
     await shot('correct');
+    await page.waitForTimeout(450); // Next ignores taps within 400 ms of Submit (double-tap guard).
     await page.getByRole('button', { name: 'Next question' }).click();
     await page.locator('.pt-sign img').evaluate(img => img.complete || new Promise(resolve => img.addEventListener('load', resolve, { once: true })));
     assert.ok(await page.locator('.pt-sign img').evaluate(img => img.naturalWidth > 0), 'Sign artwork loads');
@@ -66,11 +67,13 @@ try {
     assert.match(page.url(), /#\/practice\/test$/);
     assert.equal(await page.locator('.pt-count').innerText(), '2 / 46');
 
+    await page.waitForTimeout(450);
     await page.getByRole('button', { name: 'Next question' }).click();
     for (let i = 3; i <= 46; i++) {
       assert.equal(await page.locator('.pt-count').innerText(), `${i} / 46`);
       await page.getByRole('radio').first().check();
       await page.getByRole('button', { name: 'Submit answer' }).click();
+      await page.waitForTimeout(450);
       await page.getByRole('button', { name: i === 46 ? 'See results' : 'Next question' }).click();
     }
     await page.getByRole('heading', { name: 'Your results' }).waitFor();

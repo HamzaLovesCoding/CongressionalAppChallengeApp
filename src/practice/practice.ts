@@ -72,7 +72,7 @@ export function mountPracticeTest(root: HTMLElement): View {
       <p class="pt-eyebrow">Practice complete</p><h1 class="pt-results-title" tabindex="-1">Your results</h1>
       <section class="home-lesson pt-score${result.meetsTarget ? ' is-met' : ''}" aria-label="Score">
         <div class="pt-score-main">
-          <div class="pt-score-ring" aria-hidden="true"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="52"/><circle class="pt-score-arc" cx="60" cy="60" r="52" pathLength="100" stroke-dasharray="${result.percentage} 100"/><line x1="103" y1="60" x2="119" y2="60" transform="rotate(${targetPct * 3.6} 60 60)"/></svg>${result.meetsTarget ? `<span class="pt-score-star">${icon('star')}</span>` : ''}</div>
+          <div class="pt-score-ring" aria-hidden="true"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="52"/>${result.percentage ? `<circle class="pt-score-arc" cx="60" cy="60" r="52" pathLength="100" stroke-dasharray="${result.percentage} 100"/>` : ''}<line x1="103" y1="60" x2="119" y2="60" transform="rotate(${targetPct * 3.6} 60 60)"/></svg>${result.meetsTarget ? `<span class="pt-score-star">${icon('star')}</span>` : ''}</div>
           <div><p class="home-eyebrow">Score</p><p class="pt-score-value">${result.percentage}%</p><p class="home-lesson-detail">${result.correct} of ${result.total} correct</p></div>
         </div>
         <p class="pt-score-status">${result.meetsTarget ? `${check}<span>You reached the ${targetPct}% practice target.</span>` : `<span>Keep practicing to reach the ${targetPct}% target.</span>`}</p>
@@ -113,11 +113,32 @@ export function mountPracticeTest(root: HTMLElement): View {
     if (focus) main.querySelector<HTMLElement>('h1')?.focus({ preventScroll: true });
   }
 
+  // Back mid-test would silently drop the attempt, so one same-URL history entry catches it and
+  // asks first, like the leave button.
+  let guarded = false;
+  function guard() {
+    if (guarded) return;
+    history.pushState({ practiceGuard: true }, '', location.href);
+    guarded = true;
+  }
+  function onPop() {
+    if (!guarded || location.hash !== '#/practice/test') return;
+    guarded = false;
+    if (phase === 'results' || !responses.length) return;
+    guard();
+    if (!leave.open) leave.showModal();
+  }
+  window.addEventListener('popstate', onPop);
+
+  // Submit turns into Next in place, so a quick second tap would skip the feedback.
+  let answeredAt = 0;
   function submit() {
     const q = bank.questions[index];
     if (selected === null || !imageReady) return;
     const correct = selected === q.correctChoiceId;
     responses.push(correct);
+    guard();
+    answeredAt = performance.now();
     phase = 'feedback';
     main.querySelectorAll<HTMLInputElement>('input').forEach(input => { input.disabled = true; });
     // Only the learner's own choice is marked; the bank deliberately doesn't reveal the key mid-test.
@@ -156,13 +177,17 @@ export function mountPracticeTest(root: HTMLElement): View {
     if (!event.target.closest('[data-action]')) return;
     if (phase === 'answer') submit();
     else if (phase === 'feedback') {
+      if (performance.now() - answeredAt < 400) return;
       index++; selected = null;
       phase = index === bank.questions.length ? 'results' : 'answer';
+      // Nothing is left to lose on the results screen, so drop the guard entry and let Back leave in one press.
+      if (phase === 'results' && guarded) { guarded = false; history.back(); }
       render(true);
     }
   });
-  leave.addEventListener('close', () => { if (leave.returnValue === 'leave') go('#/practice'); leave.returnValue = ''; });
+  // Leaving from the guard entry replaces it, so Back afterwards doesn't land on the test twice.
+  leave.addEventListener('close', () => { if (leave.returnValue === 'leave') go('#/practice', guarded); leave.returnValue = ''; });
   render(true);
   main.classList.add('is-live');
-  return { dispose() { page.remove(); } };
+  return { dispose() { window.removeEventListener('popstate', onPop); page.remove(); } };
 }

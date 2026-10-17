@@ -150,7 +150,7 @@ export const PERMIT_BANK: PermitBank = {
       id: 'ca-014', topicId: 'parking', conceptId: 'white-curbs', sourcePage: 4,
       prompt: 'What does a white-painted curb mean?',
       choices: [
-        { id: 'a', text: 'loading or unloading passengers only' },
+        { id: 'a', text: 'pick up or drop off passengers or mail only' },
         { id: 'b', text: 'no stopping, standing, or parking' },
         { id: 'c', text: 'loading zone for freight only' },
       ],
@@ -372,7 +372,7 @@ export const PERMIT_BANK: PermitBank = {
       prompt: 'How should you react to an emergency vehicle displaying flashing lights and sounding a siren?',
       choices: [
         { id: 'a', text: 'speed up so you can clear the road ahead of it' },
-        { id: 'b', text: 'move over to allow a clear path and stop if necessary' },
+        { id: 'b', text: 'drive to the right edge of the road and stop until it passes' },
         { id: 'c', text: 'follow closely behind it to get through traffic' },
       ],
       correctChoiceId: 'b',

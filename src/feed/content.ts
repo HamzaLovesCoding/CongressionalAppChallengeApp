@@ -58,6 +58,7 @@ export const FEED_COPY = {
   simSkip: 'Not now',
   simDone: 'You made the safe choice.',
   simSaved: 'Saved to Review later. It will come back.',
+  simClosed: 'Challenge closed. You already made the safe choice here.',
   simUnavailable: 'This practice could not load on this device.',
   nextUp: 'NEXT UP',
   nextSim: 'Try a 30-second challenge',
