@@ -1,0 +1,27 @@
+{
+  "id": "blind-spot-motorcycle",
+  "num": 5,
+  "type": "2d",
+  "title": "Blind-Spot Check: Motorcycle Beside You",
+  "short": "You want to change lanes.",
+  "topic": "blind-spots-lane-change",
+  "tag": "RIGHT LANE CHANGE",
+  "context": "Your right signal is on",
+  "timer": 6,
+  "source": "https://www.dmv.ca.gov/portal/handbook/california-driver-handbook/navigating-the-roads/",
+  "section": "Section 6 · Changing Lanes",
+  "intro": "You want the right lane. Watch the motorcycle approaching from behind.",
+  "observe": "Watch the traffic.",
+  "safeTitle": "Seen before you move.",
+  "unsafeTitle": "Try a safer choice.",
+  "watchCaption": "The motorcycle is in the amber car’s right-side blind spot.",
+  "safeCaption": "Shoulder check reveals the rider. Hold your lane.",
+  "unsafeCaption": "The lane change would crowd the motorcycle.",
+  "defaultAction": "mirror-only",
+  "safeFeedback": "Your shoulder check finds the motorcycle. You hold your lane while the rider passes.",
+  "feedback": {
+    "mirror-only": "The mirror missed the motorcycle beside you. Check over your shoulder before changing lanes.",
+    "drift-right": "Moving gradually still crosses the rider’s lane. A shoulder check would reveal the motorcycle."
+  },
+  "nextId": "emergency-vehicle-yield"
+}

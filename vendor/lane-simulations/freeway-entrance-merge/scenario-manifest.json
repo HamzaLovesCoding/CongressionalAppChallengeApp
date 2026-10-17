@@ -1,0 +1,63 @@
+{
+  "id": "freeway-entrance-merge",
+  "version": 4,
+  "type": "3d",
+  "title": "Freeway Entrance: Match Traffic and Merge Into a Safe Gap",
+  "topicId": "freeway-entrance-merging",
+  "handbookSource": "California Driver’s Handbook · Section 6 · Merging and Exiting. https://www.dmv.ca.gov/portal/handbook/california-driver-handbook/navigating-the-roads/ (checked 2026-10-15; final human review pending)",
+  "relatedLessonId": "freeway-entrance-merging",
+  "quizTrigger": {
+    "offerWhen": "after_quiz",
+    "recommendWhen": [
+      "wrong_answer",
+      "high_safety_review"
+    ]
+  },
+  "learnerPrompt": "A gap is behind the blue car. How do you merge?",
+  "choices": [
+    {
+      "id": "match-check-merge",
+      "label": "Match speed, check, merge",
+      "isSafe": true
+    },
+    {
+      "id": "stop-ramp",
+      "label": "Stop and wait on the ramp",
+      "isSafe": false
+    },
+    {
+      "id": "force-merge",
+      "label": "Speed up to merge ahead",
+      "isSafe": false
+    }
+  ],
+  "safeChoiceId": "match-check-merge",
+  "safeOutcome": "You match traffic speed, signal, check, and enter behind blue without taking its space.",
+  "unsafeOutcome": "Stopping in an available merge gap created a rear-end risk. Match traffic speed and merge when clear.",
+  "completion": {
+    "estimatedSeconds": 30,
+    "retryAllowed": true,
+    "exitAddsToReviewLater": true
+  },
+  "integrationEvents": {
+    "start": "scenario_started",
+    "complete": "scenario_completed",
+    "retry": "scenario_retry_requested",
+    "exit": "scenario_exited_to_review_later"
+  },
+  "assets": [
+    {
+      "id": "preview-thumbnail",
+      "role": "image",
+      "path": "thumbnail.png",
+      "mimeType": "image/png",
+      "sourceLicense": "Original capture of this scenario’s code-generated geometry; no third-party artwork. See README for dependency licenses."
+    }
+  ],
+  "fallback": {
+    "behavior": "Keep the scene description and choices available when the visual cannot render.",
+    "message": "You are on the entrance ramp. The blue car is on your left; the mirror shows traffic behind."
+  },
+  "performanceNotes": "Immersive portrait stage with reserved QTE overlay space and a separate primary action. Relative speed gauge. 1.8-second approach, required countdown at 8% simulation speed, action-specific consequence. Shadow DOM, hidden/offscreen pause, reduced-motion support. Code-generated geometry.",
+  "contentStatus": "draft-needs-human-handbook-review"
+}

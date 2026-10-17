@@ -11,6 +11,10 @@ import { CAR_SCALE, LANE, carY, roadAt, roadKnots, type Knot } from './road';
 import { roadScene, trailPath } from './scenery';
 import { bottomSheet, sheetMarkup } from '../home/sheet';
 import { milestones, completionChange } from './milestones';
+import { SCENARIOS } from '../simulation/registry';
+import { nextLessonId, PLAN_LESSONS } from '../feed/plan';
+import { readiness } from '../learning/scoring';
+import { topicRecord } from '../feed/progress';
 
 const esc = (value: string) => value.replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]!);
 const ease = (t: number) => t < .5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2;
@@ -69,16 +73,23 @@ function sheetBody(clip: Clip, index: number, state: Stop) {
   const firstTry = result?.done && result.firstTry ? `<span class="ui-chip is-accent">${pathIcon('star')}${copy.firstTry}</span>` : '';
   const detail = result?.done ? '' : result?.tries ? copy.started : clip.lesson ? '' : copy.fresh(clip.followUp ? 2 : 1);
   const action = result?.done ? copy.reviewLesson : result?.tries ? copy.continueLesson : copy.startLesson;
+  // Optional practice appears only after the lesson's check is done (CLAUDE.md).
+  const scenario = result?.done ? SCENARIOS.find(entry => entry.lessonId === clip.id) : undefined;
   return `<p class="path-sheet-meta">${copy.lesson(index + 1)} · ${esc(topicLabel(clip.topic))}</p>
     <p class="path-sheet-chips">${status}${reward}${firstTry}</p>
     ${clip.lesson ? `<p class="path-sheet-summary">${esc(clip.lesson.summary)}</p>` : ''}
     ${detail ? `<p class="path-sheet-result">${detail}</p>` : ''}
     <a class="path-sheet-action ui-button is-split" href="#/feed/${esc(clip.id)}">${action}${pathIcon('arrow')}</a>
-    ${clip.simulator && result?.done ? `<a class="path-sheet-action ui-button is-split is-secondary" href="#/drive/${esc(clip.id)}">${copy.simulator}<small>${copy.optional}</small></a>` : ''}`;
+    ${scenario ? `<a class="path-sheet-action ui-button is-split is-secondary" href="#/feed/sim/${scenario.id}">${copy.simulator}<small>${copy.optional}</small></a>` : ''}`;
 }
 
 export function mountLearningPath(root: HTMLElement): View {
-  const progress = lessonProgress(CLIPS, record);
+  const progress = lessonProgress(CLIPS, record, nextLessonId());
+  // Driver readiness (owner formula) over every lesson topic; a topic not practiced yet counts as 0,
+  // so two good lessons can't read as ready for the whole test.
+  const masteries = [...new Set(PLAN_LESSONS.map(lesson => lesson.topicId))].map(id => topicRecord(id).mastery);
+  const scored = masteries.filter(value => value !== null);
+  const ready = readiness(masteries.map(value => value ?? 0));
   // Road position: the index of the lesson the car waits at, or CLIPS.length once it has parked past the last one.
   const position = progress.allDone ? CLIPS.length : CLIPS.indexOf(progress.next);
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -101,7 +112,7 @@ export function mountLearningPath(root: HTMLElement): View {
       <header class="path-dashboard">
         <h1>${copy.title}</h1>
         <div class="path-chips">
-          <button class="path-chip-button path-trophies" type="button" data-badges aria-haspopup="dialog" aria-label="${copy.milestonesEarned(earnedBadges, badges.length)}"><span class="ui-chip">${pathIcon('trophy')}${earnedBadges}/${badges.length}</span></button>
+          <button class="path-chip-button path-trophies" type="button" data-badges aria-haspopup="dialog" aria-label="${copy.milestonesEarned(earnedBadges, badges.length)}"><span class="ui-chip">${pathIcon('trophy')}${earnedBadges}/${badges.length}<small>${copy.milestonesShort}</small></span></button>
           <span class="path-xp ui-chip is-accent">${pathIcon('star')}<span aria-hidden="true">${totalXP}<small>XP</small></span><span class="home-sr-only">${copy.totalXP(totalXP)}</span></span>
         </div>
         <div class="path-trip">
@@ -111,6 +122,7 @@ export function mountLearningPath(root: HTMLElement): View {
             ${badges.map(badge => `<i class="path-meter-pin${badge.earned ? ' is-earned' : ''}" data-count="${badge.count}" style="--pin:${badge.count / total}"></i>`).join('')}
             <svg class="path-meter-car" viewBox="-16 -9 32 18" aria-hidden="true" focusable="false"><g transform="rotate(90) scale(.68)">${carArt(car)}</g></svg>
           </div>
+          <a class="path-readiness" href="#/review">${scored.length ? copy.readiness(ready.score, ready.status) : copy.readinessEmpty}</a>
         </div>
       </header>
       <div class="path-atlas">

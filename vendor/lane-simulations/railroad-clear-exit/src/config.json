@@ -1,0 +1,27 @@
+{
+  "id": "railroad-clear-exit",
+  "num": 7,
+  "type": "2d",
+  "title": "Railroad Tracks: Do Not Enter Without a Clear Exit",
+  "short": "You need to cross the tracks.",
+  "topic": "railroad-crossing-clearance",
+  "tag": "RAILROAD CROSSING",
+  "context": "Traffic ahead has stopped",
+  "timer": 6,
+  "source": "https://www.dmv.ca.gov/portal/handbook/california-driver-handbook/laws-and-rules-of-the-road-cont1/",
+  "section": "Section 7 continued · Near Railroad or Light Rail Tracks",
+  "intro": "There is no room for your car beyond the tracks. The crossing lights begin flashing.",
+  "observe": "Watch the traffic.",
+  "safeTitle": "Keep the tracks clear.",
+  "unsafeTitle": "Try a safer choice.",
+  "watchCaption": "The queue leaves no space beyond the tracks. Warning active.",
+  "safeCaption": "You wait clear of the tracks while the train passes.",
+  "unsafeCaption": "Your car cannot fit beyond the tracks. Wait before the gate.",
+  "defaultAction": "queue-on-tracks",
+  "safeFeedback": "You wait behind the line. Cross only after the warning ends and there is room beyond the tracks.",
+  "feedback": {
+    "queue-on-tracks": "Following the queue left your car on the tracks. Wait until your whole car can fit on the far side.",
+    "bypass-gate": "The warning was already active. Crossing before the gate closes puts you in the train’s path."
+  },
+  "nextId": "yellow-light-stop"
+}

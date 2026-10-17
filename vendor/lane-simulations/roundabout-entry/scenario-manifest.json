@@ -1,0 +1,58 @@
+{
+  "id": "roundabout-entry",
+  "version": 4,
+  "type": "2d",
+  "title": "Roundabout Entry: Yield Before Joining",
+  "topicId": "roundabout-entry",
+  "handbookSource": "California Driver’s Handbook · Section 7 · Roundabouts. https://www.dmv.ca.gov/portal/handbook/california-driver-handbook/laws-and-rules-of-the-road/ (checked 2026-10-15; final human review pending)",
+  "relatedLessonId": "roundabout-entry",
+  "quizTrigger": {
+    "offerWhen": "after_quiz",
+    "recommendWhen": [
+      "wrong_answer",
+      "high_safety_review"
+    ]
+  },
+  "learnerPrompt": "The blue car is coming around. When do you enter?",
+  "choices": [
+    {
+      "id": "enter-now",
+      "label": "Enter ahead of the blue car",
+      "isSafe": false
+    },
+    {
+      "id": "yield-gap",
+      "label": "Enter behind the blue car",
+      "isSafe": true
+    }
+  ],
+  "safeChoiceId": "yield-gap",
+  "safeOutcome": "Traffic already in the circle goes first. You enter behind blue with room between the cars.",
+  "unsafeOutcome": "Blue already had the lane. Entering ahead cut across its path. Wait for a gap behind it.",
+  "completion": {
+    "estimatedSeconds": 30,
+    "retryAllowed": true,
+    "exitAddsToReviewLater": true
+  },
+  "integrationEvents": {
+    "start": "scenario_started",
+    "complete": "scenario_completed",
+    "retry": "scenario_retry_requested",
+    "exit": "scenario_exited_to_review_later"
+  },
+  "assets": [
+    {
+      "id": "preview-thumbnail",
+      "role": "image",
+      "path": "thumbnail.png",
+      "mimeType": "image/png",
+      "sourceLicense": "Original capture of this scenario’s code-generated geometry; no third-party artwork. See README for dependency licenses."
+    }
+  ],
+  "fallback": {
+    "behavior": "Keep the scene description and choices available when the visual cannot render.",
+    "message": "You are approaching the entrance. The blue car is already inside the roundabout."
+  },
+  "performanceNotes": "Immersive portrait stage with reserved QTE overlay space and a separate primary action. Relative speed gauge. 1.8-second approach, required countdown at 8% simulation speed, action-specific consequence. Shadow DOM, hidden/offscreen pause, reduced-motion support. Code-generated geometry.",
+  "contentStatus": "draft-needs-human-handbook-review"
+}

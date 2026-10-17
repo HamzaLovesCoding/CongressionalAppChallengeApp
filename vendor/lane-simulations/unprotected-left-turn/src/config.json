@@ -1,0 +1,27 @@
+{
+  "id": "unprotected-left-turn",
+  "num": 2,
+  "type": "2d",
+  "title": "Unprotected Left Turn: Wait for Oncoming Traffic",
+  "short": "You want to turn left.",
+  "topic": "left-turn-right-of-way",
+  "tag": "UNPROTECTED LEFT",
+  "context": "Your left signal is on",
+  "timer": 6,
+  "source": "https://www.dmv.ca.gov/portal/handbook/california-driver-handbook/laws-and-rules-of-the-road/",
+  "section": "Section 7 · Right-of-Way Rules · Turning left",
+  "intro": "The blue car is coming toward you. A person is crossing the street you want to enter.",
+  "observe": "Watch the traffic.",
+  "safeTitle": "Both paths are clear.",
+  "unsafeTitle": "Try a safer choice.",
+  "watchCaption": "Oncoming traffic is close. A pedestrian is in the crossing.",
+  "safeCaption": "Car and pedestrian clear; then you turn left.",
+  "unsafeCaption": "Your turn would cut across approaching traffic.",
+  "defaultAction": "turn-now",
+  "safeFeedback": "The oncoming car and the person both pass before you turn left.",
+  "feedback": {
+    "turn-now": "Your left turn crossed the blue car’s lane. Wait for oncoming traffic and the person crossing.",
+    "watch-pedestrian": "The person cleared, but the blue car had not. Both paths need to be clear before you turn."
+  },
+  "nextId": "roundabout-entry"
+}

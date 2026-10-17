@@ -32,5 +32,5 @@ A small emerald green gift box with shiny golden ribbon, open lid, several tiny 
 ## Other graphics
 
 Navigation, metric icons, and the decorative road on Home are inline SVG in
-`icons.ts` and `home.ts`. Earlier reference illustrations remain in `artwork.ts`.
+`icons.ts` and `home.ts`.
 Typography uses the existing self-hosted IBM Plex.

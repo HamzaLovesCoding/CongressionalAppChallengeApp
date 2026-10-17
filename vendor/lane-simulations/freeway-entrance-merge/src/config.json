@@ -1,0 +1,27 @@
+{
+  "id": "freeway-entrance-merge",
+  "num": 9,
+  "type": "3d",
+  "title": "Freeway Entrance: Match Traffic and Merge Into a Safe Gap",
+  "short": "You want to join the freeway.",
+  "topic": "freeway-entrance-merging",
+  "tag": "FREEWAY ENTRANCE",
+  "context": "A usable gap is available",
+  "timer": 6,
+  "source": "https://www.dmv.ca.gov/portal/handbook/california-driver-handbook/navigating-the-roads/",
+  "section": "Section 6 · Merging and Exiting",
+  "intro": "You are on the entrance ramp. The blue car is on your left; the mirror shows traffic behind.",
+  "observe": "Watch the traffic.",
+  "safeTitle": "Matched and merged.",
+  "unsafeTitle": "Try a safer choice.",
+  "watchCaption": "The blue car is ahead on the left. A clear gap follows.",
+  "safeCaption": "Match speed. Signal and check. Enter the open gap.",
+  "unsafeCaption": "Wait for space. Do not move in beside another car.",
+  "defaultAction": "force-merge",
+  "safeFeedback": "You match traffic speed, signal, check, and enter behind blue without taking its space.",
+  "feedback": {
+    "stop-ramp": "Stopping in an available merge gap created a rear-end risk. Match traffic speed and merge when clear.",
+    "force-merge": "You entered beside blue while trying to pass. Use the available gap behind it."
+  },
+  "nextId": "right-turn-scan"
+}

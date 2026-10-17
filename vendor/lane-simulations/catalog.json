@@ -1,0 +1,62 @@
+[
+  {
+    "id": "four-way-stop",
+    "number": 1,
+    "title": "Four-Way Stop: Who Goes First?",
+    "type": "2d"
+  },
+  {
+    "id": "unprotected-left-turn",
+    "number": 2,
+    "title": "Unprotected Left Turn: Wait for Oncoming Traffic",
+    "type": "2d"
+  },
+  {
+    "id": "roundabout-entry",
+    "number": 3,
+    "title": "Roundabout Entry: Yield Before Joining",
+    "type": "2d"
+  },
+  {
+    "id": "lane-ends-merge",
+    "number": 4,
+    "title": "Lane Ends: Merge Early and Deliberately",
+    "type": "2d"
+  },
+  {
+    "id": "blind-spot-motorcycle",
+    "number": 5,
+    "title": "Blind-Spot Check: Motorcycle Beside You",
+    "type": "2d"
+  },
+  {
+    "id": "emergency-vehicle-yield",
+    "number": 6,
+    "title": "Emergency Vehicle: Clear the Intersection, Then Pull Right",
+    "type": "2d"
+  },
+  {
+    "id": "railroad-clear-exit",
+    "number": 7,
+    "title": "Railroad Tracks: Do Not Enter Without a Clear Exit",
+    "type": "2d"
+  },
+  {
+    "id": "yellow-light-stop",
+    "number": 8,
+    "title": "Yellow Light: Stop if You Can Do So Safely",
+    "type": "3d"
+  },
+  {
+    "id": "freeway-entrance-merge",
+    "number": 9,
+    "title": "Freeway Entrance: Match Traffic and Merge Into a Safe Gap",
+    "type": "3d"
+  },
+  {
+    "id": "right-turn-scan",
+    "number": 10,
+    "title": "Right Turn Scan: Pedestrian and Bicyclist at the Corner",
+    "type": "3d"
+  }
+]

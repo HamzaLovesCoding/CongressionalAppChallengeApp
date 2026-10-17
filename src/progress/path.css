@@ -191,3 +191,5 @@
   .home-preview .path-sign-go { min-height:44px; margin-top:0; }
 }
 @media (prefers-reduced-motion:reduce) { .path-arrival.is-visible, .path-sign.is-new, .path-mile.is-new .path-mile-medal, .path-meter-pin.is-new { animation:none; } }
+.path-readiness { display:flex; align-items:center; min-height:44px; font-size:var(--fs-caption); font-weight:var(--fw-bold); color:var(--lane-accent-ink); text-decoration:underline; text-underline-offset:3px; }
+.path-trophies .ui-chip small { margin-left:4px; font-weight:var(--fw-regular); }

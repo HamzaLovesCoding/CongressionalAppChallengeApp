@@ -1,0 +1,26 @@
+{
+  "id": "four-way-stop",
+  "num": 1,
+  "type": "2d",
+  "title": "Four-Way Stop: Who Goes First?",
+  "short": "You want to go straight.",
+  "topic": "all-way-stop-right-of-way",
+  "tag": "ALL-WAY STOP",
+  "context": "All cars are going straight",
+  "timer": 5,
+  "source": "https://www.dmv.ca.gov/portal/handbook/california-driver-handbook/laws-and-rules-of-the-road/",
+  "section": "Section 7 · Right-of-Way Rules · Intersections",
+  "intro": "You and the blue car stop together. The gray car arrives later.",
+  "observe": "Watch the traffic.",
+  "safeTitle": "A clear path.",
+  "unsafeTitle": "Try a safer choice.",
+  "watchCaption": "You and the blue car stop together; the gray car arrives later.",
+  "safeCaption": "Blue goes first. You check, then proceed.",
+  "unsafeCaption": "The blue car is coming from your right. Let it go first.",
+  "defaultAction": "go-first",
+  "safeFeedback": "When two cars stop together, yield to the car on your right. Blue goes, then you; gray arrived later.",
+  "feedback": {
+    "go-first": "Blue was on your right. When you stop together, blue goes first—even when both cars are going straight."
+  },
+  "nextId": "unprotected-left-turn"
+}

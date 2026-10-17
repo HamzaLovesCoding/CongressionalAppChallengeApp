@@ -37,6 +37,14 @@ try {
     await page.keyboard.press('Home');
     assert.equal(await page.locator('#profile-tab-liked').getAttribute('aria-selected'), 'true');
     await layout(); await shot('empty');
+    // The gear menu lives on Home and Profile only.
+    await page.getByRole('button', {name:'Settings and more',exact:true}).click();
+    assert.deepEqual(await page.getByRole('navigation', {name:'Menu',exact:true}).getByRole('link').allInnerTexts(), ['Streak buddies', 'Settings', 'Credits & sources']);
+    await page.waitForTimeout(450); await shot('gear-menu');
+    await page.getByRole('button', {name:'Close menu'}).click();
+    await page.waitForTimeout(450);
+    for (const hash of ['#/progress', '#/practice']) { await page.goto(base + hash); await page.waitForSelector('.home-nav'); assert.equal(await page.locator('[data-menu]').count(), 0, hash + ' has no gear'); }
+    await page.goto(base + '#/profile'); await page.waitForSelector('[data-car-name]');
     await page.locator('[data-jump="garage"]').click();
     assert.ok(page.url().endsWith('#/profile'), 'Garage shortcut preserves hash router');
     assert.equal(await page.locator('.profile-collection').evaluate(el => el === document.activeElement), true);

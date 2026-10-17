@@ -29,6 +29,7 @@ try {
 
     await page.getByRole('link', { name: 'Start test' }).click();
     await page.waitForURL(/#\/practice\/test$/);
+    await page.locator('#pt-question').waitFor();
     assert.equal(await page.getByRole('navigation', { name: 'Main navigation' }).count(), 0, 'The test hides app navigation');
     assert.equal(await page.locator('.pt-count').innerText(), '1 / 46');
     const submit = page.getByRole('button', { name: 'Submit answer' });

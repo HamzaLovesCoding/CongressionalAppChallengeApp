@@ -58,6 +58,6 @@ test('every clip shows a California rule and credits its source video', () => {
   }
   // Clips filmed in left-hand traffic must say so on screen.
   for (const id of ['emergency-right-edge', 'blind-curve', 'blind-bend']) {
-    assert.match(VIDEO_LESSONS.find(lesson => lesson.id === id).lesson.californiaRule, /left-hand traffic/, id);
+    assert.match(VIDEO_LESSONS.find(lesson => lesson.id === id).lesson.californiaRule, /left-hand traffic|drives on the left/, id);
   }
 });

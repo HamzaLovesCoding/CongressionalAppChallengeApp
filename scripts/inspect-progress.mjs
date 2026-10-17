@@ -70,14 +70,14 @@ try {
     await page.locator(`.path-sign[data-lesson="${SPACING}"]`).click();
     await page.locator('.path-sheet[open]').waitFor();
     assert.match(await page.locator('.path-sheet').innerText(), /The three-second rule[\s\S]*Not started[\s\S]*Start lesson/);
-    assert.equal(await page.locator('.path-sheet a[href^="#/drive"]').count(), 0);
+    assert.equal(await page.locator('.path-sheet a[href^="#/sim"]').count(), 0);
     await page.waitForTimeout(450);
     await page.screenshot({ path:`artifacts/progress-sheet-${name}.png` });
     await page.keyboard.press('Escape');
     await page.waitForFunction(index => document.activeElement?.matches(`.path-sign[data-lesson="${index}"]`), SPACING);
     await page.locator(`.path-sign[data-lesson="${YELLOW}"]`).click();
     // The simulator is offered after the lesson's quiz, never before it.
-    assert.equal(await page.locator('.path-sheet a[href="#/drive/yellow-light"]').count(), 0);
+    assert.equal(await page.locator('.path-sheet a[href="#/feed/sim/yellow-light-stop"]').count(), 0);
     assert.match(await page.locator('.path-sheet').innerText(), /2 quick questions/);
     await page.locator('.path-sheet a[href="#/feed/yellow-light"]').click();
     await page.locator('.lane-feed').waitFor();
@@ -134,7 +134,7 @@ try {
     assert.ok(finish.y - 26 >= panel.y + panel.height, 'The finish sign and its tab open clear of the trip panel');
     assert.ok(state.carBox.top >= panel.y + panel.height && state.carBox.bottom <= nav.y, 'The parked car opens in view');
     await page.locator(`.path-sign[data-lesson="${YELLOW}"]`).click();
-    assert.equal(await page.locator('.path-sheet a[href="#/drive/yellow-light"]').count(), 1, 'A completed lesson with a simulator offers it');
+    assert.equal(await page.locator('.path-sheet a[href="#/feed/sim/yellow-light-stop"]').count(), 1, 'A completed lesson with a practice scenario offers it');
     await page.keyboard.press('Escape');
     await page.waitForFunction(() => !document.querySelector('.path-sheet').open);
     await page.screenshot({ path:`artifacts/progress-complete-${name}.png` });

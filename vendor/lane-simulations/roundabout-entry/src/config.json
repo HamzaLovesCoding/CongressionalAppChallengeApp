@@ -1,0 +1,26 @@
+{
+  "id": "roundabout-entry",
+  "num": 3,
+  "type": "2d",
+  "title": "Roundabout Entry: Yield Before Joining",
+  "short": "You want to enter the roundabout.",
+  "topic": "roundabout-entry",
+  "tag": "ROUNDABOUT ENTRY",
+  "context": "Traffic travels counterclockwise",
+  "timer": 5,
+  "source": "https://www.dmv.ca.gov/portal/handbook/california-driver-handbook/laws-and-rules-of-the-road/",
+  "section": "Section 7 · Roundabouts",
+  "intro": "You are approaching the entrance. The blue car is already inside the roundabout.",
+  "observe": "Watch the traffic.",
+  "safeTitle": "Join the flow.",
+  "unsafeTitle": "Try a safer choice.",
+  "watchCaption": "The circulating blue car is nearing your entrance.",
+  "safeCaption": "You enter behind the blue car, heading right.",
+  "unsafeCaption": "Your entry would block circulating traffic.",
+  "defaultAction": "enter-now",
+  "safeFeedback": "Traffic already in the circle goes first. You enter behind blue with room between the cars.",
+  "feedback": {
+    "enter-now": "Blue already had the lane. Entering ahead cut across its path. Wait for a gap behind it."
+  },
+  "nextId": "lane-ends-merge"
+}

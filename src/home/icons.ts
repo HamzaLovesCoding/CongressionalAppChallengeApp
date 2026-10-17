@@ -10,9 +10,12 @@ const paths = {
   progress: '<path d="M5 3h9a5 5 0 0 1 0 10h-4a4 4 0 0 0 0 8h9"/><circle cx="5" cy="3" r="2" fill="currentColor"/><path d="m17 18 3 3-3 3"/>',
   feed: '<rect x="4" y="2" width="16" height="20" rx="4"/><path d="m10 8 6 4-6 4Z" fill="currentColor" stroke="none"/>',
   profile: '<circle cx="12" cy="7" r="5"/><path d="M4 23v-2a8 8 0 0 1 16 0v2"/>',
+  settings: '<path d="M10.11 4.95L10.65 2.39L13.35 2.39L13.89 4.95L15.65 5.68L17.84 4.25L19.75 6.16L18.32 8.35L19.05 10.11L21.61 10.65L21.61 13.35L19.05 13.89L18.32 15.65L19.75 17.84L17.84 19.75L15.65 18.32L13.89 19.05L13.35 21.61L10.65 21.61L10.11 19.05L8.35 18.32L6.16 19.75L4.25 17.84L5.68 15.65L4.95 13.89L2.39 13.35L2.39 10.65L4.95 10.11L5.68 8.35L4.25 6.16L6.16 4.25L8.35 5.68Z"/><circle cx="12" cy="12" r="3"/>',
   clock: '<circle cx="12" cy="12" r="10"/><path d="M12 6v7l4 3"/>',
   star: '<path d="m12 2.5 2.9 5.9 6.5.9-4.7 4.6 1.1 6.5-5.8-3.1-5.8 3.1 1.1-6.5-4.7-4.6 6.5-.9Z" fill="currentColor" stroke="none"/>',
   tick: '<path d="m6 12.5 4 4 8-9" stroke-width="2.4"/>',
+  buddies: '<circle cx="8.5" cy="8" r="3.5"/><circle cx="16.5" cy="9.5" r="2.8"/><path d="M2 20c.6-3.6 3.2-5.6 6.5-5.6s5.9 2 6.5 5.6M14.5 14.6c.6-.2 1.3-.3 2-.3 2.7 0 4.7 1.7 5.2 4.7"/>',
+  chevron: '<path d="m9 5 7 7-7 7"/>',
   wifi: '<path d="M2 8a16 16 0 0 1 20 0M6 12a10 10 0 0 1 12 0m-8 4a4 4 0 0 1 4 0"/><circle cx="12" cy="20" r="1" fill="currentColor"/>',
 };
 export const icon = (name: keyof typeof paths) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[name]}</svg>`;

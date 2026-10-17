@@ -34,7 +34,7 @@ export const PROFILE_COPY = {
   balanceLabel: 'XP to spend',
   nextUnlock: (name: string) => `Next unlock: ${name}`,
   nextProgress: (amount: number, price: number) => `${amount} / ${price} XP`,
-  balanceNote: 'Purchases don’t change total XP or streak.',
+  balanceNote: 'Spending XP on cars keeps your total XP and streak the same.',
   likesTitle: 'Lessons you like',
   likesEmpty: 'Lessons you like in the feed appear here.',
   library: 'Your lessons',

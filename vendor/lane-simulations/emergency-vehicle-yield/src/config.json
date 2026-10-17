@@ -1,0 +1,27 @@
+{
+  "id": "emergency-vehicle-yield",
+  "num": 6,
+  "type": "2d",
+  "title": "Emergency Vehicle: Clear the Intersection, Then Pull Right",
+  "short": "A fire engine is behind you.",
+  "topic": "emergency-vehicle-right-of-way",
+  "tag": "EMERGENCY VEHICLE",
+  "context": "Red lights and siren active",
+  "timer": 6,
+  "source": "https://www.dmv.ca.gov/portal/handbook/california-driver-handbook/laws-and-rules-of-the-road-cont1/",
+  "section": "Section 7 continued · Emergency Vehicles",
+  "intro": "You are already crossing the intersection. A fire engine approaches with red lights and a siren.",
+  "observe": "Watch the traffic.",
+  "safeTitle": "A clear route for help.",
+  "unsafeTitle": "Try a safer choice.",
+  "watchCaption": "Already in the intersection; the fire engine is behind you.",
+  "safeCaption": "Clear the intersection. Pull right and stop.",
+  "unsafeCaption": "The fire engine’s route is still obstructed.",
+  "defaultAction": "continue-normal",
+  "safeFeedback": "You clear the intersection, pull to the right edge, and stop while the fire engine passes.",
+  "feedback": {
+    "stop-intersection": "Stopping inside blocked the fire engine’s path. Clear the intersection before pulling right.",
+    "continue-normal": "You stayed in the fire engine’s path. Clear the intersection, then pull right and stop."
+  },
+  "nextId": "railroad-clear-exit"
+}

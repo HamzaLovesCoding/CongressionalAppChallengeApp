@@ -1,5 +1,4 @@
 import './home.css';
-import type { View } from '../navigation';
 import { icon } from './icons';
 
 export const HOME_TABS = [
@@ -12,17 +11,8 @@ export const HOME_TABS = [
 
 type Tab = typeof HOME_TABS[number]['id'];
 
-// The home and blank tabs share navigation so labels and destinations stay in sync.
+// Every tab shares this navigation so labels and destinations stay in sync.
 export function homeNavigation(active: Tab) {
   return `<nav class="home-nav" aria-label="Main navigation">${HOME_TABS.map(tab => `<a href="#/${tab.id}"${tab.id === active ? ' aria-current="page"' : ''}><span class="home-nav-icon">${tab.id === active ? '<i class="home-nav-pill" aria-hidden="true"></i>' : ''}${icon(tab.icon)}</span><span>${tab.label}</span></a>`).join('')}</nav>`;
 }
 
-export function mountBlankTab(root: HTMLElement, tab: 'profile'): View {
-  const label = HOME_TABS.find(item => item.id === tab)!.label;
-  const page = document.createElement('div');
-  page.className = 'home-preview';
-  page.innerHTML = `<div class="home-phone"><main class="home-empty" aria-label="${label}" tabindex="-1"></main>${homeNavigation(tab)}</div>`;
-  root.append(page);
-  page.querySelector<HTMLElement>('main')!.focus({ preventScroll: true });
-  return { dispose() { page.remove(); } };
-}
