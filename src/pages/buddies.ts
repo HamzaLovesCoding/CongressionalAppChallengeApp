@@ -57,8 +57,8 @@ export function mountBuddies(root: HTMLElement): View {
     if (form.matches('[data-username-form]')) {
       const input = body.querySelector<HTMLInputElement>('#buddy-username')!;
       const status = body.querySelector<HTMLElement>('[data-username-status]')!;
-      const clean = input.value.trim() ? input.value.trim().replace(/\s+/g, '_') : null;
-      if (clean && !/^[A-Za-z0-9_-]{3,20}$/.test(clean)) { status.textContent = copy.usernameRule; return; }
+      const clean = input.value.trim().replace(/\s+/g, '_');
+      if (!/^[A-Za-z0-9_-]{3,20}$/.test(clean)) { status.textContent = copy.usernameRule; return; }
       status.textContent = copy.saving;
       void sync.setUsername(clean).then(result => {
         if (disposed) return;

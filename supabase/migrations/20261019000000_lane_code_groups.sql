@@ -4,7 +4,8 @@
 -- Privacy model (users are minors)
 -- - A group is found only by its exact code; there is no search or list of groups.
 -- - Members see only each other's username, car and weekly XP, the same fields as the global board.
--- - No free text: a group's name is made from its creator's username.
+-- - No free text: a group's name is made from its creator's current username (the stored name is
+--   only a fallback once the creator's account is gone).
 -- - A username is required to make or join a group, so no member shows up nameless.
 -- - The tables have no direct access; everything goes through the functions below.
 
@@ -112,8 +113,9 @@ $$;
 create function public.my_groups()
 returns table (code text, name text, members integer, is_owner boolean)
 language sql stable security definer set search_path = '' as $$
-  select g.code, g.name, (select count(*)::integer from public.code_group_members c where c.group_id = g.id), g.owner = auth.uid()
+  select g.code, coalesce(o.alias || '''s group', g.name), (select count(*)::integer from public.code_group_members c where c.group_id = g.id), g.owner = auth.uid()
   from public.code_group_members m join public.code_groups g on g.id = m.group_id
+    left join public.profiles o on o.user_id = g.owner
   where m.user_id = auth.uid()
   order by m.joined_at desc;
 $$;

@@ -215,3 +215,55 @@ test('a username chosen offline is claimed before the next backup, once', async 
   await app.sync();
   assert.deepEqual(calls, ['set_username:Road_Runner', 'sync_learner', 'sync_learner']);
 });
+
+// A fake server for username tests: set_username answers from `answers`, everything else succeeds.
+function usernameClient(calls, answers = {}) {
+  return {
+    async signInAnonymously() { return { accessToken: 'a', refreshToken: 'r', expiresAt: Date.now() + 3600_000, userId: 'u1' }; },
+    async refresh() { throw new Error('unused'); },
+    async rpc(_session, fn, args) {
+      calls.push(fn === 'set_username' ? `${fn}:${args.new_name}` : fn);
+      if (fn === 'set_username') return answers[args.new_name] ?? 'ok';
+      return fn === 'sync_learner' ? { syncedAt: new Date().toISOString() } : null;
+    },
+  };
+}
+
+test('a name saved later replaces one waiting from offline onboarding', async () => {
+  const { progress, sync } = await setup({});
+  const calls = [];
+  const app = sync.createSync(usernameClient(calls), [], progress);
+  app.claimLater('Old_Name');
+  assert.equal(await app.setUsername('New_Name'), 'ok');
+  await app.sync();
+  assert.deepEqual(calls, ['set_username:New_Name', 'sync_learner'], 'the stale name is never sent');
+});
+
+test('a waiting name someone else took is dropped on this device too', async () => {
+  const { progress, sync } = await setup({});
+  progress.setDisplayAlias('Taken_Name');
+  const app = sync.createSync(usernameClient([], { Taken_Name: 'taken' }), [], progress);
+  app.claimLater('Taken_Name');
+  await app.sync();
+  assert.equal(progress.settings().displayAlias, null);
+});
+
+test('after deleting backed-up data, the next backup reclaims the username', async () => {
+  const { progress, sync } = await setup({});
+  progress.setDisplayAlias('Road_Runner');
+  const calls = [];
+  const app = sync.createSync(usernameClient(calls), [], progress);
+  await app.sync();
+  assert.equal(await app.deleteRemote(), true);
+  await app.sync();
+  assert.deepEqual(calls, ['sync_learner', 'delete_my_data', 'set_username:Road_Runner', 'sync_learner']);
+});
+
+test('ensureUsername claims the local name, and clears it when taken', async () => {
+  const { progress, sync } = await setup({});
+  progress.setDisplayAlias('Mine');
+  assert.equal(await sync.createSync(usernameClient([]), [], progress).ensureUsername(), 'ok');
+  assert.equal(progress.settings().displayAlias, 'Mine');
+  assert.equal(await sync.createSync(usernameClient([], { Mine: 'taken' }), [], progress).ensureUsername(), 'taken');
+  assert.equal(progress.settings().displayAlias, null);
+});

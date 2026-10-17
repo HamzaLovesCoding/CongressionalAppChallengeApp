@@ -21,7 +21,7 @@ export function mountLeaderboard(root: HTMLElement, snapshots: Partial<Record<Sc
   const sync = appSync(CLIPS.map(clip => clip.id));
   let disposed = false;
   // Code groups: null until the server answers. `picked` survives refreshes within this Home visit.
-  let groups: GroupRow[] | null = null, picked: string | null = null, joining = false, busy = false, groupStatus = '';
+  let groups: GroupRow[] | null = null, picked: string | null = null, joining = false, busy = false, groupStatus = '', nameWasTaken = false;
   const groupBoards = new Map<string, LeaderboardSnapshot>();
   const selected = () => groups?.find(group => group.code === picked) ?? groups?.[0] ?? null;
   root.innerHTML = `<div class="home-section-heading"><h2 id="home-leaderboard-title">${copy.title}</h2></div>
@@ -84,21 +84,30 @@ export function mountLeaderboard(root: HTMLElement, snapshots: Partial<Record<Sc
     await loadGroups();
   }
   const setStatus = (text: string) => { groupStatus = text; const el = panel.querySelector('[data-group-status]'); if (el) el.textContent = text; };
+  // The server can lack the username this device shows (a lost session or deleted data); claim it once and retry.
+  async function claimOwnName() {
+    if (!settings().displayAlias) return false;
+    const result = await sync.ensureUsername();
+    if (result === 'taken') nameWasTaken = true;
+    return result === 'ok';
+  }
   async function createGroup() {
     busy = true; refresh();
-    const result = await sync.createGroup();
+    let result = await sync.createGroup();
+    if (result.status === 'need-username' && await claimOwnName()) result = await sync.createGroup();
     busy = false;
     if (disposed) return;
     if (result.status === 'ok') { picked = result.code; groupStatus = copy.created(result.code); await loadGroups(); refresh(); return; }
-    groupStatus = copy.groupErrors[result.status]; refresh();
+    groupStatus = nameWasTaken ? copy.nameTaken : copy.groupErrors[result.status]; nameWasTaken = false; refresh();
   }
   async function joinGroup(code: string) {
     busy = true; setStatus(copy.joining);
-    const result = await sync.joinGroup(code);
+    let result = await sync.joinGroup(code);
+    if (result === 'need-username' && await claimOwnName()) result = await sync.joinGroup(code);
     busy = false;
     if (disposed) return;
     if (result === 'joined' || result === 'already') { joining = false; picked = code.replace(/[\s-]/g, '').toUpperCase(); groupStatus = result === 'joined' ? copy.joined : copy.groupErrors.already; await loadGroups(); refresh(); return; }
-    setStatus(copy.groupErrors[result]);
+    setStatus(nameWasTaken ? copy.nameTaken : copy.groupErrors[result]); nameWasTaken = false;
   }
   async function shareCode(code: string) {
     const text = copy.shareText(code);

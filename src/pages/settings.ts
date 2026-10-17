@@ -66,14 +66,16 @@ export function mountSettings(root: HTMLElement): View {
       dateStatus.textContent = setPermitTestDate(value || null) ? (value ? 'Saved.' : 'Date cleared.') : 'Enter a valid date.';
     } else {
       const input = body.querySelector<HTMLInputElement>('#alias')!;
-      const name = input.value.trim() ? cleanAlias(input.value) : null;
-      if (input.value.trim() && !name) { aliasStatus.textContent = 'Use 3–20 letters, numbers, - or _.'; return; }
+      // A username is required (onboarding asks for one), so it can be changed but not cleared.
+      if (!input.value.trim()) { aliasStatus.textContent = 'Choose a username. It can be changed, not removed.'; return; }
+      const name = cleanAlias(input.value);
+      if (!name) { aliasStatus.textContent = 'Use 3–20 letters, numbers, - or _.'; return; }
       // With a server, the name is claimed there first so no two learners share it.
-      if (!sync.configured) { setDisplayAlias(name); input.value = name ?? ''; aliasStatus.textContent = name ? 'Saved.' : 'Username cleared.'; return; }
+      if (!sync.configured) { setDisplayAlias(name); input.value = name; aliasStatus.textContent = 'Saved.'; return; }
       aliasStatus.textContent = 'Saving…';
       void sync.setUsername(name).then(result => {
-        if (result === 'ok') { setDisplayAlias(name); input.value = name ?? ''; }
-        aliasStatus.textContent = result === 'ok' ? (name ? 'Saved.' : 'Username cleared.') : result === 'taken' ? 'Someone already has that username. Try another.' : result === 'invalid' ? 'Use 3–20 letters, numbers, - or _.' : 'Lane couldn’t connect. Try again in a moment.';
+        if (result === 'ok') { setDisplayAlias(name); input.value = name; }
+        aliasStatus.textContent = result === 'ok' ? 'Saved.' : result === 'taken' ? 'Someone already has that username. Try another.' : result === 'invalid' ? 'Use 3–20 letters, numbers, - or _.' : 'Lane couldn’t connect. Try again in a moment.';
       });
     }
   });

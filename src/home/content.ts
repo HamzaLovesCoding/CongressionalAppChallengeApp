@@ -45,6 +45,7 @@ export const LEADERBOARD_COPY = {
   joined: 'You joined the group.',
   left: 'You left the group.',
   copied: 'Code copied.',
+  nameTaken: 'Someone else has your username now. Choose a new one in Settings.',
   groupErrors: {
     'need-username': 'Choose a username in Settings first.',
     limit: 'You’ve reached the group limit for now.',
@@ -54,5 +55,6 @@ export const LEADERBOARD_COPY = {
     already: 'You’re already in that group.',
     offline: 'Couldn’t reach the server. Try again.',
   },
-  noAlias: 'Choose a username in Settings to appear here.',
+  // Usernames are required at onboarding; this covers older saves and a name someone else claimed first.
+  noAlias: 'Others see you as Anonymous. Choose a username in Settings.',
 } as const;

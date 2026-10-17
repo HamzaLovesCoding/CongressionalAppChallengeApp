@@ -201,6 +201,9 @@ assert.deepEqual(Object.keys(gBoard[0]).sort(), ['alias', 'car_id', 'is_you', 'r
 assert.deepEqual(gBoard.map(row => [row.alias, row.is_you]), [['Road_Runner', false], ['Brake_Light', true]]); ok('the group leaderboard ranks its members by weekly XP');
 assert.equal((await call(C, `select * from public.code_group_leaderboard('${code}')`)).length, 0); ok('a non-member cannot read a group leaderboard');
 assert.deepEqual((await call(B, 'select * from public.my_groups()')).map(row => [row.code, row.name, row.members, row.is_owner]), [[code, "Road_Runner's group", 2, false]]); ok('my_groups lists the code, name, size and ownership');
+await call(A, "select public.set_username('Road_Runner2')");
+assert.equal((await call(B, 'select * from public.my_groups()'))[0].name, "Road_Runner2's group"); ok("a group's name follows its creator's username");
+await call(A, "select public.set_username('Road_Runner')");
 assert.equal((await call(A, 'select public.leave_group($$' + code + '$$) r'))[0].r, true);
 assert.deepEqual((await call(B, `select * from public.code_group_leaderboard('${code}')`)).map(row => row.alias), ['Brake_Light']); ok('a member who leaves drops off the board; the group stays');
 assert.equal((await call(B, `select public.leave_group('${code}') r`))[0].r, true);

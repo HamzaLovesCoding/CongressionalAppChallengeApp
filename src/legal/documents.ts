@@ -31,7 +31,7 @@ export const PRIVACY: LegalDocument = {
       'Like any hosting provider, Supabase may process technical information such as your IP address to deliver the service.',
     ] },
     { heading: 'Leaderboards, groups and streak buddies', body: [
-      'Leaderboards and streak buddies work when backup is on. Once you have earned XP in a week, other learners see you on the global weekly leaderboard with your selected car and that week’s XP. If you chose a username it is shown; otherwise you appear as Anonymous. Don’t use your real name.',
+      'Leaderboards and streak buddies work when backup is on. Once you have earned XP in a week, other learners see you on the global weekly leaderboard with your selected car and that week’s XP. You choose a username when you start, and it is shown there; if your account has none (for example, someone else claimed it first), you appear as Anonymous. Don’t use your real name.',
       'You can make a group leaderboard, which gives you a 6-character code, or join one by typing a friend’s code. Lane has no search or list of groups, and a username is needed to make or join one. Members of a group see each other’s username, selected car and that week’s XP. You can leave a group at any time; the last member to leave deletes it.',
       'A friend can send you a streak-buddy request only by typing your exact username; Lane has no search or list of learners. Nothing is shared until you accept. A streak buddy can see your username, selected car, weekly XP, whether you practiced today and your shared streak. Lane has no private messages or chat. You can decline a request or remove a buddy at any time.',
     ] },

@@ -30,7 +30,7 @@ const AUTH_KEY = 'lane-auth';
 type AuthRecord = { session?: Session; lastSyncedAt?: string; pendingUsername?: string };
 
 // The store's validated readers; passed in so the boundary can be tested with any store instance.
-export type Store = Pick<typeof progress, 'activeDays' | 'attempts' | 'carState' | 'dailyGoal' | 'exportLearnerState' | 'reviewHistory' | 'settings' | 'simulations' | 'topicIds' | 'topicRecord' | 'videoRecord'>;
+export type Store = Pick<typeof progress, 'activeDays' | 'attempts' | 'carState' | 'dailyGoal' | 'exportLearnerState' | 'reviewHistory' | 'setDisplayAlias' | 'settings' | 'simulations' | 'topicIds' | 'topicRecord' | 'videoRecord'>;
 
 // Everything the server needs. XP totals, likes, saves and purchases are never sent. The username is
 // claimed separately (setUsername) so the server can keep it unique.
@@ -116,8 +116,10 @@ export function createSync(client: SupabaseClient | null, lessonIds: string[], s
     set({ state: 'syncing', lastSyncedAt: auth.lastSyncedAt ?? null });
     try {
       if (auth.pendingUsername) {
-        // 'taken' or 'invalid' can't succeed on a retry; the learner picks another name in Settings.
-        await call<UsernameResult>('set_username', { new_name: auth.pendingUsername });
+        // Someone took the name meanwhile: drop it on this device too, so the app asks for a new one
+        // instead of showing a name nobody else can see.
+        const claimed = await call<UsernameResult>('set_username', { new_name: auth.pendingUsername });
+        if (claimed !== 'ok' && store.settings().displayAlias === auth.pendingUsername) store.setDisplayAlias(null);
         auth = { ...auth, pendingUsername: undefined };
         writeAuth(auth);
       }
@@ -170,7 +172,21 @@ export function createSync(client: SupabaseClient | null, lessonIds: string[], s
     // Claims a username on the server; the store keeps it only once the server agrees.
     async setUsername(name: string | null): Promise<UsernameResult> {
       if (!client) return 'offline';
-      try { return await call<UsernameResult>('set_username', { new_name: name }); } catch { return 'offline'; }
+      try {
+        const result = await call<UsernameResult>('set_username', { new_name: name });
+        // A name saved now supersedes one waiting from offline onboarding.
+        if (result === 'ok' && auth.pendingUsername) { auth = { ...auth, pendingUsername: undefined }; writeAuth(auth); }
+        return result;
+      } catch { return 'offline'; }
+    },
+    // Makes sure the server holds this device's username (it can lack it after a lost session or a
+    // data delete). 'taken' clears it locally so the learner chooses again.
+    async ensureUsername(): Promise<UsernameResult> {
+      const name = store.settings().displayAlias;
+      if (!name) return 'invalid';
+      const result = await this.setUsername(name);
+      if (result === 'taken' || result === 'invalid') store.setDisplayAlias(null);
+      return result;
     },
     // Syncs first, so practice days and XP are current before streaks are read.
     async buddies(): Promise<BuddyRow[] | null> {
@@ -207,9 +223,10 @@ export function createSync(client: SupabaseClient | null, lessonIds: string[], s
       if (!client) return 'offline';
       try { return await call<boolean>('delete_comment', { comment: commentId }) ? 'ok' : 'refused'; } catch { return 'offline'; }
     },
+    // The new anonymous account that follows reclaims this device's username on its first backup.
     async deleteRemote() {
       if (!client || !auth.session) return true;
-      try { await call('delete_my_data', {}); auth = {}; writeAuth(auth); set({ state: 'syncing', lastSyncedAt: null }); return true; } catch { return false; }
+      try { await call('delete_my_data', {}); auth = { pendingUsername: store.settings().displayAlias ?? undefined }; writeAuth(auth); set({ state: 'syncing', lastSyncedAt: null }); return true; } catch { return false; }
     },
   };
 }
