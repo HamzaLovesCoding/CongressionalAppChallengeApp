@@ -103,7 +103,7 @@ const board = await as('authenticated', B, 'select * from public.weekly_leaderbo
 assert.deepEqual(Object.keys(board.rows[0]).sort(), ['alias', 'car_id', 'is_you', 'rank', 'xp']); ok('leaderboard returns only rank, alias, car_id, xp, is_you');
 assert.deepEqual(board.rows.map(row => [row.rank, row.alias, row.xp, row.is_you]), [[1, 'Road_Runner', 20, false], [2, null, 10, true]]); ok('leaderboard ranks by verified weekly XP and pins the caller');
 const aBoard = await as('authenticated', A, 'select * from public.weekly_leaderboard(10)');
-assert.deepEqual(aBoard.rows.map(row => row.alias), ['Road_Runner']); ok('learners without an alias are hidden from others');
+assert.deepEqual(aBoard.rows.map(row => [row.alias, row.xp, row.is_you]), [['Road_Runner', 20, true], [null, 10, false]]); ok('learners without a username appear to others as an anonymous row with their XP');
 
 // 8. Streak buddies.
 const call = async (who, sql) => (await as('authenticated', who, sql)).rows;

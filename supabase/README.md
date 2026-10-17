@@ -37,7 +37,7 @@ After that, run the Supabase security advisor (Dashboard → Advisors) and repea
 - **Foundation:** tables for profile, practice days, settings, lesson progress, quiz events, topic mastery, Review Later, simulation attempts and XP events, all with row level security; learners **read only their own rows** and never write tables directly.
   - `sync_learner(payload)` (security definer, `search_path` pinned) is the only progress write path. It takes the user from `auth.uid()`, validates lessons/scenarios/outcomes against allow-lists, clamps numbers and dates, is idempotent on client event IDs, never lets progress shrink, and grants each catalog lesson's XP once.
   - `set_username(name)` claims a username: 3–20 letters, numbers, `-` or `_`, unique ignoring case; returns `ok`, `taken` or `invalid`. Sync never sets it.
-  - `weekly_leaderboard(max_rows)` returns only rank, username, car ID, weekly XP (Monday 00:00 Pacific) and is-you. Learners appear to others only after choosing a username.
+  - `weekly_leaderboard(max_rows)` returns only rank, username, car ID, weekly XP (Monday 00:00 Pacific) and is-you. A learner appears to others once they have XP that week: their username if they chose one, otherwise Anonymous.
   - `delete_my_data()` erases the caller's rows, including buddy links and practice days (the anonymous auth user itself needs the service role).
 - **Streak buddies:** `buddy_links` (one row per pair, `pending` or `accepted`), readable only by the two learners in it.
   - `request_buddy(username)` by exact name only (no search); returns `sent`, `accepted` (they had asked you), `already`, `not-found`, `self`, `need-username`, `limit` or `invalid`. Limits: 20 pending requests, 50 buddies.

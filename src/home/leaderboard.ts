@@ -1,8 +1,9 @@
-import { settings, weeklyProgress } from '../feed/progress';
+import { carState, settings, weeklyProgress } from '../feed/progress';
 import { CLIPS } from '../feed/clips';
 import { appSync, type GroupRow, type RemoteRow } from '../data/sync';
 import './leaderboard.css';
 import { icon } from './icons';
+import { carById, carPreview } from '../profile/cars';
 import { leaderboardRows, type LeaderboardRow, type LeaderboardSnapshot } from './leaderboard-model';
 import { LEADERBOARD_COPY as copy } from './content';
 
@@ -12,7 +13,7 @@ const empty: LeaderboardSnapshot = { entries: [], yourRank: null };
 // Global shows verified weekly XP from the backend when one is configured; otherwise only the
 // learner's own local row. Group shows a code group the learner made or joined. No sample people ship.
 const toSnapshot = (rows: RemoteRow[]): LeaderboardSnapshot => ({
-  entries: rows.map(row => ({ nickname: row.alias ?? 'You', avatar: row.car_id ?? '', xp: row.xp, rank: row.rank, isYou: row.is_you })),
+  entries: rows.map(row => ({ nickname: row.alias ?? (row.is_you ? 'You' : 'Anonymous'), avatar: row.car_id ?? '', xp: row.xp, rank: row.rank, isYou: row.is_you })),
   yourRank: rows.find(row => row.is_you)?.rank ?? null,
 });
 export function mountLeaderboard(root: HTMLElement, snapshots: Partial<Record<Scope, LeaderboardSnapshot>> = {}) {
@@ -31,14 +32,14 @@ export function mountLeaderboard(root: HTMLElement, snapshots: Partial<Record<Sc
   const row = (entry: LeaderboardRow) => {
     return `<li class="home-board-row${entry.isYou ? ' is-you' : ''}"${entry.isYou ? ' data-board-you' : ''}>
       <span class="home-board-rank${entry.rank !== null && entry.rank <= 3 ? ` is-place-${entry.rank}` : ''}" aria-label="${entry.rank === null ? copy.noRank : `Rank ${entry.rank}`}">${entry.rank ?? '—'}</span>
-      <span class="home-board-person" aria-hidden="true">${icon('profile')}</span>
+      <span class="home-board-person" aria-hidden="true">${carById(entry.avatar) ? carPreview(entry.avatar as never) : icon('profile')}</span>
       <span class="home-board-name"><b>${esc(entry.nickname)}</b></span>
       <span class="home-board-xp"><strong>${entry.xp.toLocaleString('en-US')}</strong><small>XP</small></span></li>`;
   };
   function rankings(snapshot: LeaderboardSnapshot | undefined, label: string) {
     // With remote rankings, the learner's row shows the server-verified XP, not the local total.
     const own = snapshot?.entries.find(entry => entry.isYou);
-    const rows = leaderboardRows(snapshot ?? empty, { avatar: '', xp: own?.xp ?? weeklyProgress().xp });
+    const rows = leaderboardRows(snapshot ?? empty, { avatar: carState().selected, xp: own?.xp ?? weeklyProgress().xp });
     return `${rows.top.length ? `<ol class="home-board-list" aria-label="${label}">${rows.top.map(row).join('')}</ol>` : ''}
       ${rows.pinned ? `<div class="home-board-pinned${rows.top.length ? ' is-separated' : ''}"><ol class="home-board-list" aria-label="${copy.yourPlace}">${row(rows.pinned)}</ol></div>` : ''}`;
   }

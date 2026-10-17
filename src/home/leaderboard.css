@@ -10,6 +10,7 @@
 .home-board-rank.is-place-2,.home-board-rank.is-place-3 { background:var(--lane-soft); color:var(--lane-ink); }
 .home-board-person { display:grid; place-items:center; flex:none; width:44px; height:44px; border-radius:50%; background:var(--lane-soft); color:var(--lane-ink); }
 .home-board-person svg { width:24px; height:24px; }
+.home-board-person .profile-car-art { width:38px; height:38px; }
 .home-board-name { flex:1; min-width:0; }.home-board-name b{display:block;font-size:var(--fs-body);font-weight:var(--fw-bold);overflow-wrap:anywhere}
 .home-board-xp { display:flex; align-items:baseline; justify-content:flex-end; gap:var(--sp-1); max-width:36%; flex-wrap:wrap; }
 .home-board-xp strong { font-size:var(--fs-title); font-weight:var(--fw-bold); font-variant-numeric:tabular-nums; overflow-wrap:anywhere; }
