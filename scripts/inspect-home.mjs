@@ -34,7 +34,26 @@ try {
       assert.ok(await page.locator('.home-content img').evaluateAll(images => images.every(img => img.complete && img.naturalWidth > 0)));
       assert.ok(await page.locator('.home-live button, .home-live a').evaluateAll(elements => elements.filter(el => el.getClientRects().length).every(el => { const r = el.getBoundingClientRect(); return r.width >= 44 && r.height >= 44; })), 'Visible controls meet 44px target size');
     };
+    const goalArea = () => page.locator('.home-goal-summary').innerText();
+    // A first launch starts with onboarding: an optional username and the Terms, then the main goal.
     await page.goto(base, { waitUntil: 'networkidle' });
+    await page.waitForURL(/#\/welcome$/);
+    await page.getByRole('heading', { name: 'Welcome to Lane', level: 1 }).waitFor();
+    await page.getByRole('button', { name: 'Continue', exact: true }).click();
+    assert.match(await page.locator('[data-status]').innerText(), /Agree to the Terms/);
+    await page.locator('.welcome-doc summary').first().click();
+    assert.match(await page.locator('.welcome-doc').first().innerText(), /Never use Lane while driving/);
+    await page.getByLabel('I agree to the Terms of Service and Privacy Policy.').check();
+    if (name === 'portrait') await page.screenshot({ path: 'artifacts/onboarding-1.png', fullPage: true });
+    await page.getByRole('button', { name: 'Continue', exact: true }).click();
+    await page.getByRole('heading', { name: 'What’s your main goal?', level: 1 }).waitFor();
+    await page.getByRole('button', { name: 'Start Lane', exact: true }).click();
+    assert.match(await page.locator('[data-status]').innerText(), /Choose a goal/);
+    await page.getByLabel('Prepare for the permit test, then for driving').check();
+    if (name === 'portrait') await page.screenshot({ path: 'artifacts/onboarding-2.png', fullPage: true });
+    await page.getByRole('button', { name: 'Start Lane', exact: true }).click();
+    await page.locator('.home-live').waitFor();
+    assert.ok(page.url().endsWith('#/home'));
     await page.evaluate(() => document.fonts.ready);
     assert.equal(await page.getByRole('heading', { name:'Lane', exact:true }).count(), 1);
     assert.equal(await page.locator('[data-completed]').innerText(), `0 of ${TOTAL} done`);
@@ -44,37 +63,26 @@ try {
     assert.equal(await page.locator('.home-strip-card.is-done').count(), 0);
     assert.equal(await page.locator('.home-week-bars li').count(), 7);
     assert.equal(await page.locator('[data-streak]').innerText(), 'Start a streak today');
-    assert.equal(await stored(), null, 'Opening home must not write progress');
+    const fresh = await stored();
+    assert.equal(fresh.xp ?? 0, 0); assert.deepEqual(Object.keys(fresh.clips ?? {}), [], 'onboarding writes no progress');
+    assert.equal(fresh.settings.goal, 'permit'); assert.ok(fresh.settings.termsAcceptedAt); assert.equal(fresh.settings.displayAlias ?? null, null);
+    assert.match(await goalArea(), /Permit test readiness\s+0%\s+Needs Foundation/);
+    assert.equal(await page.locator('.home-goal-summary').getAttribute('href'), '#/review');
+    assert.equal(await page.locator('.home-goal-sheet, [data-goal]').count(), 0, 'the daily XP goal editor is gone');
     assert.equal(await page.locator('.home-mascot, .home-greeting, .home-stats, [data-saved], .home-library-sheet').count(), 0, 'Saved lessons live on Profile');
     assert.equal(await page.locator('.home-leaderboard').count(), 1, 'Leaderboard lives on Home');
     await layout();
     await page.screenshot({ path: `artifacts/home-${name}.png` });
 
-    await page.getByRole('button', { name: 'Edit daily goal' }).click();
-    await page.getByRole('radio', { name: '10 XP 1 new lesson', exact: true }).check();
-    await settled('.home-goal-sheet');
-    await page.screenshot({ path: `artifacts/home-goal-${name}.png` });
-    await page.getByRole('button', { name: 'Save goal', exact: true }).click();
-    assert.equal((await stored()).dailyGoal, 10);
-    assert.equal(await page.locator('[data-goal-title]').textContent(), 'Earn 10 XP');
-    // The sheet plays its exit before closing; focus then returns to the goal ring.
-    await page.waitForFunction(() => !document.querySelector('.home-goal-sheet').open && document.activeElement?.matches('[data-goal]'));
-    await page.getByRole('button', { name: 'Edit daily goal' }).click();
-    await page.getByRole('radio', { name: '30 XP 3 new lessons', exact: true }).check();
-    await page.getByRole('button', { name: 'Cancel', exact: true }).click();
-    await page.waitForFunction(() => !document.querySelector('.home-goal-sheet').open);
-    assert.equal((await stored()).dailyGoal, 10);
-    await page.reload({ waitUntil: 'load' });
-    assert.equal(await page.locator('[data-goal-title]').textContent(), 'Earn 10 XP');
-
+    // Roundabout is a text lesson; going straight to its check returns to Home afterwards.
     await page.locator('.home-strip-card[href="#/feed/roundabout"]').click();
-    await page.locator('.is-current [data-play]').click();
+    await page.locator('.is-current [data-post-choice]').first().waitFor();
     await page.goto(`${base}#/feed/roundabout/quiz`);
     await page.locator('[data-answer="0"]').click();
     await page.locator('[data-continue]').click();
     await home();
     assert.equal(await page.locator('[data-completed]').innerText(), `1 of ${TOTAL} done`);
-    assert.equal(await page.locator('[data-goal-title]').textContent(), 'Goal reached. Nice work!');
+    assert.match(await goalArea(), /Permit test readiness\s+[1-9]\d*%/, 'a right answer raises readiness');
     assert.equal(await page.locator('.home-strip-card.is-done').count(), 1);
     assert.equal(await page.locator('[data-streak]').innerText(), '1-day streak');
     assert.equal(await page.locator('.home-week-bars .is-today .home-sr-only').innerText().then(text => text.endsWith(': 10 XP')), true);
@@ -92,17 +100,33 @@ try {
     await page.goForward();
     await page.getByRole('main', { name: 'Profile', exact: true }).waitFor();
     await nav().getByRole('link', { name: 'Home', exact: true }).click();
-    await page.getByRole('button', { name: 'Menu', exact: true }).click();
-    await page.getByRole('navigation', { name: 'Menu', exact: true }).getByRole('link', { name: 'Home', exact: true }).click();
-    await page.waitForFunction(() => !document.querySelector('.home-menu-sheet').open);
+    await page.getByRole('button', { name: 'Settings and more', exact: true }).click();
+    const menu = page.getByRole('navigation', { name: 'Menu', exact: true });
+    assert.deepEqual(await menu.getByRole('link').allInnerTexts(), ['Streak buddies', 'Settings', 'Credits & sources']);
+    await menu.getByRole('link', { name: 'Settings', exact: true }).click();
+    await page.getByRole('heading', { name: 'Settings', level: 1 }).waitFor();
+    // Settings changes the main goal, and Home rewords the readiness goal to match.
+    await page.getByLabel('Sharpen my driving skills and learn safer habits').check();
+    await page.getByRole('button', { name: 'Save goal', exact: true }).click();
+    assert.equal(await page.locator('[data-goal-status]').innerText(), 'Saved.');
+    if (name === 'narrow') await page.screenshot({ path: 'artifacts/settings-goal-narrow.png', fullPage: true });
+    await page.goto(`${base}#/home`); await page.locator('.home-live').waitFor();
+    assert.match(await goalArea(), /Driver class\s+(Learner|Class [A-C]\+?)/);
+    await page.goto(`${base}#/settings`); await page.getByLabel('Prepare for the permit test, then for driving').check();
+    await page.getByRole('button', { name: 'Save goal', exact: true }).click();
+    await page.goto(`${base}#/home`);
+    await page.locator('.home-live').waitFor();
     await nav().getByRole('link', { name: 'Practice', exact: true }).click();
     await page.getByRole('link', { name: 'Start test', exact: true }).click();
     await page.locator('#pt-question').waitFor();
     await page.getByRole('button', { name: 'Leave practice test' }).click();
     await nav().getByRole('link', { name: 'Home', exact: true }).click();
     if (name === 'portrait') {
-      await page.goto(`${base}#/drive`);
-      await page.locator('#exit').click();
+      // A challenge runs inside the feed; leaving it must not leave the page locked.
+      await page.goto(`${base}#/feed/sim/four-way-stop`);
+      await page.locator('.is-current [data-sim-start]').click();
+      await page.locator('[data-exit]').waitFor({ timeout: 30000 });
+      await page.goto(`${base}#/home`);
       await page.locator('.home-live').waitFor();
       assert.equal(await page.evaluate(() => getComputedStyle(document.body).touchAction), 'auto');
       await layout();
@@ -116,13 +140,19 @@ try {
     await context.setOffline(true);
     await page.reload({ waitUntil: 'load' });
     await page.locator('.home-week').waitFor();
-    assert.equal(await page.locator('[data-goal-title]').textContent(), 'Goal reached. Nice work!');
+    assert.match(await goalArea(), /Permit test readiness/);
     await layout();
-    await page.getByRole('link', { name: 'Continue lesson: Scanning Ahead for Lane-End Warnings', exact: true }).click();
+    // Home names the lesson the learner will resume (the shared resume point), and opens exactly it.
+    const sign = page.locator('.home-sign-face');
+    const resume = await sign.getAttribute('href');
+    assert.match(await sign.getAttribute('aria-label'), /^Continue lesson: /);
+    await sign.click();
     await page.locator('.is-current [data-play]').click();
-    assert.match(page.url(), /feed\/lane-end-scan$/);
+    assert.ok(page.url().endsWith(resume), `${page.url()} opens ${resume}`);
     await page.locator('.is-current').getByRole('link', { name: 'Back to home' }).click();
-    assert.deepEqual(await stored(), beforeOffline);
+    // Opening a lesson updates only the resume point; no progress changes offline.
+    const { position: _after, ...after } = await stored(), { position: _before, ...before } = beforeOffline;
+    assert.deepEqual(after, before);
     await context.setOffline(false);
 
     await page.evaluate(ids => {
@@ -139,7 +169,7 @@ try {
       const state = JSON.parse(localStorage.getItem('roadloop-progress'));
       for (const id of [...ids, 'yellow-light', 'roundabout', 'four-way-stop', 'following-distance', 'school-bus']) state.clips[id] = { done: true, firstTry: true, tries: 1 };
       state.xp = 50;
-      state.dailyGoal = 50;
+      state.settings = { ...state.settings, goal: 'driver' };
       localStorage.setItem('roadloop-progress', JSON.stringify(state));
     }, VIDEO_IDS);
     await page.reload({ waitUntil: 'load' });
@@ -147,7 +177,7 @@ try {
     assert.equal(await page.locator('.home-strip-card.is-done').count(), TOTAL);
     assert.equal(await page.locator('.home-strip-next').count(), 0);
     assert.equal(await page.locator('.home-sign-face').getAttribute('href'), '#/practice');
-    assert.equal(await page.locator('[data-goal-title]').textContent(), 'You’re caught up');
+    assert.match(await goalArea(), /Driver class\s+(Learner|Class [A-C]\+?)\s+Readiness \d+/, 'the driver goal shows a driver class');
     await page.screenshot({ path: `artifacts/home-complete-${name}.png` });
     await page.locator('.home-preview').evaluate(el => { el.scrollTop = el.scrollHeight; });
     await page.screenshot({ path: `artifacts/home-shortcuts-${name}.png` });
@@ -156,7 +186,7 @@ try {
     assert.ok(last.y + last.height <= bar.y, 'Leaderboard scrolls clear of navigation');
     assert.deepEqual(failed.filter(url => !url.includes('/videos/')), []);
     assert.deepEqual(problems.filter(problem => !/^Failed to load resource/.test(problem)), []);
-    console.log(`${name}: signpost, week row, lesson strip, goal/menu sheets, leaderboard placement, quiz return, practice, navigation, completion, layout and offline passed.`);
+    console.log(`${name}: signpost, week row, lesson strip, onboarding, readiness goal, gear menu, leaderboard placement, quiz return, practice, navigation, completion, layout and offline passed.`);
     await context.close();
   }
 } finally { await browser.close(); }

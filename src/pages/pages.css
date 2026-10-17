@@ -1,0 +1,64 @@
+/* Menu-reached screens share the practice test's column, type and row patterns (DESIGN.md). */
+.lane-sub .sub-content { padding:max(var(--sp-4), env(safe-area-inset-top)) 20px max(var(--sp-6), env(safe-area-inset-bottom)); outline:none; }
+.lane-sub .sub-top { display:flex; align-items:center; gap:var(--sp-3); min-height:56px; margin-bottom:var(--sp-5); }
+.lane-sub .sub-top h1 { margin:0; font-size:var(--fs-display); line-height:1.15; font-weight:var(--fw-bold); letter-spacing:-.02em; }
+.lane-sub h2 { margin:var(--sp-6) 0 var(--sp-3); font-size:var(--fs-title); line-height:1.2; font-weight:var(--fw-bold); letter-spacing:-.01em; }
+.lane-sub h3 { margin:var(--sp-5) 0 var(--sp-2); font-size:var(--fs-body); font-weight:var(--fw-bold); }
+.lane-sub p, .lane-sub li { font-size:var(--fs-body); line-height:1.5; }
+.lane-sub p { margin:0 0 var(--sp-3); }
+.lane-sub .sub-note { font-size:var(--fs-caption); line-height:1.5; color:var(--lane-muted); }
+.lane-sub .sub-list { list-style:none; margin:0; padding:0; border-top:1px solid var(--lane-line); }
+.lane-sub .sub-list>li { border-bottom:1px solid var(--lane-line); }
+.lane-sub .sub-row { display:flex; align-items:center; gap:var(--sp-3); min-height:64px; padding:var(--sp-3) 0; color:inherit; text-decoration:none; }
+.lane-sub .sub-row>span { flex:1; min-width:0; display:grid; gap:2px; }
+.lane-sub .sub-row b { font-size:var(--fs-body); font-weight:var(--fw-bold); line-height:1.3; }
+.lane-sub .sub-row small { font-size:var(--fs-caption); color:var(--lane-muted); line-height:1.4; }
+.lane-sub .sub-row>i { flex:none; font-style:normal; color:var(--lane-support); }
+.lane-sub .sub-actions { display:grid; gap:var(--sp-3); margin-top:var(--sp-5); }
+.lane-sub a:not(.ui-button):not(.sub-row):not(.home-circle) { color:var(--lane-accent-ink); text-underline-offset:3px; }
+.lane-sub a:focus-visible, .lane-sub button:focus-visible, .lane-sub input:focus-visible { outline:3px solid var(--lane-accent-ink); outline-offset:3px; }
+/* Form rows (Settings). */
+.lane-sub .sub-field { display:grid; gap:var(--sp-2); padding:var(--sp-4) 0; border-bottom:1px solid var(--lane-line); }
+.lane-sub .sub-field label { font-weight:var(--fw-bold); }
+.lane-sub .sub-field input:not([type=radio]) { min-height:48px; padding:var(--sp-2) var(--sp-3); border:1.5px solid var(--lane-ink); border-radius:var(--radius-md); background:var(--lane-surface); color:var(--lane-ink); font:inherit; font-size:16px; }
+/* 16px is the smallest input size iOS Safari does not zoom into on focus. */
+.lane-sub .sub-field-row { display:flex; gap:var(--sp-3); }
+/* width:0 lets WebKit shrink a text input below its default 20-character width. */
+.lane-sub .sub-field-row>input { flex:1 1 0; width:0; min-width:0; }
+.lane-sub .sub-field-row>.ui-button { width:auto; flex:none; }
+.lane-sub .sub-status { margin:0; font-size:var(--fs-caption); font-weight:var(--fw-bold); color:var(--lane-support); }
+.lane-sub .sub-status:empty { display:none; }
+.lane-sub .sub-field>h2 { margin-top:0; }
+.lane-sub .sub-field .sub-note { margin:0; }
+/* Review session question: the feed's choice and feedback components on a light page. */
+.lane-sub .review-question { margin:var(--sp-2) 0 var(--sp-5); font-size:var(--fs-title); line-height:1.35; font-weight:var(--fw-bold); }
+.lane-sub .review-question:focus { outline:none; }
+.lane-sub .lane-choices { display:grid; gap:var(--sp-3); }
+.lane-sub .review-progress { font-size:var(--fs-caption); font-weight:var(--fw-bold); color:var(--lane-accent-ink); }
+.lane-sub .review-card { display:block; }
+.lane-sub .review-card summary { display:flex; cursor:pointer; list-style:none; }
+.lane-sub .review-card summary::-webkit-details-marker { display:none; }
+.lane-sub .review-card p { margin:var(--sp-2) 0 var(--sp-3); }
+.lane-sub .review-band { flex:none; display:flex; gap:4px; }
+.lane-sub .review-band i { width:14px; height:14px; border:1.5px solid var(--lane-ink); border-radius:4px; background:var(--lane-surface); }
+.lane-sub .review-band i.is-on { background:var(--lane-accent); }
+/* Streak buddies. */
+.lane-sub .buddy-row { gap:var(--sp-3); }
+.lane-sub .buddy-actions { display:flex; gap:var(--sp-2); flex:none; }
+.lane-sub .buddy-row .ui-button { width:auto; min-height:44px; padding-inline:var(--sp-4); }
+.lane-sub .buddy-streak { display:inline-flex; align-items:center; gap:4px; font-size:var(--fs-caption); font-weight:var(--fw-bold); color:var(--lane-muted); }
+.lane-sub .buddy-streak.is-lit { color:var(--lane-accent-ink); }
+.lane-sub .buddy-streak svg { width:16px; height:16px; fill:currentColor; }
+@media (max-width:380px) { .lane-sub .buddy-row { flex-wrap:wrap; } .lane-sub .buddy-actions { width:100%; } .lane-sub .buddy-actions .ui-button { flex:1; } }
+/* Onboarding (#/welcome) */
+.lane-sub .welcome-title { margin:var(--sp-2) 0 var(--sp-4); font-size:var(--fs-display); line-height:1.15; font-weight:var(--fw-bold); letter-spacing:-.02em; }
+.lane-sub .welcome-doc { border-bottom:1px solid var(--lane-line); }
+.lane-sub .welcome-doc summary { display:flex; align-items:center; min-height:48px; font-weight:var(--fw-bold); cursor:pointer; }
+.lane-sub .welcome-doc-body { max-height:40dvh; overflow-y:auto; padding:0 0 var(--sp-3); }
+.lane-sub .welcome-doc-body p { font-size:var(--fs-caption); }
+.lane-sub .welcome-check { display:flex; align-items:flex-start; gap:var(--sp-3); min-height:48px; padding:var(--sp-4) 0 var(--sp-2); font-weight:var(--fw-bold); }
+.lane-sub .welcome-check input, .lane-sub .welcome-goal input { flex:none; width:22px; height:22px; margin:0; accent-color:var(--lane-ink); }
+.lane-sub .welcome-goals { display:grid; gap:var(--sp-3); margin:0 0 var(--sp-3); padding:0; border:0; }
+.lane-sub .welcome-goal { display:flex; align-items:center; gap:var(--sp-3); min-height:64px; padding:var(--sp-3) var(--sp-4); border:1.5px solid var(--lane-ink); border-radius:var(--radius-md); background:var(--lane-surface); font-weight:var(--fw-bold); }
+.lane-sub .welcome-goal:has(:checked) { background:var(--lane-accent-soft); box-shadow:var(--shadow-soft); }
+.lane-sub .sub-legend { padding:0; margin-bottom:var(--sp-2); font-weight:var(--fw-bold); }

@@ -1,0 +1,27 @@
+{
+  "id": "lane-ends-merge",
+  "num": 4,
+  "type": "2d",
+  "title": "Lane Ends: Merge Early and Deliberately",
+  "short": "Your lane ends ahead.",
+  "topic": "ending-lane-awareness",
+  "tag": "RIGHT LANE ENDS",
+  "context": "The right lane ends ahead",
+  "timer": 6,
+  "source": "https://www.dmv.ca.gov/portal/handbook/california-driver-handbook/navigating-the-roads/",
+  "section": "Section 6 · End of Lane Markings; Changing Lanes",
+  "intro": "The blue car is in the next lane. There is space behind it.",
+  "observe": "Watch the traffic.",
+  "safeTitle": "Prepared, then merged.",
+  "unsafeTitle": "Try a safer choice.",
+  "watchCaption": "Your lane ends. There is room behind the blue car.",
+  "safeCaption": "Signal. Mirrors. Shoulder check. Merge into the gap.",
+  "unsafeCaption": "Moving over now would cut off the blue car.",
+  "defaultAction": "force-at-end",
+  "safeFeedback": "You signal, check the blind spot, and merge into the open space behind blue.",
+  "feedback": {
+    "force-at-end": "You reached the narrowing lane beside blue. Match its speed and use the space behind it.",
+    "cross-barrier": "The double solid white lines separate lanes you cannot cross here. Use the open lane beside you."
+  },
+  "nextId": "blind-spot-motorcycle"
+}

@@ -1,6 +1,8 @@
 import { CLIPS, type Clip } from './clips';
 import { dailyGoal, record, stats } from './progress';
 import type { View } from '../navigation';
+import { SCENARIOS } from '../simulation/registry';
+import { nextLessonId } from './plan';
 
 function weakSpot() {
   const topics = new Map<string, { attempted: number; right: number; open: Clip[] }>();
@@ -24,7 +26,7 @@ export function mountProgress(root: HTMLElement): View {
   const s = stats();
   const readiness = Math.round(s.done / CLIPS.length * 100);
   const remaining = CLIPS.length - s.done;
-  const next = CLIPS.find(clip => !record(clip.id)?.done) ?? CLIPS[0];
+  const next = CLIPS.find(clip => clip.id === nextLessonId()) ?? CLIPS.find(clip => !record(clip.id)?.done) ?? CLIPS[0];
   const peak = Math.max(dailyGoal(), ...s.week);
   const weak = weakSpot();
   const stat = (value: string | number, label: string) => `<div class="lane-stat"><strong>${value}</strong><span>${label}</span></div>`;
@@ -41,7 +43,7 @@ export function mountProgress(root: HTMLElement): View {
       </section>
       <section class="lane-route" aria-label="Choose a lesson"><div class="lane-route-heading"><h2>Your lessons</h2><span>${s.done} / ${CLIPS.length}</span></div>${CLIPS.map((clip, i) => {
         const done = record(clip.id)?.done;
-        return `<a class="lane-route-stop${done ? ' is-cleared' : clip.id === next.id ? ' is-next' : ''}" href="#/feed/${clip.id}"><span class="lane-route-node" aria-hidden="true">${done ? '<svg viewBox="0 0 24 24"><path d="m6 12.5 4 4 8-9"/></svg>' : String(i + 1).padStart(2, '0')}</span><span class="lane-route-copy"><small>${done ? 'Complete' : clip.id === next.id ? 'Up next' : `Lesson ${String(i + 1).padStart(2, '0')}`}${clip.simulator ? ' · Driving practice available' : ''}</small><strong>${clip.title}</strong></span><span aria-hidden="true">${done ? '↻' : '↗'}</span></a>`;
+        return `<a class="lane-route-stop${done ? ' is-cleared' : clip.id === next.id ? ' is-next' : ''}" href="#/feed/${clip.id}"><span class="lane-route-node" aria-hidden="true">${done ? '<svg viewBox="0 0 24 24"><path d="m6 12.5 4 4 8-9"/></svg>' : String(i + 1).padStart(2, '0')}</span><span class="lane-route-copy"><small>${done ? 'Complete' : clip.id === next.id ? 'Up next' : `Lesson ${String(i + 1).padStart(2, '0')}`}${SCENARIOS.some(entry => entry.lessonId === clip.id) ? ' · Challenge included' : ''}</small><strong>${clip.title}</strong></span><span aria-hidden="true">${done ? '↻' : '↗'}</span></a>`;
       }).join('')}</section>
       <section class="lane-week" aria-label="XP earned each day this week">
         <h2>This week</h2>

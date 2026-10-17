@@ -1,0 +1,27 @@
+{
+  "id": "right-turn-scan",
+  "num": 10,
+  "type": "3d",
+  "title": "Right Turn Scan: Pedestrian and Bicyclist at the Corner",
+  "short": "You want to turn right.",
+  "topic": "right-turn-vulnerable-road-users",
+  "tag": "RIGHT TURN SCAN",
+  "context": "Green light; crossing occupied",
+  "timer": 6,
+  "source": "https://www.dmv.ca.gov/portal/handbook/california-driver-handbook/laws-and-rules-of-the-road/",
+  "section": "Section 7 · Right-of-Way Rules · Turning right; Pedestrians",
+  "intro": "A person is crossing ahead. A bicyclist is continuing straight on your right.",
+  "observe": "Watch the traffic.",
+  "safeTitle": "Everyone has space.",
+  "unsafeTitle": "Try a safer choice.",
+  "watchCaption": "Pedestrian ahead. Bicyclist on your right.",
+  "safeCaption": "Both clear the turn. Scan again, then go.",
+  "unsafeCaption": "Wait for the pedestrian and bicyclist to pass.",
+  "defaultAction": "turn-on-green",
+  "safeFeedback": "You wait for both the person and bicyclist, check again, then turn right.",
+  "feedback": {
+    "turn-on-green": "Green did not clear your turn’s path. Wait for the person and the bicyclist.",
+    "watch-cars-only": "The person cleared, but the bicyclist was still beside you. Check both paths before turning."
+  },
+  "nextId": ""
+}

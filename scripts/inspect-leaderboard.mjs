@@ -1,6 +1,7 @@
 import { chromium } from '@playwright/test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
+// Onboarding is covered by inspect-home.mjs; this walkthrough starts as a learner who finished it.
 const base=process.env.BASE ?? 'http://127.0.0.1:4173/';
 const dev=process.env.DEV_BASE ?? 'http://localhost:5173/';
 const browser=await chromium.launch({executablePath:process.env.CHROMIUM ?? '/Users/hamza/Library/Caches/ms-playwright/chromium-1228/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing',headless:true});
@@ -8,6 +9,7 @@ await fs.mkdir('artifacts',{recursive:true});
 try {
   for(const [name,viewport] of Object.entries({portrait:{width:390,height:844},narrow:{width:320,height:740},landscape:{width:844,height:390},desktop:{width:1440,height:1000}})) {
     const context=await browser.newContext({viewport,deviceScaleFactor:2,reducedMotion:'reduce',timezoneId:'America/Los_Angeles'});
+    await context.addInitScript((() => { if (!localStorage.getItem('roadloop-progress')) localStorage.setItem('roadloop-progress', JSON.stringify({ settings: { onboardedAt: '2026-10-16T00:00:00.000Z', termsAcceptedAt: '2026-10-16T00:00:00.000Z', goal: 'other' } })); }));
     const page=await context.newPage(); const errors=[];
     page.on('pageerror',e=>errors.push(e.message));
     page.on('console',m=>{if(m.type()==='error') errors.push(m.text());});
@@ -15,7 +17,8 @@ try {
     await page.goto(`${base}#/home`,{waitUntil:'networkidle'});
     assert.equal(await page.locator('[data-board-you] .home-board-xp').innerText(),'0\nXP');
     assert.equal(await page.locator('[data-board-reset]').count(),0);
-    assert.equal(await page.evaluate(()=>localStorage.getItem('roadloop-progress')),null);
+    // Opening Home leaves storage as it was (here, only the finished-onboarding seed).
+    assert.deepEqual(Object.keys(JSON.parse(await page.evaluate(()=>localStorage.getItem('roadloop-progress')))),['settings']);
     await page.evaluate(()=>localStorage.setItem('roadloop-progress',JSON.stringify({xp:140,spentXp:10,ownedAvatars:['sprout','sunny'],selectedAvatar:'sunny',clips:{},daily:{'2026-10-04':100,'2026-10-05':10,'2026-10-06':10,'2026-10-07':20},liked:[],saved:[]})));
     await page.reload({waitUntil:'networkidle'});
     const board=page.locator('.home-leaderboard');
@@ -24,19 +27,25 @@ try {
     assert.equal(await page.locator('[data-board-you] .home-board-xp strong').innerText(),'40');
     assert.equal(await page.locator('[data-board-you] img').count(),0, 'Avatar portraits removed');
     assert.equal(await page.locator('[data-board-you] .home-board-rank').innerText(),'—');
-    await page.screenshot({path:`artifacts/leaderboard-group-${name}.png`});
-    await page.getByRole('tab',{name:'Group',exact:true}).focus();
-    await page.keyboard.press('ArrowRight');
+    // Global opens first; without the backend it shows your own row and says rankings are coming.
     assert.equal(await page.getByRole('tab',{name:'Global',exact:true}).getAttribute('aria-selected'),'true');
-    assert.equal(await page.getByRole('tabpanel').getAttribute('aria-labelledby'),'board-tab-global');
-    assert.doesNotMatch(await board.innerText(),/XP earned this week|Resets|friendly competition|Better with friends|coming soon|Preview/);
+    assert.match(await board.innerText(),/Weekly rankings are coming soon/);
+    assert.doesNotMatch(await board.innerText(),/XP earned this week|Resets|friendly competition|Better with friends|Preview|sync|device/i);
     await page.screenshot({path:`artifacts/leaderboard-global-${name}.png`});
-    await page.keyboard.press('Home');
+    await page.getByRole('tab',{name:'Global',exact:true}).focus();
+    await page.keyboard.press('ArrowLeft');
     assert.equal(await page.getByRole('tab',{name:'Group',exact:true}).getAttribute('aria-selected'),'true');
+    assert.equal(await page.getByRole('tabpanel').getAttribute('aria-labelledby'),'board-tab-group');
+    // Group has no product model yet: an accurate message, no invented members.
+    assert.match(await board.innerText(),/rankings are coming soon/i);
+    assert.equal(await page.locator('.home-board-row').count(),0);
+    await page.screenshot({path:`artifacts/leaderboard-group-${name}.png`});
     await page.keyboard.press('End');
+    assert.equal(await page.getByRole('tab',{name:'Global',exact:true}).getAttribute('aria-selected'),'true');
     await page.keyboard.press('Tab');
     assert.equal(await page.getByRole('tabpanel').evaluate(el=>el===document.activeElement),true);
     await page.locator('.home-nav a[href="#/profile"]').click();
+    await page.locator('.profile-content').waitFor();
     assert.equal(await page.locator('.home-leaderboard').count(),0);
     await page.locator('[data-car="sedan"]').click(); await page.locator('[data-item-action]').click(); await page.locator('[data-confirm]').click();
     await page.waitForFunction(() => !document.querySelector('.profile-item-sheet').open);
@@ -62,6 +71,7 @@ try {
   // Development-only ranked fixtures exercise the future data boundary, never shipped sample users.
   for(const width of [390,320]) {
     const context=await browser.newContext({viewport:{width,height:844},deviceScaleFactor:2,serviceWorkers:'block',timezoneId:'America/Los_Angeles'});
+    await context.addInitScript((() => { if (!localStorage.getItem('roadloop-progress')) localStorage.setItem('roadloop-progress', JSON.stringify({ settings: { onboardedAt: '2026-10-16T00:00:00.000Z', termsAcceptedAt: '2026-10-16T00:00:00.000Z', goal: 'other' } })); }));
     const page=await context.newPage();
     await page.goto(`${dev}#/home`,{waitUntil:'networkidle'});
     await page.evaluate(async()=>{
@@ -76,10 +86,8 @@ try {
     assert.equal(await page.locator('[data-board-you] .home-board-xp strong').innerText(),'0');
     await page.screenshot({path:`artifacts/leaderboard-global-fixture-${width}.png`});
     await page.getByRole('tab',{name:'Group',exact:true}).click();
-    assert.equal(await page.locator('[data-board-you]').count(),1);
-    assert.equal(await page.locator('.home-board-pinned').count(),0);
-    assert.equal(await page.locator('[data-board-you] .home-board-rank').innerText(),'2');
-    assert.equal(await page.locator('[data-board-you] .home-board-xp strong').innerText(),'0');
+    assert.equal(await page.locator('.home-board-row').count(),0, 'Group ignores supplied rows until a group model exists');
+    assert.match(await page.locator('.home-leaderboard').innerText(),/rankings are coming soon/i);
     await page.screenshot({path:`artifacts/leaderboard-group-fixture-${width}.png`});
     await context.close();
   }

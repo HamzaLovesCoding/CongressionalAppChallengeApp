@@ -8,6 +8,9 @@ export const PATH_COPY = {
   totalXP: (xp: number) => `${xp} total XP`,
   lessonsComplete: 'Lessons complete',
   milestones: 'Milestones',
+  milestonesShort: 'milestones',
+  readiness: (score: number, status: string) => `Driver readiness ${score} · ${status}`,
+  readinessEmpty: 'Driver readiness appears after your first check',
   // Starts with the chip's visible text, so voice control users can say what they see.
   milestonesEarned: (earned: number, total: number) => `${earned}/${total} milestones earned`,
   milestone: 'Milestone',
@@ -36,7 +39,7 @@ export const PATH_COPY = {
   startLesson: 'Start lesson',
   continueLesson: 'Continue lesson',
   reviewLesson: 'Review lesson',
-  simulator: 'Practice in the simulator',
+  simulator: 'Practice this decision',
   optional: 'Optional',
   closeDetails: 'Close lesson details',
   allDone: 'Road basics complete',

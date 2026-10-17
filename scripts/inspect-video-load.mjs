@@ -45,6 +45,9 @@ for (const [id, result] of Object.entries(report.webkit)) if (result !== 'plays'
 const cr = await chromium.launch({ executablePath: CHROMIUM, args: ['--autoplay-policy=no-user-gesture-required'] });
 for (const [network, { latency, down }] of Object.entries(NETWORKS)) {
   const context = await cr.newContext({ ...devices['Pixel 7'], serviceWorkers: 'block' });
+  // Lessons start completed so the early-leave safety check (which pauses a part-watched safety lesson)
+  // doesn't stop the timed swipes; this script measures video start-up, not the quiz flow.
+  await context.addInitScript(ids => { if (!localStorage.getItem('roadloop-progress')) localStorage.setItem('roadloop-progress', JSON.stringify({ xp: 0, daily: {}, liked: [], saved: [], clips: Object.fromEntries(ids.map(id => [id, { tries: 1, firstTry: true, done: true }])) })); }, VIDEO_LESSONS.map(lesson => lesson.id));
   const page = await context.newPage();
   const cdp = await context.newCDPSession(page);
   await cdp.send('Network.enable');
@@ -61,7 +64,8 @@ for (const [network, { latency, down }] of Object.entries(NETWORKS)) {
     const swipe = await page.evaluate(async () => {
       const feed = document.querySelector('.lane-feed'), from = document.querySelector('.is-current');
       feed.scrollTo({ top: from.nextElementSibling.offsetTop, behavior: 'instant' });
-      while (document.querySelector('.is-current') === from) await new Promise(resolve => setTimeout(resolve, 5));
+      const until = performance.now() + 5000;
+      while (document.querySelector('.is-current') === from && performance.now() < until) await new Promise(resolve => setTimeout(resolve, 5));
       return document.querySelector('.is-current').dataset.clip;
     });
     const result = await page.evaluate(started);

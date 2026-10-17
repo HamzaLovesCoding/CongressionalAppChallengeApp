@@ -40,7 +40,7 @@ export function mountPractice(root: HTMLElement): View {
         <div class="home-section-heading"><h2 id="practice-topics-title">What’s covered</h2></div>
         <ul class="practice-list">${Object.entries(bank.topics).filter(([id]) => counts.has(id)).map(([id, label]) => `<li>${topicIcon(id)}<b>${esc(label)}</b><span>${plural(counts.get(id)!, 'question')}</span></li>`).join('')}</ul>
       </section>
-      <p class="practice-note">You’ll see whether each answer is right as you go, then your score and the topics to review at the end. This is practice, not an official DMV test.</p>
+      <p class="practice-note">You’ll see whether each answer is right as you go, then your score and the topics to review at the end. These are Lane practice questions. The DMV test uses its own.</p>
     </main>
     ${homeNavigation('practice')}
   </div>`;
@@ -79,7 +79,7 @@ export function mountPracticeTest(root: HTMLElement): View {
       </section>
       <section class="pt-section"><h2>Areas to improve</h2>${review.length ? topicList(review) : '<p class="pt-detail">No topics stood out for review in this attempt.</p>'}</section>
       ${limited.length ? `<section class="pt-section"><h2>More practice to assess</h2>${topicList(limited)}<p class="pt-detail">This test covers too few different rules in these topics to judge them yet.</p></section>` : ''}
-      <footer class="pt-bottom"><button class="pt-action ui-button" type="button" data-restart>Start again</button><a class="pt-secondary ui-button is-secondary" href="#/practice">Back to practice</a><p class="pt-caption">Practice target: ${targetPct}%. This is practice, not an official DMV test.</p></footer>`;
+      <footer class="pt-bottom"><button class="pt-action ui-button" type="button" data-restart>Start again</button><a class="pt-secondary ui-button is-secondary" href="#/practice">Back to practice</a><p class="pt-caption">Practice target: ${targetPct}%. These are Lane practice questions. The DMV test uses its own.</p></footer>`;
   }
 
   function renderQuestion() {

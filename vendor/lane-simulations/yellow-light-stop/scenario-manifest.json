@@ -1,0 +1,63 @@
+{
+  "id": "yellow-light-stop",
+  "version": 4,
+  "type": "3d",
+  "title": "Yellow Light: Stop if You Can Do So Safely",
+  "topicId": "yellow-light-safe-stop",
+  "handbookSource": "California Driver’s Handbook · Section 7 · Traffic Signals · Solid Yellow Light. https://www.dmv.ca.gov/portal/handbook/california-driver-handbook/laws-and-rules-of-the-road/ (checked 2026-10-15; final human review pending)",
+  "relatedLessonId": "yellow-light-safe-stop",
+  "quizTrigger": {
+    "offerWhen": "after_quiz",
+    "recommendWhen": [
+      "wrong_answer",
+      "high_safety_review"
+    ]
+  },
+  "learnerPrompt": "The light turns yellow. You have room to stop.",
+  "choices": [
+    {
+      "id": "brake-smoothly",
+      "label": "Brake smoothly now",
+      "isSafe": true
+    },
+    {
+      "id": "accelerate",
+      "label": "Keep your speed through",
+      "isSafe": false
+    },
+    {
+      "id": "late-brake",
+      "label": "Brake closer to the line",
+      "isSafe": false
+    }
+  ],
+  "safeChoiceId": "brake-smoothly",
+  "safeOutcome": "You brake while there is room and stop just before the limit line.",
+  "unsafeOutcome": "You continued into the intersection as the light turned red. Braking on yellow would have kept you clear.",
+  "completion": {
+    "estimatedSeconds": 30,
+    "retryAllowed": true,
+    "exitAddsToReviewLater": true
+  },
+  "integrationEvents": {
+    "start": "scenario_started",
+    "complete": "scenario_completed",
+    "retry": "scenario_retry_requested",
+    "exit": "scenario_exited_to_review_later"
+  },
+  "assets": [
+    {
+      "id": "preview-thumbnail",
+      "role": "image",
+      "path": "thumbnail.png",
+      "mimeType": "image/png",
+      "sourceLicense": "Original capture of this scenario’s code-generated geometry; no third-party artwork. See README for dependency licenses."
+    }
+  ],
+  "fallback": {
+    "behavior": "Keep the scene description and choices available when the visual cannot render.",
+    "message": "You are approaching the signal. There is enough space to brake smoothly before the line."
+  },
+  "performanceNotes": "Immersive portrait stage with reserved QTE overlay space and a separate primary action. Relative speed gauge. 1.8-second approach, required countdown at 8% simulation speed, action-specific consequence. Shadow DOM, hidden/offscreen pause, reduced-motion support. Code-generated geometry.",
+  "contentStatus": "draft-needs-human-handbook-review"
+}

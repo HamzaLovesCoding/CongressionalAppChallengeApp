@@ -1,0 +1,63 @@
+{
+  "id": "emergency-vehicle-yield",
+  "version": 4,
+  "type": "2d",
+  "title": "Emergency Vehicle: Clear the Intersection, Then Pull Right",
+  "topicId": "emergency-vehicle-right-of-way",
+  "handbookSource": "California Driver’s Handbook · Section 7 continued · Emergency Vehicles. https://www.dmv.ca.gov/portal/handbook/california-driver-handbook/laws-and-rules-of-the-road-cont1/ (checked 2026-10-15; final human review pending)",
+  "relatedLessonId": "emergency-vehicle-right-of-way",
+  "quizTrigger": {
+    "offerWhen": "after_quiz",
+    "recommendWhen": [
+      "wrong_answer",
+      "high_safety_review"
+    ]
+  },
+  "learnerPrompt": "A siren sounds behind you. Where do you stop?",
+  "choices": [
+    {
+      "id": "stop-intersection",
+      "label": "Stop where you are",
+      "isSafe": false
+    },
+    {
+      "id": "clear-pull-right",
+      "label": "Clear the junction, pull right",
+      "isSafe": true
+    },
+    {
+      "id": "continue-normal",
+      "label": "Keep going to the next block",
+      "isSafe": false
+    }
+  ],
+  "safeChoiceId": "clear-pull-right",
+  "safeOutcome": "You clear the intersection, pull to the right edge, and stop while the fire engine passes.",
+  "unsafeOutcome": "Stopping inside blocked the fire engine’s path. Clear the intersection before pulling right.",
+  "completion": {
+    "estimatedSeconds": 30,
+    "retryAllowed": true,
+    "exitAddsToReviewLater": true
+  },
+  "integrationEvents": {
+    "start": "scenario_started",
+    "complete": "scenario_completed",
+    "retry": "scenario_retry_requested",
+    "exit": "scenario_exited_to_review_later"
+  },
+  "assets": [
+    {
+      "id": "preview-thumbnail",
+      "role": "image",
+      "path": "thumbnail.png",
+      "mimeType": "image/png",
+      "sourceLicense": "Original capture of this scenario’s code-generated geometry; no third-party artwork. See README for dependency licenses."
+    }
+  ],
+  "fallback": {
+    "behavior": "Keep the scene description and choices available when the visual cannot render.",
+    "message": "You are already crossing the intersection. A fire engine approaches with red lights and a siren."
+  },
+  "performanceNotes": "Immersive portrait stage with reserved QTE overlay space and a separate primary action. Relative speed gauge. 1.8-second approach, required countdown at 8% simulation speed, action-specific consequence. Shadow DOM, hidden/offscreen pause, reduced-motion support. Code-generated geometry.",
+  "contentStatus": "draft-needs-human-handbook-review"
+}

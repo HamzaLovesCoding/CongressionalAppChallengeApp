@@ -1,0 +1,63 @@
+{
+  "id": "unprotected-left-turn",
+  "version": 4,
+  "type": "2d",
+  "title": "Unprotected Left Turn: Wait for Oncoming Traffic",
+  "topicId": "left-turn-right-of-way",
+  "handbookSource": "California Driver’s Handbook · Section 7 · Right-of-Way Rules · Turning left. https://www.dmv.ca.gov/portal/handbook/california-driver-handbook/laws-and-rules-of-the-road/ (checked 2026-10-15; final human review pending)",
+  "relatedLessonId": "left-turn-right-of-way",
+  "quizTrigger": {
+    "offerWhen": "after_quiz",
+    "recommendWhen": [
+      "wrong_answer",
+      "high_safety_review"
+    ]
+  },
+  "learnerPrompt": "You want to turn left. When do you go?",
+  "choices": [
+    {
+      "id": "turn-now",
+      "label": "Turn before the blue car",
+      "isSafe": false
+    },
+    {
+      "id": "wait-yield",
+      "label": "Wait for both to pass",
+      "isSafe": true
+    },
+    {
+      "id": "watch-pedestrian",
+      "label": "Go after the person crosses",
+      "isSafe": false
+    }
+  ],
+  "safeChoiceId": "wait-yield",
+  "safeOutcome": "The oncoming car and the person both pass before you turn left.",
+  "unsafeOutcome": "Your left turn crossed the blue car’s lane. Wait for oncoming traffic and the person crossing.",
+  "completion": {
+    "estimatedSeconds": 30,
+    "retryAllowed": true,
+    "exitAddsToReviewLater": true
+  },
+  "integrationEvents": {
+    "start": "scenario_started",
+    "complete": "scenario_completed",
+    "retry": "scenario_retry_requested",
+    "exit": "scenario_exited_to_review_later"
+  },
+  "assets": [
+    {
+      "id": "preview-thumbnail",
+      "role": "image",
+      "path": "thumbnail.png",
+      "mimeType": "image/png",
+      "sourceLicense": "Original capture of this scenario’s code-generated geometry; no third-party artwork. See README for dependency licenses."
+    }
+  ],
+  "fallback": {
+    "behavior": "Keep the scene description and choices available when the visual cannot render.",
+    "message": "The blue car is coming toward you. A person is crossing the street you want to enter."
+  },
+  "performanceNotes": "Immersive portrait stage with reserved QTE overlay space and a separate primary action. Relative speed gauge. 1.8-second approach, required countdown at 8% simulation speed, action-specific consequence. Shadow DOM, hidden/offscreen pause, reduced-motion support. Code-generated geometry.",
+  "contentStatus": "draft-needs-human-handbook-review"
+}

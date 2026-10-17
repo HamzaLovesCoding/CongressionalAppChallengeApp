@@ -1,0 +1,27 @@
+{
+  "id": "yellow-light-stop",
+  "num": 8,
+  "type": "3d",
+  "title": "Yellow Light: Stop if You Can Do So Safely",
+  "short": "The light is turning yellow.",
+  "topic": "yellow-light-safe-stop",
+  "tag": "SOLID YELLOW",
+  "context": "A smooth stop is possible",
+  "timer": 6,
+  "source": "https://www.dmv.ca.gov/portal/handbook/california-driver-handbook/laws-and-rules-of-the-road/",
+  "section": "Section 7 · Traffic Signals · Solid Yellow Light",
+  "intro": "You are approaching the signal. There is enough space to brake smoothly before the line.",
+  "observe": "Watch the traffic.",
+  "safeTitle": "Stopped with room to spare.",
+  "unsafeTitle": "Try a safer choice.",
+  "watchCaption": "Green changes to yellow. The limit line is still ahead.",
+  "safeCaption": "Smooth braking brings you to a stop before the line.",
+  "unsafeCaption": "The light turns red as you reach the intersection.",
+  "defaultAction": "accelerate",
+  "safeFeedback": "You brake while there is room and stop just before the limit line.",
+  "feedback": {
+    "accelerate": "You continued into the intersection as the light turned red. Braking on yellow would have kept you clear.",
+    "late-brake": "Waiting used up your stopping distance. Hard braking left your car past the line."
+  },
+  "nextId": "freeway-entrance-merge"
+}

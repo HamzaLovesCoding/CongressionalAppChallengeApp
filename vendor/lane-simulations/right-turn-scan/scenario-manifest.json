@@ -1,0 +1,63 @@
+{
+  "id": "right-turn-scan",
+  "version": 4,
+  "type": "3d",
+  "title": "Right Turn Scan: Pedestrian and Bicyclist at the Corner",
+  "topicId": "right-turn-vulnerable-road-users",
+  "handbookSource": "California Driver’s Handbook · Section 7 · Right-of-Way Rules · Turning right; Pedestrians. https://www.dmv.ca.gov/portal/handbook/california-driver-handbook/laws-and-rules-of-the-road/ (checked 2026-10-15; final human review pending)",
+  "relatedLessonId": "right-turn-vulnerable-road-users",
+  "quizTrigger": {
+    "offerWhen": "after_quiz",
+    "recommendWhen": [
+      "wrong_answer",
+      "high_safety_review"
+    ]
+  },
+  "learnerPrompt": "You want to turn right on green. When do you go?",
+  "choices": [
+    {
+      "id": "turn-on-green",
+      "label": "Turn while the light is green",
+      "isSafe": false
+    },
+    {
+      "id": "wait-scan-clear",
+      "label": "Wait for both to pass",
+      "isSafe": true
+    },
+    {
+      "id": "watch-cars-only",
+      "label": "Go after the person crosses",
+      "isSafe": false
+    }
+  ],
+  "safeChoiceId": "wait-scan-clear",
+  "safeOutcome": "You wait for both the person and bicyclist, check again, then turn right.",
+  "unsafeOutcome": "Green did not clear your turn’s path. Wait for the person and the bicyclist.",
+  "completion": {
+    "estimatedSeconds": 30,
+    "retryAllowed": true,
+    "exitAddsToReviewLater": true
+  },
+  "integrationEvents": {
+    "start": "scenario_started",
+    "complete": "scenario_completed",
+    "retry": "scenario_retry_requested",
+    "exit": "scenario_exited_to_review_later"
+  },
+  "assets": [
+    {
+      "id": "preview-thumbnail",
+      "role": "image",
+      "path": "thumbnail.png",
+      "mimeType": "image/png",
+      "sourceLicense": "Original capture of this scenario’s code-generated geometry; no third-party artwork. See README for dependency licenses."
+    }
+  ],
+  "fallback": {
+    "behavior": "Keep the scene description and choices available when the visual cannot render.",
+    "message": "A person is crossing ahead. A bicyclist is continuing straight on your right."
+  },
+  "performanceNotes": "Immersive portrait stage with reserved QTE overlay space and a separate primary action. Relative speed gauge. 1.8-second approach, required countdown at 8% simulation speed, action-specific consequence. Shadow DOM, hidden/offscreen pause, reduced-motion support. Code-generated geometry.",
+  "contentStatus": "draft-needs-human-handbook-review"
+}
