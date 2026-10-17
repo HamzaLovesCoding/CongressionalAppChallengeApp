@@ -17,7 +17,6 @@ import { go, type View } from '../navigation';
 import { createScrollTimer } from './scrollTimer';
 import { roadPoster } from './poster';
 import { LOCAL_SOURCE } from './curriculum';
-import { commentsSheet } from './comments';
 import '../simulation/host.css';
 import './minimal.css';
 
@@ -31,7 +30,6 @@ const esc = (value: string) => value.replace(/[&<>"']/g, char => ({ '&': '&amp;'
 const clock = (seconds: number) => `${Math.floor(seconds / 60)}:${String(Math.floor(seconds % 60)).padStart(2, '0')}`;
 const bookmark = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12v18l-6-4-6 4z"/></svg>';
 const heart = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/></svg>';
-const commentIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/></svg>';
 const shareIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m21 3-7 18-4-8-8-3 19-7Zm0 0L10 13"/></svg>';
 const back = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14 5-7 7 7 7"/></svg>';
 const play = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 5 11 7-11 7z"/></svg>';
@@ -46,7 +44,7 @@ type Kind = 'primary' | 'similar' | 'harder';
 type Question = { question: string; options: string[]; answer: number; explanation: string; source?: string };
 export type FeedTarget = { id?: string; quiz?: boolean; sim?: string };
 
-const rail = (clip: Clip) => `<div class="lane-rail"><button class="lane-icon" data-like="${clip.id}" aria-label="${marked('liked', clip.id) ? 'Unlike lesson' : 'Like lesson'}" aria-pressed="${marked('liked', clip.id)}">${heart}</button><button class="lane-icon" data-comments="${clip.id}" aria-label="Comments">${commentIcon}</button><button class="lane-icon" data-save="${clip.id}" aria-label="${marked('saved', clip.id) ? 'Unsave lesson' : 'Save lesson'}" aria-pressed="${marked('saved', clip.id)}">${bookmark}</button><button class="lane-icon" data-share="${clip.id}" aria-label="Share lesson">${shareIcon}</button></div>`;
+const rail = (clip: Clip) => `<div class="lane-rail"><button class="lane-icon" data-like="${clip.id}" aria-label="${marked('liked', clip.id) ? 'Unlike lesson' : 'Like lesson'}" aria-pressed="${marked('liked', clip.id)}">${heart}</button><button class="lane-icon" data-save="${clip.id}" aria-label="${marked('saved', clip.id) ? 'Unsave lesson' : 'Save lesson'}" aria-pressed="${marked('saved', clip.id)}">${bookmark}</button><button class="lane-icon" data-share="${clip.id}" aria-label="Share lesson">${shareIcon}</button></div>`;
 // A text lesson (no video): a post whose sentences the learner completes one blank at a time.
 function textLessonHtml(clip: Clip, index: number, revisit: boolean) {
   return `<article class="lane-clip lane-card lane-text-lesson" data-item="${index}" data-clip="${clip.id}" aria-label="Lesson ${lessonNumber(clip.id)}: ${esc(clip.title)}">
@@ -98,7 +96,6 @@ export function mountFeed(root: HTMLElement, target: FeedTarget = {}): View {
     <div class="lane-scrim" hidden></div><section class="lane-sheet" role="dialog" aria-modal="true" aria-label="Quick check" aria-hidden="true"><div class="lane-sheet-grab"></div><div class="lane-sheet-content"></div></section>
     <div class="lane-toast" role="status" aria-live="polite"></div>
     <dialog class="lane-about" aria-labelledby="lane-about-title"></dialog>
-    <dialog class="lane-comments" aria-labelledby="lane-comments-title"></dialog>
   </main>`;
   const shell = root.querySelector<HTMLElement>('.lane-shell')!;
   const feed = root.querySelector<HTMLElement>('.lane-feed')!;
@@ -109,13 +106,11 @@ export function mountFeed(root: HTMLElement, target: FeedTarget = {}): View {
   const scrim = root.querySelector<HTMLElement>('.lane-scrim')!;
   const toast = root.querySelector<HTMLElement>('.lane-toast')!;
   const about = root.querySelector<HTMLDialogElement>('.lane-about')!;
-  const commentsDialog = root.querySelector<HTMLDialogElement>('.lane-comments')!;
-  const comments = commentsSheet(commentsDialog);
   // Like every off-screen panel, the end card is inactive until the learner reaches it.
   const endCard = root.querySelector<HTMLElement>('.lane-end')!;
   endCard.inert = true;
   const controller = new AbortController();
-  let resumeAfterAbout = false, resumeAfterRule = false, resumeAfterComments = false;
+  let resumeAfterAbout = false, resumeAfterRule = false;
   let active = 0, questionIndex = 0, questionAnswered = false, sheetOpen = false;
   let questionMissed = false, firstTryCount = 0, earnedXP = 0;
   let kind: Kind = 'primary', checkKind: CheckKind = 'quiz', questionShownAt = 0, activityPicked = -1, activityThen: 'question' | 'next' = 'question';
@@ -776,8 +771,6 @@ export function mountFeed(root: HTMLElement, target: FeedTarget = {}): View {
     if (target.closest('[data-card-got]')) { rateCard(true); return; }
     if (target.closest('[data-card-not]')) { rateCard(false); return; }
     if (target.closest('.lane-close, .lane-scrim')) { if (dismissable()) closeSheet(); return; }
-    const commentButton = target.closest<HTMLButtonElement>('[data-comments]');
-    if (commentButton) { resumeAfterComments = playing; setPlaying(false); comments.open(commentButton.dataset.comments!); return; }
     const aboutButton = target.closest<HTMLButtonElement>('[data-about]');
     if (aboutButton) { const clip = clipById(aboutButton.dataset.about); if (clip) openAbout(clip); return; }
     if (target === about) { about.close(); return; }
@@ -830,10 +823,9 @@ export function mountFeed(root: HTMLElement, target: FeedTarget = {}): View {
   }, { signal: controller.signal, capture: true });
   for (const type of ['waiting', 'playing', 'canplay', 'pause', 'emptied', 'loadedmetadata', 'volumechange']) root.addEventListener(type, event => { if (event.target === video()) { paintLoading(); paintTime(); paintSound(); } }, { signal: controller.signal, capture: true });
   root.addEventListener('canplay', event => { if (event.target === video()) paintPreload(); }, { signal: controller.signal, capture: true });
-  commentsDialog.addEventListener('close', () => { if (resumeAfterComments && !sheetOpen && !about.open) setPlaying(true); resumeAfterComments = false; feed.focus({ preventScroll: true }); }, { signal: controller.signal });
   about.addEventListener('close', () => { if (resumeAfterAbout && !sheetOpen) setPlaying(true); resumeAfterAbout = false; feed.focus({ preventScroll: true }); }, { signal: controller.signal });
   root.addEventListener('keydown', event => {
-    if (about.open || commentsDialog.open) return;
+    if (about.open) return;
     if (event.key === 'Escape' && sheetOpen) {
       if (dismissable()) closeSheet();
       else if (content.querySelector('[data-menu]')) { savedStage = content.innerHTML; renderMenu(); }
@@ -865,7 +857,7 @@ export function mountFeed(root: HTMLElement, target: FeedTarget = {}): View {
     if (isLesson()) saveWatch(active);
     // Leaving the feed during a running simulation counts as its Exit.
     simLeave?.(); simHandle?.destroy();
-    controller.abort(); if (about.open) about.close(); if (commentsDialog.open) commentsDialog.close(); clearInterval(ticker); clearTimeout(toastTimeout); clearTimeout(loadingTimeout); clearTimeout(snapTimer); cancelAnimationFrame(snapFrame);
+    controller.abort(); if (about.open) about.close(); clearInterval(ticker); clearTimeout(toastTimeout); clearTimeout(loadingTimeout); clearTimeout(snapTimer); cancelAnimationFrame(snapFrame);
     // Detached videos can keep downloading, so leaving the feed releases every source.
     panels.forEach(entry => { const media = entry.querySelector('video'); if (media?.hasAttribute('src')) { media.pause(); media.removeAttribute('src'); media.load(); } });
   } };
