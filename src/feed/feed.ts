@@ -21,13 +21,15 @@ import '../simulation/host.css';
 import './minimal.css';
 
 const DEMO_SECONDS = 8;
+// Every panel shows how long this feed visit has lasted, so learners can see their scrolling time.
+const scrollTime = `<div class="lane-scroll-time" role="timer" aria-label="${copy.scrollTime}"><time>00:00</time></div>`;
 // Must match VIDEO_CACHE in src/sw.js, which serves these cached files (with byte ranges) offline.
 const VIDEO_CACHE = 'amber-videos-h264';
 // A first-frame still for each lesson video (see public/images/lessons/posters/README.md), shown
 // the moment a clip scrolls in so the screen is never blank while the video starts.
 export const videoPoster = (video: string) => video.replace(/^videos\/(.+)\.mp4$/, 'images/lessons/posters/$1.jpg');
 const esc = (value: string) => value.replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]!);
-const clock = (seconds: number) => `${Math.floor(seconds / 60)}:${String(Math.floor(seconds % 60)).padStart(2, '0')}`;
+const sessionClock = (seconds: number) => { const h = Math.floor(seconds / 3600), mm = String(Math.floor(seconds / 60) % 60).padStart(2, '0'), ss = String(seconds % 60).padStart(2, '0'); return h ? `${h}:${mm}:${ss}` : `${mm}:${ss}`; };
 const bookmark = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12v18l-6-4-6 4z"/></svg>';
 const heart = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/></svg>';
 const shareIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m21 3-7 18-4-8-8-3 19-7Zm0 0L10 13"/></svg>';
@@ -48,7 +50,7 @@ const rail = (clip: Clip) => `<div class="lane-rail"><button class="lane-icon" d
 // A text lesson (no video): a post whose sentences the learner completes one blank at a time.
 function textLessonHtml(clip: Clip, index: number, revisit: boolean) {
   return `<article class="lane-clip lane-card lane-text-lesson" data-item="${index}" data-clip="${clip.id}" aria-label="Lesson ${lessonNumber(clip.id)}: ${esc(clip.title)}">
-    <div class="lane-top"><a class="lane-home" href="#/home" aria-label="Back to home">${back}</a></div>
+    <div class="lane-top"><a class="lane-home" href="#/home" aria-label="Back to home">${back}</a>${scrollTime}</div>
     <div class="lane-card-body lane-post"><span class="lane-card-label">${revisit ? `${copy.reviewLabel} · ` : ''}${esc(clip.topic.toUpperCase())} · ${copy.fillLabel}</span><h2>${esc(clip.title)}</h2><ol class="lane-post-steps" data-post-steps></ol><p class="lane-card-status" role="status" data-post-status></p><small class="lane-card-source">Source: ${esc(citation(clip.post!.source))}</small></div>
     ${rail(clip)}
   </article>`;
@@ -61,14 +63,14 @@ function lessonHtml(clip: Clip, index: number, revisit: boolean) {
     <video class="lane-video" ${clip.video ? `data-src="${esc(clip.video)}" data-poster="${esc(videoPoster(clip.video))}"` : ''} playsinline muted preload="none" aria-label="${esc(clip.title)}"></video>
     <div class="lane-poster" aria-hidden="true">${roadPoster(CLIPS.indexOf(clip), clip.poster?.scene)}</div>
     <button class="lane-play-surface" data-play aria-label="Pause clip"></button>
-    <div class="lane-top"><a class="lane-home" href="#/home" aria-label="Back to home">${back}</a><div class="lane-top-end">${clip.video ? '<button class="lane-sound" data-sound aria-pressed="false" aria-label="Mute sound"></button>' : ''}<div class="lane-scroll-time" role="timer" aria-label="${copy.videoTime}"><time>0:00</time></div></div></div>
+    <div class="lane-top"><a class="lane-home" href="#/home" aria-label="Back to home">${back}</a><div class="lane-top-end">${clip.video ? '<button class="lane-sound" data-sound aria-pressed="false" aria-label="Mute sound"></button>' : ''}${scrollTime}</div></div>
     <div class="lane-meta"><span>${revisit ? `${copy.reviewLabel} · ` : ''}${esc(lesson?.category ?? clip.topic)}</span><h2>${esc(clip.title)}</h2>${lesson ? `<details class="lane-rule"><summary>California rule<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><div class="lane-rule-content"><p>${esc(lesson.californiaRule)}</p><small>${esc(lesson.handbook)}</small><button class="lane-about-open" data-about="${clip.id}" aria-haspopup="dialog">About this lesson</button></div></details>` : ''}</div>
     ${rail(clip)}
   </article>`;
 }
 // What a learner sees as a source: the handbook part of a citation (internal provenance notes stay in the data).
 const citation = (source: string) => { const at = source.search(/California Quick Reference/); return at >= 0 ? source.slice(at) : /Aceable/.test(source) ? 'Aceable driver’s ed glossary' : source; };
-const cardTop = `<div class="lane-top"><a class="lane-home" href="#/home" aria-label="Back to home">${back}</a></div>`;
+const cardTop = `<div class="lane-top"><a class="lane-home" href="#/home" aria-label="Back to home">${back}</a>${scrollTime}</div>`;
 function simHtml(entry: ScenarioEntry, index: number) {
   return `<article class="lane-clip lane-card lane-sim-card" data-item="${index}" aria-label="${esc(`${copy.simLabel}: ${entry.title}`)}">${cardTop}
     <div class="lane-card-body" data-sim-body><span class="lane-card-label">${copy.simLabel} · SIM ${String(entry.number).padStart(2, '0')}</span><h2>${esc(entry.title)}</h2><p class="lane-card-rule">${esc(entry.rule)}</p><p class="lane-card-note">${copy.simPitch}</p>
@@ -227,13 +229,14 @@ export function mountFeed(root: HTMLElement, target: FeedTarget = {}): View {
     panels.forEach(entry => { if (entry !== panel() || !waiting()) entry.classList.remove('is-loading'); });
     if (waiting()) loadingTimeout = window.setTimeout(() => panel().classList.toggle('is-loading', waiting()), 300);
   }
-  // The corner timer is the clip's own time; it stops when the clip ends.
+  // The corner timer is time spent in this feed visit, not the clip's position.
+  let shownSeconds = -1;
   function paintTime() {
-    if (!isLesson()) return;
-    const time = panel().querySelector('.lane-scroll-time time');
-    if (!time) return;
-    const media = video();
-    time.textContent = media ? `${clock(media.currentTime || 0)} / ${clock(Number.isFinite(media.duration) ? media.duration : 0)}` : `${clock(elapsed)} / ${clock(DEMO_SECONDS)}`;
+    const seconds = sessionTimer.tick(performance.now(), !document.hidden);
+    if (seconds === shownSeconds) return;
+    shownSeconds = seconds;
+    const text = sessionClock(seconds);
+    root.querySelectorAll('.lane-scroll-time time').forEach(time => { time.textContent = text; });
   }
   function cacheWatched(media: HTMLVideoElement) {
     if (!navigator.serviceWorker?.controller || !('caches' in window)) return;
@@ -848,7 +851,7 @@ export function mountFeed(root: HTMLElement, target: FeedTarget = {}): View {
   const ticker = window.setInterval(() => {
     const now = performance.now(), delta = Math.min((now - lastTick) / 1000, .2);
     lastTick = now;
-    sessionTimer.tick(now, !document.hidden);
+    paintTime();
     if (isLesson() && !current().post && playing && !sheetOpen && !document.hidden && !video() && elapsed < DEMO_SECONDS) { elapsed = Math.min(DEMO_SECONDS, elapsed + delta); paintTime(); if (elapsed >= DEMO_SECONDS) finishClip(); }
   }, 100);
   setActive(0, false); feed.scrollTop = panel().offsetTop; paintEnd();

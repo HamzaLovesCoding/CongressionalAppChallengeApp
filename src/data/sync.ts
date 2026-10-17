@@ -20,6 +20,9 @@ export type CommentRow = { id: string; author: string | null; body: string; crea
 export type PostResult = 'ok' | 'invalid' | 'limit' | 'offline';
 // A vote or delete the server turned down (refused) is not a connection problem (offline).
 export type ActionResult = 'ok' | 'refused' | 'offline';
+export type GroupRow = { code: string; name: string; members: number; is_owner: boolean };
+export type CreateGroupResult = { status: 'ok'; code: string } | { status: 'need-username' | 'limit' | 'offline' };
+export type JoinResult = 'joined' | 'already' | 'not-found' | 'need-username' | 'limit' | 'full' | 'invalid' | 'offline';
 export type RequestResult = 'sent' | 'accepted' | 'already' | 'not-found' | 'self' | 'need-username' | 'limit' | 'invalid' | 'offline';
 
 const AUTH_KEY = 'lane-auth';
@@ -133,6 +136,27 @@ export function createSync(client: SupabaseClient | null, lessonIds: string[], s
     async groupLeaderboard(): Promise<RemoteRow[] | null> {
       if (!client) return null;
       try { return await call<RemoteRow[]>('group_leaderboard', {}); } catch { return null; }
+    },
+    // Code groups: make one (the server returns its code), join by code, leave, and read one group's board.
+    async groups(): Promise<GroupRow[] | null> {
+      if (!client) return null;
+      try { return await call<GroupRow[]>('my_groups', {}); } catch { return null; }
+    },
+    async createGroup(): Promise<CreateGroupResult> {
+      if (!client) return { status: 'offline' };
+      try { return await call<CreateGroupResult>('create_group', {}); } catch { return { status: 'offline' }; }
+    },
+    async joinGroup(code: string): Promise<JoinResult> {
+      if (!client) return 'offline';
+      try { return await call<JoinResult>('join_group', { group_code: code }); } catch { return 'offline'; }
+    },
+    async leaveGroup(code: string) {
+      if (!client) return false;
+      try { return await call<boolean>('leave_group', { group_code: code }); } catch { return false; }
+    },
+    async codeGroupLeaderboard(code: string): Promise<RemoteRow[] | null> {
+      if (!client) return null;
+      try { return await call<RemoteRow[]>('code_group_leaderboard', { group_code: code }); } catch { return null; }
     },
     // Claims a username on the server; the store keeps it only once the server agrees.
     async setUsername(name: string | null): Promise<UsernameResult> {

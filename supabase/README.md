@@ -19,6 +19,7 @@ Status (2026-10-16): the owner pasted the foundation and streak-buddies migratio
    - `migrations/20261016000000_lane_streak_buddies.sql`
    - `migrations/20261017000000_lane_lesson_comments.sql`
    - `migrations/20261017010000_lane_comment_self_upvote.sql`
+   - `migrations/20261018000000_lane_xp_needs_answer.sql` (lesson XP only after a correct answer is on the server)
 2. **Allow anonymous sign-ins**: Dashboard → Authentication → Sign In / Providers → turn on **Allow anonymous sign-ins**. Learners never type an email or password; each device gets an anonymous account.
 3. **Point the app at it**: create `.env.local` (gitignored) with
 
@@ -43,6 +44,7 @@ After that, run the Supabase security advisor (Dashboard → Advisors) and repea
   - `respond_buddy(link_id, accept)`, `remove_buddy(link_id)`.
   - `my_buddies()` returns username, car, relation, duo streak (consecutive Pacific days both practiced), whether each practiced today, and the buddy's weekly XP. Pending requests show only the username.
   - `group_leaderboard()` ranks the caller and accepted buddies by weekly XP.
+  - Code groups (`20261019000000_lane_code_groups.sql`): `create_group()` returns a 6-character code, `join_group(code)`, `leave_group(code)` (the last member out deletes the group), `my_groups()`, and `code_group_leaderboard(code)` for members only. A username is required to make or join one; no free text, no group search.
 - **Lesson comments:** `lesson_comments` and `comment_votes`, no direct access.
   - `lesson_comments_list(lesson)` returns, newest first (100 max): id, author username (null shows as Anonymous), text, time, score, your vote, whether it is yours.
   - `post_comment(lesson, message)` returns `ok`, `invalid` (empty, over 300 characters or unknown lesson) or `limit` (30 per learner per 24 hours); whitespace is collapsed.

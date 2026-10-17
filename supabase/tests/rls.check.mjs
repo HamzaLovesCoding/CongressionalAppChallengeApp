@@ -9,13 +9,13 @@ import assert from 'node:assert/strict';
 const dir = new URL('../migrations/', import.meta.url);
 const migrations = readdirSync(dir).filter(name => name.endsWith('.sql')).sort().map(name => readFileSync(new URL(name, dir), 'utf8'));
 const db = new PGlite();
-const A = '11111111-1111-4111-8111-111111111111', B = '22222222-2222-4222-8222-222222222222', C = '33333333-3333-4333-8333-333333333333';
+const A = '11111111-1111-4111-8111-111111111111', B = '22222222-2222-4222-8222-222222222222', C = '33333333-3333-4333-8333-333333333333', D = '44444444-4444-4444-8444-444444444444';
 await db.exec(`
   create role anon nologin; create role authenticated nologin;
   create schema auth; create table auth.users (id uuid primary key);
   create function auth.uid() returns uuid language sql stable as $$ select nullif(current_setting('request.jwt.claim.sub', true), '')::uuid $$;
   grant usage on schema auth, public to anon, authenticated; grant execute on function auth.uid() to anon, authenticated;
-  insert into auth.users values ('${A}'), ('${B}'), ('${C}');
+  insert into auth.users values ('${A}'), ('${B}'), ('${C}'), ('${D}');
   -- Hosted Supabase grants execute on every new public function to anon and authenticated.
   alter default privileges in schema public grant execute on functions to anon, authenticated;`);
 for (const sql of migrations) await db.exec(sql);
@@ -42,6 +42,7 @@ const payload = {
     { id: 'attempt-aaaa-0001', lessonId: 'lane-end-scan', topicId: 'road-awareness', kind: 'primary', correct: true, activeMs: 12000, at: now },
     { id: 'attempt-aaaa-0002', lessonId: 'not-a-lesson', topicId: 'x', kind: 'primary', correct: true, activeMs: 1, at: now },
     { id: 'attempt-aaaa-0003', lessonId: 'dark-signal', topicId: 'right-of-way', kind: 'cheat', correct: true, activeMs: 1, at: now },
+    { id: 'attempt-aaaa-0004', lessonId: 'dark-signal', topicId: 'right-of-way', kind: 'similar', correct: true, activeMs: 9000, at: now },
   ],
   simulations: [
     { id: 'sim-aaaa-0001', scenarioId: 'four-way-stop', topicId: 'all-way-stop-right-of-way', outcome: 'unsafe', chosenAction: 'go-first', elapsedSeconds: 6, at: now },
@@ -61,11 +62,13 @@ assert.ok(await denied('anon', null, 'select * from public.profiles')); ok('anon
 assert.equal((await as('authenticated', A, "select public.set_username('Road_Runner') r")).rows[0].r, 'ok'); ok('a learner claims a username');
 // 2. Learner A syncs; invalid lesson/attempt/sim rows are dropped; XP comes from the catalog only.
 const first = await as('authenticated', A, 'select public.sync_learner($1::jsonb) as r', [JSON.stringify(payload)]);
-assert.equal(first.rows[0].r.weeklyXp, 20); ok('XP is 10 per real completed lesson (client xp field ignored)');
+assert.equal(first.rows[0].r.weeklyXp, 0); ok('no XP until the server has a correct answer for the lesson (client xp field ignored)');
 await as('authenticated', A, 'select public.sync_learner($1::jsonb)', [JSON.stringify(payload)]);
 const again = await as('authenticated', A, 'select public.sync_learner($1::jsonb) as r', [JSON.stringify(payload)]);
-assert.equal(again.rows[0].r.weeklyXp, 20); ok('re-syncing the same payload adds no XP (idempotent)');
-assert.equal((await as('authenticated', A, 'select count(*)::int n from public.learning_events')).rows[0].n, 1); ok('attempt events are idempotent and invalid ones rejected');
+assert.equal(again.rows[0].r.weeklyXp, 20); ok('each completion with a recorded correct answer earns 10 XP, once (idempotent)');
+const claimOnly = await as('authenticated', A, 'select public.sync_learner($1::jsonb) as r', [JSON.stringify({ lessons: [{ id: 'front-curb', tries: 1, done: true, completedAt: now }] })]);
+assert.equal(claimOnly.rows[0].r.weeklyXp, 20); ok('a lesson marked done with no correct answer earns no XP');
+assert.equal((await as('authenticated', A, 'select count(*)::int n from public.learning_events')).rows[0].n, 2); ok('attempt events are idempotent and invalid ones rejected');
 assert.equal((await as('authenticated', A, 'select count(*)::int n from public.simulation_attempts')).rows[0].n, 1); ok('simulation events are idempotent and unknown scenarios rejected');
 assert.equal((await as('authenticated', A, "select count(*)::int n from public.content_progress where lesson_id = 'not-a-lesson'")).rows[0].n, 0); ok('unknown lessons are not stored');
 
@@ -75,7 +78,10 @@ const kept = (await as('authenticated', A, "select done, watched_ratio from publ
 assert.equal(kept.done, true); assert.ok(kept.watched_ratio > 0.9); ok('empty or older data never overwrites completion or watch coverage');
 
 // 4. Bad usernames and cars are refused or stored as null, never as markup; names are unique.
-await as('authenticated', B, 'select public.sync_learner($1::jsonb)', [JSON.stringify({ profile: { alias: '<script>x</script>', carId: 'tank' }, lessons: [{ id: 'school-bus', tries: 1, done: true, completedAt: now }] })]);
+const bPayload = JSON.stringify({ profile: { alias: '<script>x</script>', carId: 'tank' }, lessons: [{ id: 'school-bus', tries: 1, done: true, completedAt: now }], attempts: [{ id: 'attempt-bbbb-0001', lessonId: 'school-bus', topicId: 'sharing-the-road', kind: 'primary', correct: true, activeMs: 8000, at: now }] });
+// Twice: XP for a completion arrives on the backup after its correct answer is stored.
+await as('authenticated', B, 'select public.sync_learner($1::jsonb)', [bPayload]);
+await as('authenticated', B, 'select public.sync_learner($1::jsonb)', [bPayload]);
 const bProfile = (await as('authenticated', B, 'select alias, car_id from public.profiles')).rows[0];
 assert.equal(bProfile.alias, null); assert.equal(bProfile.car_id, null); ok('sync never sets a username; an invalid car is stored as null');
 assert.equal((await as('authenticated', B, "select public.set_username('<b>x</b>') r")).rows[0].r, 'invalid'); ok('markup or spaces in a username are refused');
@@ -84,7 +90,7 @@ assert.equal((await as('authenticated', B, "select public.set_username('road_run
 // 5. Own-row reads only.
 const bSees = await as('authenticated', B, 'select user_id from public.content_progress');
 assert.ok(bSees.rows.every(row => row.user_id === B)); ok('learner B reads only their own progress rows');
-assert.equal((await as('authenticated', B, 'select count(*)::int n from public.learning_events')).rows[0].n, 0); ok("learner B cannot read A's events");
+assert.equal((await as('authenticated', B, "select count(*)::int n from public.learning_events where lesson_id <> 'school-bus'")).rows[0].n, 0); ok("learner B cannot read A's events");
 assert.equal((await as('authenticated', B, 'select count(*)::int n from public.profiles')).rows[0].n, 1); ok("learner B cannot read A's profile");
 
 // 6. No direct writes, including XP.
@@ -179,6 +185,32 @@ assert.ok(await denied('authenticated', B, 'select * from public.lesson_comments
 ok('comments need a signed-in learner and the tables have no direct access');
 assert.equal(await post(A, 'Before deleting my data'), 'ok');
 
+// 8c. Code groups.
+const created = (await call(A, 'select public.create_group() r'))[0].r;
+assert.equal(created.status, 'ok'); assert.match(created.code, /^[A-HJ-NP-Z2-9]{6}$/); ok('a learner with a username makes a group and gets a 6-character code');
+const code = created.code;
+assert.ok(await denied('authenticated', B, 'select * from public.code_groups')); assert.ok(await denied('authenticated', B, 'select * from public.code_group_members'));
+assert.ok(await denied('authenticated', B, `insert into public.code_group_members select id, '${B}' from public.code_groups`)); ok('group tables have no direct reads or writes');
+assert.ok(await denied('anon', null, `select public.join_group('${code}')`)); ok('anon role cannot join a group');
+assert.equal((await call(B, `select public.join_group('${code.toLowerCase().slice(0, 3)} ${code.slice(3)}') r`))[0].r, 'joined'); ok('a friend joins by code (any case, spaces ignored)');
+assert.equal((await call(B, `select public.join_group('${code}') r`))[0].r, 'already'); ok('joining twice is reported, not duplicated');
+assert.equal((await call(B, "select public.join_group('ZZZZZZ') r"))[0].r, 'not-found'); ok('an unknown code is not found');
+assert.equal((await call(B, "select public.join_group('IO01') r"))[0].r, 'invalid'); ok('a malformed code is invalid');
+const gBoard = await call(B, `select * from public.code_group_leaderboard('${code}')`);
+assert.deepEqual(Object.keys(gBoard[0]).sort(), ['alias', 'car_id', 'is_you', 'rank', 'xp']); ok('group leaderboard returns only rank, alias, car_id, xp, is_you');
+assert.deepEqual(gBoard.map(row => [row.alias, row.is_you]), [['Road_Runner', false], ['Brake_Light', true]]); ok('the group leaderboard ranks its members by weekly XP');
+assert.equal((await call(C, `select * from public.code_group_leaderboard('${code}')`)).length, 0); ok('a non-member cannot read a group leaderboard');
+assert.deepEqual((await call(B, 'select * from public.my_groups()')).map(row => [row.code, row.name, row.members, row.is_owner]), [[code, "Road_Runner's group", 2, false]]); ok('my_groups lists the code, name, size and ownership');
+assert.equal((await call(A, 'select public.leave_group($$' + code + '$$) r'))[0].r, true);
+assert.deepEqual((await call(B, `select * from public.code_group_leaderboard('${code}')`)).map(row => row.alias), ['Brake_Light']); ok('a member who leaves drops off the board; the group stays');
+assert.equal((await call(B, `select public.leave_group('${code}') r`))[0].r, true);
+assert.equal((await call(C, `select public.join_group('${code}') r`))[0].r, 'not-found'); ok('the last member out deletes the group and its code stops working');
+assert.equal((await call(D, 'select public.create_group() r'))[0].r.status, 'need-username'); assert.equal((await call(D, `select public.join_group('ABCDEF') r`))[0].r, 'need-username'); ok('a username is required to make or join a group');
+for (let i = 0; i < 5; i++) await call(C, 'select public.create_group()');
+assert.equal((await call(C, 'select public.create_group() r'))[0].r.status, 'limit'); ok('making groups is rate limited');
+const keptCode = (await call(C, 'select * from public.my_groups()'))[0].code;
+assert.equal((await call(A, `select public.join_group('${keptCode}') r`))[0].r, 'joined');
+
 // 9. Delete my data.
 await as('authenticated', A, 'select public.delete_my_data()');
 assert.equal((await as('authenticated', A, 'select count(*)::int n from public.xp_events')).rows[0].n, 0); ok('delete_my_data erases the caller rows');
@@ -186,6 +218,7 @@ assert.equal((await as('authenticated', B, 'select count(*)::int n from public.x
 assert.equal((await as('authenticated', B, 'select count(*)::int n from public.buddy_links')).rows[0].n, 0); ok('delete_my_data removes buddy links on both sides');
 assert.equal((await as('authenticated', A, 'select count(*)::int n from public.activity_days')).rows[0].n, 0); ok('delete_my_data removes practice days');
 assert.equal((await list(B)).some(row => row.body === 'Before deleting my data'), false); ok('delete_my_data removes the learner comments');
+assert.deepEqual((await call(C, `select * from public.code_group_leaderboard('${keptCode}')`)).map(row => row.alias), ['Curb_Side']); ok('delete_my_data leaves every group');
 
 console.log(results.join('\n'));
 console.log(`${results.length} checks passed on ${(await db.query('select version() v')).rows[0].v.split(' on ')[0]}`);

@@ -30,8 +30,9 @@ export const PRIVACY: LegalDocument = {
       'A sign-in token for that anonymous account is kept on this device so it can sync again later.',
       'Like any hosting provider, Supabase may process technical information such as your IP address to deliver the service.',
     ] },
-    { heading: 'Leaderboards and streak buddies', body: [
+    { heading: 'Leaderboards, groups and streak buddies', body: [
       'Leaderboards and streak buddies work when backup is on. Other learners see you on the weekly leaderboard only after you choose a username, and then they see your username, selected car and that week’s XP. Don’t use your real name.',
+      'You can make a group leaderboard, which gives you a 6-character code, or join one by typing a friend’s code. Lane has no search or list of groups, and a username is needed to make or join one. Members of a group see each other’s username, selected car and that week’s XP. You can leave a group at any time; the last member to leave deletes it.',
       'A friend can send you a streak-buddy request only by typing your exact username; Lane has no search or list of learners. Nothing is shared until you accept. A streak buddy can see your username, selected car, weekly XP, whether you practiced today and your shared streak. Lane has no private messages or chat. You can decline a request or remove a buddy at any time.',
     ] },
     { heading: 'Links and sharing', body: [
@@ -39,7 +40,7 @@ export const PRIVACY: LegalDocument = {
     ] },
     { heading: 'Your choices', body: [
       'You can change or clear your permit test date and username at any time in Settings. You can remove all progress on this device by clearing this site’s data in your browser settings.',
-      'When backup is on, Settings includes Delete backed-up data, which removes your learning records and streak buddies from the server. To remove the anonymous account itself or ask about your data, use the contact below.',
+      'When backup is on, Settings includes Delete backed-up data, which removes your learning records, group memberships and streak buddies from the server. To remove the anonymous account itself or ask about your data, use the contact below.',
     ] },
     { heading: 'Teens and families', body: [
       'Lane is designed for teens preparing for a learner’s permit. The age policy and any parent or guardian consent process will be set by the operator before public release.',

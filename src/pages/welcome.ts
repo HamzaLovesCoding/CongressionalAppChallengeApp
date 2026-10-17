@@ -10,7 +10,7 @@ import { WELCOME_COPY as copy } from './content';
 const esc = (value: string) => value.replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]!);
 const documentBody = (doc: LegalDocument) => doc.sections.map(section => `<h3>${esc(section.heading)}</h3>${section.body.map(paragraph => `<p>${esc(paragraph)}</p>`).join('')}`).join('');
 
-// #/welcome: first launch only (main.ts). Step 1 picks an optional username and accepts the Terms;
+// #/welcome: first launch only (main.ts). Step 1 picks a required username and accepts the Terms;
 // step 2 asks for the main goal, which only changes how Home words the readiness goal.
 export function mountWelcome(root: HTMLElement): View {
   const sync = appSync(CLIPS.map(clip => clip.id));
@@ -27,7 +27,7 @@ export function mountWelcome(root: HTMLElement): View {
     body.innerHTML = `<p class="review-progress">${copy.step(1)}</p><h1 id="welcome-title" class="welcome-title">${copy.title}</h1>
       <form data-account novalidate>
         <div class="sub-field"><label for="welcome-name">${copy.usernameLabel}</label>
-          <input id="welcome-name" type="text" maxlength="20" autocomplete="off" autocapitalize="off" spellcheck="false" value="${esc(settings().displayAlias ?? '')}">
+          <input id="welcome-name" type="text" maxlength="20" required aria-required="true" autocomplete="off" autocapitalize="off" spellcheck="false" value="${esc(settings().displayAlias ?? '')}">
           <p class="sub-note">${copy.usernameNote}</p></div>
         <details class="welcome-doc"><summary>${copy.readTerms}</summary><div class="welcome-doc-body">${documentBody(TERMS)}</div></details>
         <details class="welcome-doc"><summary>${copy.readPrivacy}</summary><div class="welcome-doc-body">${documentBody(PRIVACY)}</div></details>
@@ -61,10 +61,11 @@ export function mountWelcome(root: HTMLElement): View {
     if (form.matches('[data-account]')) {
       if (!form.querySelector<HTMLInputElement>('[name="terms"]')!.checked) { status(copy.needTerms); return; }
       const raw = form.querySelector<HTMLInputElement>('#welcome-name')!.value;
-      const name = raw.trim() ? cleanAlias(raw) : null;
-      if (raw.trim() && !name) { status(copy.usernameRule); return; }
+      if (!raw.trim()) { status(copy.needUsername); return; }
+      const name = cleanAlias(raw);
+      if (!name) { status(copy.usernameRule); return; }
       // With a server, the name is claimed there first so no two learners share it.
-      if (!name || !sync.configured) { setDisplayAlias(name); stepTwo(); return; }
+      if (!sync.configured) { setDisplayAlias(name); stepTwo(); return; }
       status(copy.saving);
       void sync.setUsername(name).then(result => {
         if (result === 'ok') { setDisplayAlias(name); stepTwo(); return; }

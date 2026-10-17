@@ -75,7 +75,7 @@ async function videoLesson(name, viewport) {
   await current.locator('[data-sound]').click();
   assert.equal(await page.evaluate(() => JSON.parse(localStorage.getItem('roadloop-progress')).soundOff), true, 'Muting is remembered');
   await current.locator('[data-sound]').click();
-  assert.match(await current.locator('.lane-scroll-time').innerText(), /^\d+:\d{2} \/ 0:3\d$/, 'The corner timer is the clip\'s own time');
+  assert.match(await current.locator('.lane-scroll-time').innerText(), /^\d{2}:\d{2}$/, 'The corner timer shows time in the feed');
   const meta = await current.locator('.lane-meta').boundingBox();
   assert.ok(meta.height < viewport.height * .4, 'Collapsed metadata leaves most of the video visible');
   assert.deepEqual(await page.locator('.lane-clip:not(.is-current) video[src]').evaluateAll(list => list.map(media => media.preload)), ['metadata'], 'A clip two items ahead loads only its header');
@@ -106,7 +106,7 @@ async function videoLesson(name, viewport) {
 
   await current.locator('video').evaluate(media => { media.currentTime = Math.max(0, media.duration - .4); });
   await page.locator('.lane-sheet[aria-hidden="false"]').waitFor({ timeout: 12000 });
-  assert.match(await current.locator('.lane-scroll-time').innerText(), /^0:3\d \/ 0:3\d$/, 'The timer stops at the end of the clip');
+  assert.match(await current.locator('.lane-scroll-time').innerText(), /^\d{2}:\d{2}$/, 'The feed timer keeps counting after the clip ends');
   await page.locator(`[data-answer="${answerOf('lane-end-scan')}"]`).click();
   assert.match(await page.locator('.lane-feedback').innerText(), /Nailed it[\s\S]*DL 600X, 2025[\s\S]*p\. 44/);
   await shot('quiz');

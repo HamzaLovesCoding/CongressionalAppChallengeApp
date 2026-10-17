@@ -63,6 +63,6 @@ export const FEED_COPY = {
   nextUp: 'NEXT UP',
   nextSim: 'Try a 30-second challenge',
   cardLabel: { glossary: 'GLOSSARY', flashcard: 'FLASHCARD', 'permit-post': 'PERMIT TEST TIP' },
-  videoTime: 'Video time',
+  scrollTime: 'Time in feed',
   endSession: (minutes: number) => minutes < 1 ? 'You just got started today.' : `You spent ${minutes} minute${minutes === 1 ? '' : 's'} learning in this session.`,
 } as const;
