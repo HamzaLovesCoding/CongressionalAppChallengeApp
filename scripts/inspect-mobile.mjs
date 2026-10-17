@@ -4,6 +4,8 @@
 // artifacts/mobile/. Emulation catches layout faults; it does not prove performance on a real phone.
 import { chromium, webkit, devices } from '@playwright/test';
 import fs from 'node:fs/promises';
+import { CLIPS } from '../src/feed/clips.ts';
+import { LEARNING } from '../src/content/learning.ts';
 
 const BASE = process.env.BASE ?? 'http://127.0.0.1:4173/';
 const OUT = 'artifacts/mobile';
@@ -122,6 +124,8 @@ for (const phone of PHONES) {
       });
     }
     await context.addInitScript(([seed]) => { if (!sessionStorage.getItem('seeded')) { localStorage.clear(); if (seed) localStorage.setItem('roadloop-progress', JSON.stringify(seed)); sessionStorage.setItem('seeded', '1'); } }, [state === 'progressed' ? PROGRESSED : null]);
+    // Onboarding has its own captures below; the walkthrough itself starts as a learner who finished it.
+    await context.addInitScript((() => { if (!localStorage.getItem('roadloop-progress')) localStorage.setItem('roadloop-progress', JSON.stringify({ settings: { onboardedAt: '2026-10-16T00:00:00.000Z', termsAcceptedAt: '2026-10-16T00:00:00.000Z', goal: 'other' } })); }));
     const page = await context.newPage();
     const errors = [];
     page.on('pageerror', error => errors.push(`page error: ${error.message}`));
@@ -147,7 +151,20 @@ for (const phone of PHONES) {
       await scroller('.home-preview'); await capture('home-bottom');
       await page.locator('[data-menu]').click(); await capture('home-menu', { reach: true });
       await page.keyboard.press('Escape'); await page.waitForTimeout(300);
-      await page.locator('[data-goal]').click(); await capture('home-goal', { reach: true });
+      if (state === 'fresh') {
+        // Onboarding on a clean device: both steps fit the phone without sideways scrolling.
+        const welcome = await (await browsers[phone.engine].newContext({ ...descriptor, viewport, reducedMotion: 'reduce', serviceWorkers: 'block' })).newPage();
+        await welcome.goto(`${BASE}#/home`); await welcome.waitForURL(/#\/welcome$/); await welcome.getByRole('heading', { name: 'Welcome to Lane' }).waitFor();
+        for (const step of [1, 2]) {
+          await welcome.waitForTimeout(350);
+          const file = `${OUT}/${phone.name}-${state}-welcome-${step}.png`;
+          await welcome.screenshot({ path: file });
+          (shots[`welcome-${step}`] ??= []).push({ file: file.replace(`${OUT}/`, ''), label: `${phone.name} ${state}` });
+          if (await welcome.evaluate(() => document.documentElement.scrollWidth > innerWidth + 1)) report[key].screens[`welcome-${step}`] = ['horizontal overflow'];
+          if (step === 1) { await welcome.locator('.welcome-check input').check(); await welcome.locator('[data-account] button[type="submit"]').click(); await welcome.getByRole('heading', { name: 'What’s your main goal?' }).waitFor(); }
+        }
+        await welcome.context().close();
+      }
 
       await open('#/progress');
       const nextSign = await page.evaluate(() => {
@@ -169,25 +186,42 @@ for (const phone of PHONES) {
       await page.locator('.lane-clip.is-current .lane-rule summary').click(); await capture('feed-rule');
       await page.locator('.lane-clip.is-current .lane-about-open').click(); await capture('feed-about', { reach: true });
       await page.keyboard.press('Escape');
-      await open('#/feed/lane-end-scan/quiz'); await capture('feed-quiz', { reach: true });
-      // Answer wrong first (when possible), then right, to see both feedback states.
-      const choices = page.locator('.lane-choice');
-      for (let i = 0; i < await choices.count(); i++) {
-        await choices.nth(i).click();
-        if (await page.locator('.lane-feedback.is-correct').count()) break;
-        if (i === 0) await capture('feed-quiz-wrong');
+      // Swiping on before the clip ends asks "Are you sure?" (a new learner hasn't finished lesson 1).
+      if (state === 'fresh') {
+        await page.evaluate(() => { const feed = document.querySelector('.lane-feed'); const current = feed.querySelector('.is-current'); feed.scrollTop = current.offsetTop + current.offsetHeight; });
+        await page.locator('.lane-sheet[aria-hidden="false"] [data-gate-stay]').waitFor({ timeout: 5000 }); await page.waitForTimeout(450); await capture('feed-are-you-sure', { reach: true });
+        // Keep watching closes it; the open gate holds the /quiz address, so the next step would otherwise be a same-URL visit.
+        await page.locator('.lane-sheet[aria-hidden="false"] [data-gate-stay]').click();
+        await page.waitForFunction(() => location.hash === '#/feed/lane-end-scan');
       }
+      await open('#/feed/lane-end-scan/quiz'); await capture('feed-quiz', { reach: true });
+      // Answer wrong first, then the similar question right, to see both feedback states.
+      await page.locator(`[data-answer="${(CLIPS[0].answer + 1) % 4}"]`).click(); await capture('feed-quiz-wrong', { reach: true });
+      await page.locator('[data-similar]').click(); await capture('feed-quiz-similar', { reach: true });
+      await page.locator(`[data-answer="${LEARNING[CLIPS[0].id].similar.answer}"]`).click();
       await capture('feed-quiz-right', { reach: true });
       await page.locator('[data-continue]').click(); await capture('feed-complete', { reach: true });
       await open('#/feed/yellow-light'); await capture('feed-poster');
       await open('#/feed/yellow-light/quiz');
-      for (let q = 0; q < 2; q++) {
-        const options = page.locator('.lane-choice');
-        for (let i = 0; i < await options.count(); i++) { await options.nth(i).click(); if (await page.locator('.lane-feedback.is-correct').count()) break; }
-        await page.locator('[data-continue]').click();
+      const yellow = CLIPS.find(clip => clip.id === 'yellow-light');
+      for (const answer of [yellow.answer, yellow.followUp.answer]) { await page.locator(`[data-answer="${answer}"]`).click(); await page.locator('[data-continue]').click(); }
+      await capture('feed-complete-practice', { reach: true });
+      // A lower-stakes lesson is checked with a flashcard; challenges run in their feed card.
+      if (state === 'fresh') {
+        await open('#/feed/emergency-kit/quiz'); await capture('feed-flashcard', { reach: true });
+        await page.locator('[data-recall-show]').click(); await capture('feed-flashcard-back', { reach: true });
       }
-      await capture('feed-complete-simulator', { reach: true });
-      await open('#/feed/school-bus');
+      await open('#/feed/school-bus'); await capture('feed-text-lesson', { reach: true });
+      await page.locator('.is-current [data-comments]').click(); await page.locator('.lane-comments[open]').waitFor(); await capture('feed-comments', { reach: true });
+      await page.keyboard.press('Escape'); await page.waitForTimeout(300);
+      await open('#/buddies'); await capture('buddies', { reach: true });
+      await open('#/feed/sim/four-way-stop'); await capture('feed-challenge-card', { reach: true });
+      await page.locator('.is-current [data-sim-start]').click(); await page.locator('[data-start]').waitFor({ timeout: 20000 }); await page.waitForTimeout(600); await capture('feed-challenge-running');
+      await open('#/review'); await capture('review', { reach: true });
+      await open('#/settings'); await capture('settings', { reach: true });
+      await open('#/credits'); await capture('credits');
+      await open('#/privacy'); await capture('privacy');
+      await open('#/feed/sim/railroad-clear-exit');
       await page.evaluate(() => { const feed = document.querySelector('.lane-feed'); feed.scrollTop = feed.scrollHeight; });
       await page.waitForTimeout(500); await capture('feed-end');
 

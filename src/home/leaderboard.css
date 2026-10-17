@@ -16,3 +16,5 @@
 .home-board-xp small { font-size:var(--fs-caption); color:var(--lane-muted); }
 .home-board-pinned.is-separated { border-top:1.5px solid var(--lane-ink); }
 .home-board-card [role="tabpanel"]:focus-visible { outline:3px solid var(--lane-accent-ink); outline-offset:-4px; }
+.home-board-note { margin:0; padding:var(--sp-3) var(--sp-4); font-size:var(--fs-caption); line-height:1.45; color:var(--lane-support); }
+.home-board-pinned+.home-board-note, .home-board-list+.home-board-note { border-top:1px solid var(--lane-line); }

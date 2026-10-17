@@ -1,9 +1,11 @@
 import { chromium } from '@playwright/test';
 import assert from 'node:assert/strict';
+// Onboarding is covered by inspect-home.mjs; this walkthrough starts as a learner who finished it.
 const browser = await chromium.launch({ executablePath: process.env.CHROMIUM ?? '/Users/hamza/Library/Caches/ms-playwright/chromium-1228/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing' });
 try {
   for (const [name, viewport] of Object.entries({ portrait:{width:390,height:844}, narrow:{width:320,height:740}, landscape:{width:844,height:390} })) {
     const context = await browser.newContext({ viewport, reducedMotion:'no-preference' });
+    await context.addInitScript((() => { if (!localStorage.getItem('roadloop-progress')) localStorage.setItem('roadloop-progress', JSON.stringify({ settings: { onboardedAt: '2026-10-16T00:00:00.000Z', termsAcceptedAt: '2026-10-16T00:00:00.000Z', goal: 'other' } })); }));
     const page = await context.newPage();
     const errors = [];
     page.on('pageerror', error => errors.push(error.message));

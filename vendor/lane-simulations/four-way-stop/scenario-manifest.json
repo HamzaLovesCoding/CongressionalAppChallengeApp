@@ -1,0 +1,58 @@
+{
+  "id": "four-way-stop",
+  "version": 4,
+  "type": "2d",
+  "title": "Four-Way Stop: Who Goes First?",
+  "topicId": "all-way-stop-right-of-way",
+  "handbookSource": "California Driver’s Handbook · Section 7 · Right-of-Way Rules · Intersections. https://www.dmv.ca.gov/portal/handbook/california-driver-handbook/laws-and-rules-of-the-road/ (checked 2026-10-15; final human review pending)",
+  "relatedLessonId": "all-way-stop-right-of-way",
+  "quizTrigger": {
+    "offerWhen": "after_quiz",
+    "recommendWhen": [
+      "wrong_answer",
+      "high_safety_review"
+    ]
+  },
+  "learnerPrompt": "You and the blue car stop together. Who goes first?",
+  "choices": [
+    {
+      "id": "go-first",
+      "label": "Go before the blue car",
+      "isSafe": false
+    },
+    {
+      "id": "yield-right",
+      "label": "Let the blue car go first",
+      "isSafe": true
+    }
+  ],
+  "safeChoiceId": "yield-right",
+  "safeOutcome": "When two cars stop together, yield to the car on your right. Blue goes, then you; gray arrived later.",
+  "unsafeOutcome": "Blue was on your right. When you stop together, blue goes first—even when both cars are going straight.",
+  "completion": {
+    "estimatedSeconds": 30,
+    "retryAllowed": true,
+    "exitAddsToReviewLater": true
+  },
+  "integrationEvents": {
+    "start": "scenario_started",
+    "complete": "scenario_completed",
+    "retry": "scenario_retry_requested",
+    "exit": "scenario_exited_to_review_later"
+  },
+  "assets": [
+    {
+      "id": "preview-thumbnail",
+      "role": "image",
+      "path": "thumbnail.png",
+      "mimeType": "image/png",
+      "sourceLicense": "Original capture of this scenario’s code-generated geometry; no third-party artwork. See README for dependency licenses."
+    }
+  ],
+  "fallback": {
+    "behavior": "Keep the scene description and choices available when the visual cannot render.",
+    "message": "You and the blue car stop together. The gray car arrives later."
+  },
+  "performanceNotes": "Immersive portrait stage with reserved QTE overlay space and a separate primary action. Relative speed gauge. 1.8-second approach, required countdown at 8% simulation speed, action-specific consequence. Shadow DOM, hidden/offscreen pause, reduced-motion support. Code-generated geometry.",
+  "contentStatus": "draft-needs-human-handbook-review"
+}

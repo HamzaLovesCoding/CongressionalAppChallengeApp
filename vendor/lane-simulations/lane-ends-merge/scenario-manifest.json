@@ -1,0 +1,63 @@
+{
+  "id": "lane-ends-merge",
+  "version": 4,
+  "type": "2d",
+  "title": "Lane Ends: Merge Early and Deliberately",
+  "topicId": "ending-lane-awareness",
+  "handbookSource": "California Driver’s Handbook · Section 6 · End of Lane Markings; Changing Lanes. https://www.dmv.ca.gov/portal/handbook/california-driver-handbook/navigating-the-roads/ (checked 2026-10-15; final human review pending)",
+  "relatedLessonId": "ending-lane-awareness",
+  "quizTrigger": {
+    "offerWhen": "after_quiz",
+    "recommendWhen": [
+      "wrong_answer",
+      "high_safety_review"
+    ]
+  },
+  "learnerPrompt": "Your lane ends. How do you move left?",
+  "choices": [
+    {
+      "id": "signal-check-merge",
+      "label": "Signal, check, merge behind",
+      "isSafe": true
+    },
+    {
+      "id": "force-at-end",
+      "label": "Speed up to pass, then merge",
+      "isSafe": false
+    },
+    {
+      "id": "cross-barrier",
+      "label": "Move left across both lines",
+      "isSafe": false
+    }
+  ],
+  "safeChoiceId": "signal-check-merge",
+  "safeOutcome": "You signal, check the blind spot, and merge into the open space behind blue.",
+  "unsafeOutcome": "You reached the narrowing lane beside blue. Match its speed and use the space behind it.",
+  "completion": {
+    "estimatedSeconds": 30,
+    "retryAllowed": true,
+    "exitAddsToReviewLater": true
+  },
+  "integrationEvents": {
+    "start": "scenario_started",
+    "complete": "scenario_completed",
+    "retry": "scenario_retry_requested",
+    "exit": "scenario_exited_to_review_later"
+  },
+  "assets": [
+    {
+      "id": "preview-thumbnail",
+      "role": "image",
+      "path": "thumbnail.png",
+      "mimeType": "image/png",
+      "sourceLicense": "Original capture of this scenario’s code-generated geometry; no third-party artwork. See README for dependency licenses."
+    }
+  ],
+  "fallback": {
+    "behavior": "Keep the scene description and choices available when the visual cannot render.",
+    "message": "The blue car is in the next lane. There is space behind it."
+  },
+  "performanceNotes": "Immersive portrait stage with reserved QTE overlay space and a separate primary action. Relative speed gauge. 1.8-second approach, required countdown at 8% simulation speed, action-specific consequence. Shadow DOM, hidden/offscreen pause, reduced-motion support. Code-generated geometry.",
+  "contentStatus": "draft-needs-human-handbook-review"
+}

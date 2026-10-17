@@ -8,7 +8,7 @@ Visual design rules live in `DESIGN.md`.
 
 A phone-first, casual alternative to social media for teens who plan to drive or are already learning to drive. Lane uses a satisfying short-form feed, but turns scrolling time into useful driving knowledge. Built for the Congressional App Challenge.
 
-The intended short **videos are driving lessons**: they teach practical, real-world driving situations and safer decisions. California permit-test preparation is one part of Lane, not its whole identity. The feed opens with 19 licensed curriculum video lessons; the five original lessons after them still use decorative placeholders. When a lesson ends, its knowledge checks open over the same screen. The yellow-light lesson also offers optional 3D driving practice.
+The intended short **videos are driving lessons**: they teach practical, real-world driving situations and safer decisions. California permit-test preparation is one part of Lane, not its whole identity. The feed opens with 19 licensed curriculum video lessons; the five original lessons after them are fill-in-the-blank text lessons. When a lesson’s video ends, its check opens over the same screen. The feed is ordered by a planner (`src/learning/planner.ts`): it resumes where the learner left off and mixes lessons with in-feed challenges (all ten SIM packages) and glossary/flashcard/permit-tip cards.
 
 - **User:** teens before their permit, roughly 14–16.
 
@@ -26,13 +26,22 @@ Don’t assume a planned feature exists. Check the code.
 
 **Built now:**
 
-- Home with the original wordmark, the next unfinished lesson, compact real completion/daily XP, editable goals, lesson picker and Group/Global weekly leaderboard tabs. Only the local user's real weekly XP and a neutral profile icon ship; no online competitors or ranks exist. All-complete state links to Practice.
+- Home with the original wordmark, the next unfinished lesson, the week row with a readiness goal (owner, 2026-10-16; replaced the daily XP goal and its editor), lesson picker and the weekly leaderboard. The goal area words one readiness score by the onboarding goal (`goalReadiness` in `src/learning/scoring.ts`): permit → “Permit test readiness 42%”, driver → “Driver class B” (A+ ≥ 90, A ≥ 80, B ≥ 65, C ≥ 45, else Learner), other → “Driver readiness 42 · Developing”; the lesson-complete card shows the same goal. Global (default) shows only the local user's weekly XP until the backend is configured; then it shows server-verified rows (rank, username, car, XP). Group shows the learner and their accepted streak buddies. A gear button on Home and Profile only (owner, 2026-10-16) opens the menu: Streak buddies, Settings, Credits & sources (`src/home/menu.ts`). All-complete state links to Practice.
 - Five working destinations, ordered Home / Progress / Feed / Practice / Profile. The full-width bottom bar puts Feed in the center. Full-screen feed and test flows have their own return controls.
-- 24 feed lessons with like/bookmark/share, a visible-session timer, and same-screen knowledge checks. Curriculum lessons 1–19 come first, each with a real video. Each shows its category and title over the clip, a collapsed California rule dropdown with the handbook citation and About this lesson sheet (summary, rule with handbook page, Novato context, original-video credit), and its one quick check, which opens on the real `ended` event and cites the handbook after answering. Their quiz text is `draft: true`. The five original poster lessons follow; the yellow-light lesson has two checks. Data lives in `src/feed/curriculum.ts` (video lessons) and `src/feed/clips.ts`.
+- 24 feed lessons with like/bookmark/share, a corner timer showing the clip’s own time (stops at the end), and same-screen knowledge checks. Curriculum lessons 1–19 come first, each with a real video. Each shows its category and title over the clip, a collapsed California rule dropdown with the handbook citation and About this lesson sheet (summary, rule with handbook page, Novato context, Source & credits), and its one quick check, which opens on the real `ended` event and cites the handbook after answering. Their quiz text is `draft: true`. The five original text lessons follow; the yellow-light lesson has two checks. Data lives in `src/feed/curriculum.ts` (video lessons) and `src/feed/clips.ts`; lesson display titles were shortened on 2026-10-15 (IDs unchanged, `docs/lane/04`).
+- Quiz flow (rebuilt 2026-10-15 after the owner's review): the check opens only when the video ends. Swiping away early from an important lesson (S ≥ 0.8) asks "Are you sure?" (Keep watching / I already know this, quiz me / Watch the important part / Review later). The check is chosen by severity and mastery: first visit quiz (S ≥ 0.7) or flashcard (lessons 3, 4, 13); repeat visits quiz / flashcard / glossary term by topic mastery. An open check has a ⋯ menu (I already know this → harder question; Review later; I need help). A miss shows the rule, then a similar question; a second miss queues Review Later and offers the important part, a decision activity or the rule. A "developing" session score adds one quick-recall flashcard. Every video lesson has a key segment read from the clip. The corner timer is the clip's own time and stops at the end. Checks were rewritten to match each video (`docs/lane/10-content-index.md`); all are `draft: true` with verified handbook pages.
+- Onboarding at `#/welcome` (owner, 2026-10-16), first launch only (a brand-new learner opening Home; shared lesson links still open directly): step 1 optional username (claimed on the server when configured) and agreement to the Terms and Privacy Policy, readable inline; step 2 main goal (permit test then driving / sharper, safer driving / something else, free text kept on the device). It only changes the Home goal wording; Settings can change it later.
+- `#/review` (owner, 2026-10-16): Today’s review is the lessons the learner saved (bookmark, or Review later, which also sets the bookmark), due until answered right in review, then spaced 2/4/8/16 days and listed under Saved for later; ordered by review priority P and capped by permit-date band. Missed answers and unfinished challenges are still queued for the feed planner but are not listed as saved. Your topics shows the owner mastery band with the real answer count; Practice challenges shows three, picked by need with a tie-break that changes every other day (`pickChallenges`). `#/settings` (main goal, permit-test date, username, sync status, links), `#/credits`, `#/privacy`, `#/terms` (sources in `src/legal/`, owner facts shown as placeholders).
+- Ten simulation packages (`vendor/lane-simulations/`, see its `SOURCE.md`) run inside feed cards (`#/feed/sim/:id`); Start challenge mounts the package and locks the feed; Exit stays on the same card. Old `#/sim/...` and `#/drive` links redirect there. Results become safe/unsafe/timeout/retry/exit records; non-safe outcomes and exits queue Review Later; none award XP.
+- Lessons go strictly in order (owner, 2026-10-16): Home, Progress and the feed all point to the earliest unfinished lesson (`src/feed/plan.ts`), so a lesson saved for later stays next until it is done; Home shows a Review later row only while lessons the learner saved wait (`savedForLater()`: ⋯ → Review later or the “Are you sure?” choice). Missed answers and unfinished challenges are still queued, but they return through today’s review on `#/review`, listed separately from saved lessons (owner, 2026-10-16); Progress and Review show driver readiness (owner formula and labels; every lesson topic counts, unpracticed = 0; disclaimer in Settings and Terms).
+- The five lessons without video are interactive fill-in-the-blank text posts (owner, 2026-10-16): one sentence at a time, tap the missing word, see why, then the lesson's check. No timer or play control on them. Video lessons have a remembered sound button beside the clip time.
+- Streak buddies (`#/buddies`, owner 2026-10-16): pick a unique username, add a friend by exact username, they accept, and you share a duo streak (days you both practiced) and the Group leaderboard. No search, no messages; buddies see only username, car, weekly XP and today's practice. Needs the backend.
+- Lesson comments (owner, 2026-10-16): a comment button sits under the heart and above the bookmark on every lesson. The sheet (`src/feed/comments.ts`) shows the author’s username or Anonymous, date and time, and the vote score; learners get one vote, up or down, on others’ comments and one upvote (no downvote) on their own (owner, 2026-10-16; migration `20261017010000`) and delete their own from ⋯. No editing. 1–300 characters, 30 per learner per day. Needs the backend; otherwise it says comments are coming soon.
+- Supabase backend: four migrations in `supabase/migrations/` (foundation, streak buddies, lesson comments, comment self-upvote), a fetch-based client and local-first sync in `src/data/`. Project **lane** (`mtcphmkheqkzyvbvruey`): the owner pasted the first two migrations in the SQL editor and turned on anonymous sign-ins on 2026-10-16; 14 hosted end-to-end checks passed; the owner then pasted the comments and self-upvote migrations (10 hosted comment checks and 4 vote checks passed). All four migrations are live. The agent connector can read the project, but its schema changes come back `declined` with no confirmation shown (the owner never declined). `.env.local` (gitignored) points the dev server at the project; build walkthroughs with `VITE_SUPABASE_URL=` empty so they don’t write test rows to it. Without `VITE_SUPABASE_*` the app is local-only; buddies, Group and comments say they are coming soon.
 - Progress as a winding road with the car selected in Profile’s Garage at the next unfinished lesson (rebuilt October 14, 2026 for review): a compact trip panel with a car-on-track meter and milestone pins, one aligned column of lesson signs, the next lesson as Home’s dark sign with a direct Start action, and milestones standing by the road. The selected SVG car is read from the progress store on each render. It moves when returning after completing a lesson, respects reduced motion, and parks at the final stop when all are complete. It draws all 24 lessons as one long unit; splitting them into units is future work.
 - Profile with a dark identity surface and selected-car shortcut, one row for total XP/spendable XP/streak/days, and first-try accuracy. A Garage-only three-column collection has item bottom sheets, purchase confirmation and the existing spendable-XP pool. Six detailed, toy-like top-down SVG cars (Hatchback included; Sedan 15, Wagon 25, Pickup 35, Minivan 45, Classic coupe 60 XP) cost 180 XP in total, against 240 lifetime XP from 24 lessons. Legacy avatar ownership and spending remain in saved data for compatibility; avatar controls and portraits are removed. Adjacent liked/saved lesson tabs retain counts, lesson links and save removal.
 - Practice with a separate 46-question California bank, answer feedback, topic results, restart and leave confirmation. Attempts are session-only and do not award lesson XP. This is an existing practice implementation, not an official DMV test or a newly verified content source.
-- Lesson summary, one yellow-light simulator with portrait/landscape controls and replay, hash routing, local progress through the sole progress store, and the offline service worker.
+- Lesson summary, hash routing, local progress through the sole progress store, and the offline service worker. The built-in Babylon yellow-light simulator was removed on 2026-10-15 (owner direction) in favor of the SIM-08 package.
 
 **Planned, roughly in order:**
 
@@ -40,11 +49,9 @@ Don’t assume a planned feature exists. Check the code.
 
 1. Continue the existing practice-test bank's content review and expand it as needed. Preserve its separate question data and scoring module.
 
-1. 10 simulator scenarios, SIM-01 to SIM-10 in the master plan (see Simulator).
+1. Human review of the feed cards (`src/content/cards.ts`), lesson flashcards and rewritten checks.
 
-1. Saves become a “review later” list. Keep the feed's like/bookmark/share rail, as requested in the current design.
-
-1. Onboarding → required Supabase sign-in → videos. Leaderboards use friend or class codes. This step is **built last**, but it’s the app’s front door, so don’t design anything that assumes users are signed out forever.
+1. Go live on the Supabase project (`supabase/README.md`: apply migrations, allow anonymous sign-ins, set the two `VITE_` variables) and repeat the security checks there; later, onboarding → sign-in → videos. This step is **built last**, but it’s the app’s front door, so don’t design anything that assumes users are signed out forever.
 
 1. Maybe later: a Capacitor wrapper for the app stores.
 
@@ -100,7 +107,7 @@ osascript -l JavaScript -e 'ObjC.import("PDFKit"); function run(a){return $.PDFD
 
 **Rules the materials add**
 
-- **Clip licenses: confirmed by the owner on October 13, 2026.** The curriculum PDFs’ older “link-only” advice is superseded for clips 1–19. Creator names and license types are still not recorded, and a CC-BY license requires naming the creator. Record them before public release.
+- **Clip licenses: confirmed by the owner on October 13, 2026.** The curriculum PDFs’ older “link-only” advice is superseded for clips 1–19. Each clip’s source link is its recorded credit; the owner decided on 2026-10-16 that creator names and license versions are not needed.
 
 - **Every curriculum clip retains its California correction.** Owner direction on October 13, 2026 puts `lesson.californiaRule` in a collapsed dropdown over each clip. The full correction and handbook citation remain available there and in About this lesson. Lessons 7, 15 and 16 show left-hand traffic and lesson 14 a right-hand-drive car; their rule text says so. Keep these corrections attached to the lessons, including lesson 16.
 
@@ -110,9 +117,9 @@ osascript -l JavaScript -e 'ObjC.import("PDFKit"); function run(a){return $.PDFD
 
 - **Two kinds of activity.** The curriculum’s decision-only prompts follow choose → lawful outcome or corrective feedback → retry with the rule visible. They never simulate a crash or impairment and have no timed controls. The master plan’s 10 simulations follow later owner direction: a countdown with active slow motion, and non-graphic cartoon warning bursts for unsafe outcomes, never gore or injury. Don’t apply one set of rules to the other without asking.
 
-- **Safety and honesty boundaries.** Lane needs a clear “don’t use while driving” message (planned; check the code). Never show fake comments, likes, peers or ranks. Likes and saves must not affect mastery, XP or ranking. Never claim that a learner is ready to drive or will pass.
+- **Safety and honesty boundaries.** Lane needs a clear “don’t use while driving” message (in Settings and Terms). Never show fake comments, likes, peers or ranks. Likes and saves must not affect mastery, XP or ranking. Never claim that a learner is ready to drive or will pass. Exception by owner direction (2026-10-15): the readiness meter uses the owner’s labels (“Permit Test Ready”, “Highway Confident”) with the disclaimer in Settings and Terms only.
 
-**Learning model (proposed, not built).** This summarizes the algorithm PDF and master plan §7. The weights are heuristics, not trained or validated.
+**Learning model (built in `src/learning/`).** Follows the owner’s engine `algorithmforlaneapp.ts` (Oct 3), which refines the algorithm PDF: C2 = C1 when no correction was needed; an unassigned retry or activity drops out of W; without an engagement task E = 1 if more than 80% was watched, else 0.5. The weights are heuristics, not trained or validated.
 
 ```
 A = .60·first answer correct + .25·correction correct + .15·later-review rate (.50 with no history)
@@ -127,7 +134,8 @@ review priority P = .50(1−M) + .20·min(days since practice/7, 1) + .20·min(s
 ```
 
 - Route on the raw score. A score that displays as 0.60 can be 0.59875, and it must still route to support.
-- **Decision needed (DEF-09):** if a correction or activity wasn’t assigned, does W score it 0 or drop it from the denominator? The PDF’s prose says to drop it, but its worked examples score it 0. Don’t choose without the owner.
+- Verified 2026-10-16: on 20,000 random sessions Lane matches `algorithmforlaneapp.ts` to within 0.0001 (the engine rounds each score to 4 decimals; Lane routes on the raw value, so 3 band-edge cases differ), with identical readiness and review priority. The PDF’s worked-example totals contain arithmetic slips (its formula gives A 0.731, B 0.59875, C 0.226, and priorities 0.520/0.316); `scripts/scoring.test.mjs` records the formula values.
+- **DEF-09 (settled by the owner’s engine):** an unassigned correction or activity is dropped from the W denominator.
 - Mastery, review priority and readiness are separate. Time is a small diagnostic and must never become a speed score.
 
 **Where the master plan conflicts with this file** (this file wins until the owner decides):
@@ -151,9 +159,10 @@ No new runtime dependencies without asking first. Babylon is already about 1 MB 
 
 | Path | What it does |
 | --- | --- |
-| `src/main.ts` | Hash router: five destinations, `#/practice/test`, `#/feed/:clip[/quiz]`, `#/drive[/:clip]`, `#/lesson-progress`; route transitions; production service-worker registration |
+| `src/main.ts` | Hash router: five destinations, `#/practice/test`, `#/feed/:clip[/quiz]`, `#/feed/sim/:scenario`, `#/sim/...` → feed redirect, `#/review`, `#/settings`, `#/credits`, `#/privacy`, `#/terms` (menu screens lazy-loaded), `#/lesson-progress`, `#/drive` → SIM-08 card; route transitions; sync scheduling; production service-worker registration |
 | `src/theme.css`, `src/motion.css`, `src/ui.css` | Shared earthy palette and type/spacing/elevation tokens; route/dialog motion, feedback keyframes and reduced-motion behavior; shared buttons, chips, segmented tabs and celebration burst (see `DESIGN.md`) |
 | `src/home/home.ts`, `home.css` | Home: next-lesson sign, This week row, lesson strip, saved lessons; copy in `content.ts`, selection logic in `model.ts`. `sheet.ts` (bottom sheets), `strip.ts` (strip drag), `spring.ts` (spring physics, no dependency) |
+| `src/home/menu.ts` | The gear menu sheet shared by Home and Profile |
 | `src/home/tabs.ts`, `icons.ts` | Shared Home / Progress / Feed / Practice / Profile bar and icon system; full-screen feed uses a Home return control |
 | `src/home/leaderboard.ts`, `leaderboard-model.ts`, `leaderboard.css` | Local weekly leaderboard presentation mounted on Home; future ranked-data seam |
 | `src/progress/path.ts`, `path.css` | Progress: trip panel, lesson signs, moving car, milestones on the road, Find my car and lesson sheet. `road.ts` holds the tested road geometry, `scenery.ts` draws the road, `milestones.ts` derives badges |
@@ -161,22 +170,28 @@ No new runtime dependencies without asking first. Babylon is already about 1 MB 
 | `src/profile/cars.ts` | Six-car catalog, prices and shared SVG art used by Garage and the Progress highway |
 | `src/practice/practice.ts`, `practice.css`, `questions.ts`, `score.ts` | Practice introduction, test UI, separate question bank and pure scoring |
 | `src/navigation.ts` | `View` type and `go()`. Use `replace` for automatic redirects so Back doesn’t bounce |
-| `src/drive.ts` | Lazy-loads the simulator and its CSS; exit returns to the next clip |
+| `src/simulation/` | `registry.ts` (the only place sims map to lessons, with each rule line; lazy imports), `outcome.ts` (package result → record), `host.css` (stage sizing). The feed mounts packages in its cards |
+| `vendor/lane-simulations/` | Ten V4 packages, runtime files only, unedited; `SOURCE.md` has provenance and update steps |
+| `src/content/learning.ts` | Per-lesson topic, safety weight, key segment, flashcard (recall), glossary link, similar/harder drafts, decision activities |
+| `src/content/cards.ts` | Feed cards: glossary terms (rewritten from the owner's Aceable glossary), flashcards, permit-test tips |
+| `src/feed/plan.ts` | Binds the planner to the store and content: the feed plan, the shared next lesson, the check type |
+| `src/learning/` | Pure logic: `scoring.ts` (A/W/N/T, readiness), `planner.ts` (feed order, check type, resume), `session.ts`, `watch.ts`, `review.ts` (daily review, permit-date bands) |
+| `src/pages/` | Menu screens: `review.ts`, `buddies.ts` (streak buddies), `welcome.ts` (onboarding), `settings.ts`, `legal.ts`, copy in `content.ts`, shared `subpage.ts`/`pages.css` |
+| `src/legal/` | Privacy/Terms text (`documents.ts`) and attribution register (`credits.ts`) |
+| `src/data/` | `supabase.ts` (fetch client), `sync.ts` (local-first sync boundary) |
+| `supabase/` | Migrations (foundation, streak buddies), `README.md` (go-live steps), `tests/rls.check.mjs` |
 | `src/feed/curriculum.ts` | Curriculum video lessons 1–19: quick checks, handbook citations, California rule, summary, local context, original-video credit |
 | `src/feed/clips.ts` | `Clip` type, the five original lessons, and the feed order (curriculum lessons first) |
 | `public/videos/` | Clips 1–19, named by lesson ID, re-encoded from `AppMaterial/Videos.zip` by `scripts/encode-videos.sh`; first-frame posters in `public/images/lessons/posters/` |
+| `src/feed/comments.ts` | Lesson comments sheet (backend calls through `src/data/sync.ts`) |
 | `src/feed/feed.ts`, `feed.css`, `minimal.css` | Feed and quiz; `minimal.css` now defines complete components, while `feed.css` supplies fonts/base/summary styling. Escape data in HTML templates with `esc()` |
 | `src/feed/poster.ts`, `scrollTimer.ts` | Decorative media fallback and visible-time counter for the current feed visit |
-| `src/feed/progress.ts` | Sole progress store: lesson XP/results, streak, daily/weekly totals, likes/saves, avatar and car ownership/selection with shared spending |
+| `src/feed/progress.ts` | Sole progress store: lesson XP/results, streak, daily/weekly totals, likes/saves, avatar and car ownership/selection with shared spending, plus validated learner records (settings, Review Later, topics, watch, attempts, simulations) |
 | `src/feed/screens.ts` | Lesson summary at `#/lesson-progress`, separate from the highway Progress tab |
-| `src/scenario/scenario.ts` | Yellow-light state machine, braking physics, replay recording |
-| `src/scene/*` | Babylon scene: engine, lighting, scenery, vehicles, signals, cameras, replay overlay, perf overlay |
-| `src/ui/controls.ts`, `src/style.css` | Simulator controls; CSS scoped to `.experience`, bottom panel in portrait and side panel in landscape |
-| `src/audio/drivingAudio.ts` | WebAudio sounds generated in code; unlocked by the first user gesture |
 | `src/sw.js` | Service worker template; `vite.config.ts` fills in the precache list at build time |
 | `scripts/inspect*.mjs` | Playwright walkthroughs that take screenshots |
 | `AppMaterial/` | Owner-supplied curriculum PDFs, plans, clip ZIP and logo files. See Source materials |
-| `public/` | Icons, manifest, self-hosted IBM Plex/license, supplied logo, avatar/sign art, and preview captured from Lane's own simulator; retain provenance files |
+| `public/` | Icons, manifest, self-hosted IBM Plex/license, supplied logo, favicon (`favicon-32/64.png`, source `AppMaterial/lane_favicon_cac_logo.png`), avatar/sign art; retain provenance files |
 
 ## Rules
 
@@ -220,19 +235,17 @@ The following are product requirements, not a claim that every recovery/menu/rev
 
 - **Codecs (fixed October 13, 2026):** the source clips were 7 H.264, 6 VP9 and 6 AV1; most iPhones can’t play VP9 or AV1 in MP4. All 19 are now H.264/AAC, 720px wide, 30 fps, about 1–1.8 Mbps, faststart, via `scripts/encode-videos.sh`, which also writes each poster. Encode every new clip the same way; `scripts/curriculum.test.mjs` fails on a non-H.264, non-faststart or posterless clip. `node scripts/inspect-video-load.mjs` checks that every clip plays in WebKit and times first frames on throttled connections. Still check on a real iPhone.
 
-- Every video needs a recorded source and license. The source URL for each of clips 1–19 is in its lesson’s `credit` field and the curriculum table. Creator names and license types are not recorded yet (see Source materials). **TODO: where the credits list lives.** Don’t add a video whose source you don’t know.
+- Every video needs a recorded source and license. The source URL for each of clips 1–19 is in its lesson’s `credit` field and the curriculum table. The credits list is `src/legal/credits.ts` (rendered at `#/credits`; readable export in `docs/lane/08`). Don’t add a video whose source you don’t know.
 
 - When adding clips from `Videos.zip`, extract only the ones being added and name each by its stable lesson ID, not the zip’s numbered title. One zip filename has a broken apostrophe encoding. Record the zip filename and source URL next to the lesson data.
 
 **Simulator**
 
-- Target: a few reusable 3D locations plus a config per scenario (signals, other traffic, decision point, what counts as safe). The yellow-light scenario is currently hard-coded and needs refactoring into that shape before scenario #2. Don’t add a second hard-coded scenario.
-
 - Sims are optional, offered after the quiz. A lesson never requires one to count as done.
 
-- The master plan locks the catalog at 10 scenarios. The 2D ones are SIM-01 four-way stop, SIM-02 unprotected left turn, SIM-03 roundabout entry, SIM-04 lane ends, SIM-05 motorcycle in the blind spot, SIM-06 emergency vehicle at an intersection and SIM-07 railroad tracks without a clear exit. The 3D driver-seat ones are SIM-08 yellow light, SIM-09 freeway entrance and SIM-10 right turn with a pedestrian and bicyclist. Each runs after its related quiz, never as a feed opener. Its 3–5 s timers are draft values. Whether the built-in yellow-light scene stays or is replaced as SIM-08 is still an open decision.
+- The master plan locks the catalog at 10 scenarios. The 2D ones are SIM-01 four-way stop, SIM-02 unprotected left turn, SIM-03 roundabout entry, SIM-04 lane ends, SIM-05 motorcycle in the blind spot, SIM-06 emergency vehicle at an intersection and SIM-07 railroad tracks without a clear exit. The 3D driver-seat ones are SIM-08 yellow light, SIM-09 freeway entrance and SIM-10 right turn with a pedestrian and bicyclist. Each runs after its related quiz; a returning learner’s refresher slot may open with a challenge for a lesson already completed (owner, 2026-10-15). Packages show a 5–6 s countdown. SIM-08 replaced the built-in yellow-light scene (owner, 2026-10-15). Mapping: SIM-01 four-way-stop, SIM-02 intersection-right-of-way, SIM-03 roundabout, SIM-04 lane-end-scan, SIM-05 blind-spot-check, SIM-06 emergency-pull-right, SIM-08 yellow-light, SIM-09 freeway-entry, SIM-10 passing-bicyclist; SIM-07 has no lesson and the planner places it after the 4th lesson. A challenge stays in the feed after its lesson until the learner makes the safe choice.
 
-- The master plan splits ownership. GPT/Codex refines the simulation packages. Claude Code integrates approved packages and owns the rest of the frontend. The integrator doesn’t redesign an approved package. A package starts with `startScenario(container, { onComplete, onRetry, onExit })` and returns `{ scenarioId, topicId, outcome: 'safe' | 'unsafe' | 'timeout' | 'exit', selectedAction?, elapsedMs?, retryCount, handbookSource }`. The package ZIP is not in `AppMaterial/`. Babylon version and import strategy need a decision before any 3D package is imported.
+- The master plan splits ownership. GPT/Codex refines the simulation packages. Claude Code integrates approved packages and owns the rest of the frontend. The integrator doesn’t redesign an approved package. The real V4 contract: `startScenario(container, { onComplete, onRetry, onExit, onContinue? })` returns `{ destroy() }`; results are `{ scenarioId, topicId, success, chosenAction, elapsedSeconds }`. `onComplete` fires for safe **and** unsafe choices, so the outcome comes from `success` (`src/simulation/outcome.ts`). Packages are built from source with Lane's Babylon 9.27.1 and lazy-loaded.
 
 - Performance floor: **TODO: confirm the oldest supported phone** (proposed: iPhone 13). Software-rendered FPS from the inspect scripts doesn’t tell you how a real phone performs.
 
@@ -248,14 +261,17 @@ The following are product requirements, not a claim that every recovery/menu/rev
 
 1. `npm run build`: type-check plus bundle. Must pass.
 
-1. Run `node --test scripts/*.test.mjs`. Existing tests cover Home/progress, legacy avatar/car spending, weekly leaderboard logic, practice scoring, visible-session timing and curriculum data integrity. Add meaningful logic coverage alongside changed logic, with no test-framework dependency.
+1. Run `node --test scripts/*.test.mjs`. Tests cover Home/progress, avatar/car spending, leaderboard, practice scoring, timing, curriculum data, the title crosswalk, learning data, learner records and XP farming, scoring, watch/session, daily review, simulations (registry ↔ manifests, outcome adapter), the Supabase schema, sync (including buddy calls), policy ↔ payload consistency, the feed planner, and content quality (key segments, flashcards, citations, no giveaway answer lengths in checks, follow-ups, activities, text lessons or the Practice bank). Add coverage alongside changed logic, with no test-framework dependency. Backend behavior (60 checks, comments included): `npm install --no-save @electric-sql/pglite@0.5.8 && node supabase/tests/rls.check.mjs`.
 
 1. Whenever the UI changes, run the matching walkthrough and look at the screenshots:
   - Home/tabs: run `npm run build && npm run preview`, then `node scripts/inspect-home.mjs`.
   - Progress: `node scripts/inspect-progress.mjs` and `node scripts/inspect-path-motion.mjs` (actual quiz completion, moving car and reduced motion).
   - Profile/leaderboard: `node scripts/inspect-profile.mjs` and `node scripts/inspect-leaderboard.mjs`. The leaderboard fixture checks also use the dev server.
   - Practice: `node scripts/inspect-practice.mjs`, including all 46 questions, results and session reset.
-  - Simulator: run `npm run dev`, then `npm run inspect` (optional `portrait`/`landscape` arg). For the production build: `npm run build && npm run preview`, then `PRODUCTION=1 npm run inspect`.
+  - Quiz flow, menus, sim handoff, safety check: `node scripts/inspect-learning-flow.mjs`.
+  - Streak buddies and lesson comments against the real SQL (three learners): see `supabase/README.md` → Verify, then `node scripts/inspect-buddies.mjs`.
+  - Simulations: `node scripts/inspect-simulations.mjs` (all ten: safe, unsafe, retry, timeout, exit, Continue destination, no-WebGL fallback; `ONLY=id,...` limits it).
+  - Every route at the five review viewports: `LABEL=after node scripts/inspect-baseline.mjs` (overflow, blur and small-target checks in `notes.json`).
   - Feed/summary: `npm run build && npm run preview`, then `npm run inspect:feed` (optional `-- portrait` or `-- landscape`).
   - Phones (any UI change): `node scripts/inspect-mobile.mjs` walks every screen and dialog on nine phone profiles in WebKit and Chromium, including an iPhone launched from the home screen with notch insets, and writes contact sheets to `artifacts/mobile/`. `PHONES=iphone-se,pixel-7` limits the run. It needs Playwright’s WebKit (`npx playwright install webkit`).
   - Keep a build stable during offline checks. Rebuilding while a walkthrough installs its service worker can invalidate the asset list. Run WebGL-heavy walkthroughs sequentially when software rendering is slow; investigate failures rather than reporting a partial run as passed.
@@ -268,6 +284,7 @@ The following are product requirements, not a claim that every recovery/menu/rev
 
 Don’t fix these unless asked:
 
-- Old names in code: package `amber-driving-lab`, cache prefix `amber-`, storage keys `amber-muted` and `roadloop-progress`. Renaming a storage key wipes existing saved data.
+- Old names in code: package `amber-driving-lab`, cache prefix `amber-`, storage key `roadloop-progress`. Renaming a storage key wipes existing saved data. `amber-muted` belonged to the removed simulator and is no longer read.
+- `git stash@{0}` (2026-10-15) holds the owner's earlier local implementation that the learning flow was ported from; don't drop it without asking.
 
 - `liked` is retained in the progress store and powers the feed's like control, per the current design request.

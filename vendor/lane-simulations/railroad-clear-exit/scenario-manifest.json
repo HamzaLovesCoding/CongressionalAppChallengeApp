@@ -1,0 +1,63 @@
+{
+  "id": "railroad-clear-exit",
+  "version": 4,
+  "type": "2d",
+  "title": "Railroad Tracks: Do Not Enter Without a Clear Exit",
+  "topicId": "railroad-crossing-clearance",
+  "handbookSource": "California Driver’s Handbook · Section 7 continued · Near Railroad or Light Rail Tracks. https://www.dmv.ca.gov/portal/handbook/california-driver-handbook/laws-and-rules-of-the-road-cont1/ (checked 2026-10-15; final human review pending)",
+  "relatedLessonId": "railroad-crossing-clearance",
+  "quizTrigger": {
+    "offerWhen": "after_quiz",
+    "recommendWhen": [
+      "wrong_answer",
+      "high_safety_review"
+    ]
+  },
+  "learnerPrompt": "Traffic has stopped beyond the tracks. What now?",
+  "choices": [
+    {
+      "id": "stop-before-tracks",
+      "label": "Stop before the tracks",
+      "isSafe": true
+    },
+    {
+      "id": "queue-on-tracks",
+      "label": "Follow the car ahead",
+      "isSafe": false
+    },
+    {
+      "id": "bypass-gate",
+      "label": "Cross before the gate closes",
+      "isSafe": false
+    }
+  ],
+  "safeChoiceId": "stop-before-tracks",
+  "safeOutcome": "You wait behind the line. Cross only after the warning ends and there is room beyond the tracks.",
+  "unsafeOutcome": "Following the queue left your car on the tracks. Wait until your whole car can fit on the far side.",
+  "completion": {
+    "estimatedSeconds": 30,
+    "retryAllowed": true,
+    "exitAddsToReviewLater": true
+  },
+  "integrationEvents": {
+    "start": "scenario_started",
+    "complete": "scenario_completed",
+    "retry": "scenario_retry_requested",
+    "exit": "scenario_exited_to_review_later"
+  },
+  "assets": [
+    {
+      "id": "preview-thumbnail",
+      "role": "image",
+      "path": "thumbnail.png",
+      "mimeType": "image/png",
+      "sourceLicense": "Original capture of this scenario’s code-generated geometry; no third-party artwork. See README for dependency licenses."
+    }
+  ],
+  "fallback": {
+    "behavior": "Keep the scene description and choices available when the visual cannot render.",
+    "message": "There is no room for your car beyond the tracks. The crossing lights begin flashing."
+  },
+  "performanceNotes": "Immersive portrait stage with reserved QTE overlay space and a separate primary action. Relative speed gauge. 1.8-second approach, required countdown at 8% simulation speed, action-specific consequence. Shadow DOM, hidden/offscreen pause, reduced-motion support. Code-generated geometry.",
+  "contentStatus": "draft-needs-human-handbook-review"
+}

@@ -11,10 +11,6 @@ html,body { margin:0; }
 .rl button { font:inherit; cursor:pointer; -webkit-tap-highlight-color:transparent; }
 .rl a { color:inherit; }
 .rl-visually-hidden { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
-.rl.rl-screen { position:fixed; inset:0; overflow-y:auto; }
-.rl-screen-inner { width:var(--app-width); min-height:100%; margin:0 auto; padding:32px 24px; }
-.rl-page-title { margin:0 0 24px; font-size:30px; }
-.rl-cta { display:grid; place-items:center; min-height:50px; margin-top:18px; padding:12px; border-radius:12px; background:var(--ink); color:var(--paper); text-decoration:none; font-weight:600; }
 
 .rl.lane-summary { position:fixed; inset:0; overflow-y:auto; background:var(--lane-surround); }
 .lane-summary-inner { width:var(--app-width); min-height:100%; margin:auto; padding:calc(env(safe-area-inset-top) + var(--sp-5)) 20px max(var(--sp-6),env(safe-area-inset-bottom)); background:var(--lane-page); }

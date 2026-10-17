@@ -1,0 +1,8 @@
+/* Full-screen stage for a vendored simulation package. The package styles itself inside Shadow DOM;
+   this only sizes the column and colors the area around it. */
+.sim-host { position:fixed; inset:0; overflow:auto; background:var(--lane-surround, var(--lane-page)); color:var(--lane-ink); font:var(--fw-regular) var(--fs-body)/1.4 Plex,Arial,sans-serif; }
+.sim-stage { width:var(--app-width, min(100%, 430px)); min-height:100dvh; margin:auto; background:var(--lane-page); --scenario-height:100dvh; }
+.sim-fallback { display:grid; gap:var(--sp-4); align-content:center; min-height:100dvh; padding:max(var(--sp-5), env(safe-area-inset-top)) 20px max(var(--sp-5), env(safe-area-inset-bottom)); }
+.sim-fallback h1 { margin:0; font-size:var(--fs-title); line-height:1.25; }
+.sim-fallback p { margin:0; color:var(--lane-support); }
+.sim-fallback .ui-button { justify-self:start; }

@@ -5,6 +5,7 @@ import { carState, buyCar, marked, selectCar, stats, toggleMark } from '../feed/
 import { homeNavigation } from '../home/tabs';
 import { icon } from '../home/icons';
 import { bottomSheet, sheetMarkup } from '../home/sheet';
+import { bindMenu, menuButton, menuSheetMarkup } from '../home/menu';
 import { CARS, carById, carPreview } from './cars';
 import { PROFILE_COPY as copy } from './content';
 
@@ -19,7 +20,7 @@ export function mountProfile(root: HTMLElement): View {
   const page = document.createElement('div');
   page.className = 'home-preview profile-page';
   page.innerHTML = `<div class="home-phone"><main class="profile-content" aria-label="${copy.title}" tabindex="-1">
-    <header class="profile-heading ui-page-head"><h1>${copy.title}</h1></header>
+    <header class="profile-heading ui-page-head"><h1>${copy.title}</h1>${menuButton()}</header>
     <section class="profile-identity" aria-label="${copy.identityLabel}"><div class="profile-current-car" data-current-car></div><div><p>${copy.carLabel}</p><h2 data-car-name></h2><p class="profile-character-detail">${copy.onHighway}</p><a href="#profile-collection" data-jump="garage">${copy.changeCar} <span aria-hidden="true">↓</span></a></div></section>
     <section class="profile-stats" aria-labelledby="profile-stats-title"><h2 id="profile-stats-title">${copy.stats}</h2>
       <dl class="profile-metrics">
@@ -44,6 +45,7 @@ export function mountProfile(root: HTMLElement): View {
       <div id="profile-library-panel" role="tabpanel" aria-labelledby="profile-tab-liked" tabindex="0" data-library-panel></div>
     </section>
   </main>${homeNavigation('profile')}
+  ${menuSheetMarkup()}
   ${sheetMarkup('profile-item-sheet', 'profile-item-title', '', copy.closeDetails, '<div data-item-detail></div>')}
   <dialog class="profile-purchase" aria-labelledby="profile-purchase-title"><form method="dialog"><button class="profile-close" aria-label="${copy.closePurchase}">×</button></form><div class="profile-purchase-art" data-purchase-art></div><p>${copy.purchaseTitle}</p><h2 id="profile-purchase-title"></h2><div class="profile-purchase-total"><span>${copy.priceLabel}</span><strong data-purchase-price></strong></div><p data-purchase-balance></p><button class="profile-primary ui-button" data-confirm></button><button class="profile-cancel ui-button is-quiet" data-cancel>${copy.cancel}</button></dialog>
   </div>`;
@@ -54,6 +56,7 @@ export function mountProfile(root: HTMLElement): View {
   const dialog = page.querySelector<HTMLDialogElement>('.profile-purchase')!;
   const detailDialog = page.querySelector<HTMLDialogElement>('.profile-item-sheet')!;
   const sheet = bottomSheet(detailDialog);
+  const menu = bindMenu(page);
   let feedbackAnimations: Animation[] = [];
   let feedbackTimer: ReturnType<typeof setTimeout> | undefined;
   const collectionState = carState;
@@ -198,5 +201,5 @@ export function mountProfile(root: HTMLElement): View {
   page.addEventListener('click', onClick);
   page.addEventListener('keydown', onKeydown);
   page.querySelector<HTMLElement>('main')!.focus({ preventScroll: true });
-  return { dispose() { clearTimeout(feedbackTimer); feedbackAnimations.forEach(animation => animation.cancel()); page.removeEventListener('click', onClick); page.removeEventListener('keydown', onKeydown); dialog.close(); sheet.dispose(); page.remove(); } };
+  return { dispose() { clearTimeout(feedbackTimer); feedbackAnimations.forEach(animation => animation.cancel()); page.removeEventListener('click', onClick); page.removeEventListener('keydown', onKeydown); dialog.close(); sheet.dispose(); menu.dispose(); page.remove(); } };
 }
