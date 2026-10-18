@@ -133,8 +133,9 @@ test('the next readiness step names the next label and the real distance to it',
   const at = (score, status, strongTopics = 0, topics = 10) => ({ score, status, strongTopics, topics });
   assert.deepEqual(nextReadinessStep('permit', at(42, 'Needs Foundation')), { label: 'Developing', points: 8, topics: 0 });
   assert.deepEqual(nextReadinessStep('other', at(50, 'Developing')), { label: 'Permit Test Ready', points: 20, topics: 0 });
-  assert.deepEqual(nextReadinessStep('permit', at(84, 'Permit Test Ready')), { label: 'Highway Confident', points: 1, topics: 0 });
-  // 90 points but only 5 of the 8 needed strong topics: the step counts topics, not points.
+  assert.deepEqual(nextReadinessStep('permit', at(84, 'Permit Test Ready', 8)), { label: 'Highway Confident', points: 1, topics: 0 });
+  // Highway Confident also needs 8 of 10 topics strong: the step names every missing part, never points alone.
+  assert.deepEqual(nextReadinessStep('permit', at(83, 'Permit Test Ready', 2)), { label: 'Highway Confident', points: 2, topics: 6 });
   assert.deepEqual(nextReadinessStep('permit', at(90, 'Permit Test Ready', 5)), { label: 'Highway Confident', points: 0, topics: 3 });
   assert.equal(nextReadinessStep('permit', at(95, 'Highway Confident', 9)), null);
   assert.deepEqual(nextReadinessStep('driver', at(0, 'Needs Foundation')), { label: 'Class C', points: 45, topics: 0 });
@@ -150,4 +151,69 @@ test('the next readiness step names the next label and the real distance to it',
   const step = nextReadinessStep('permit', real);
   assert.equal(real.status, 'Developing');
   assert.deepEqual(step, { label: 'Permit Test Ready', points: 70 - real.score, topics: 0 });
+});
+
+// Independent restatement of the owner formula (October 17): 80% completed lessons + 20% average topic
+// mastery (each clamped to 0–1, unpracticed = 0), rounded once; labels by score, Highway also needs 80% of topics strong.
+function ownerReadiness(masteries, completed, total) {
+  let sum = 0;
+  for (const m of masteries) sum += m < 0 ? 0 : m > 1 ? 1 : m;
+  const raw = (total ? 80 * Math.min(completed, total) / total : 0) + (masteries.length ? 20 * sum / masteries.length : 0);
+  const score = total ? Math.round(raw) : 0;
+  const strong = masteries.filter(m => m >= 0.7).length;
+  const status = score >= 85 && strong >= Math.floor(masteries.length * 0.8) ? 'Highway Confident' : score >= 70 ? 'Permit Test Ready' : score >= 50 ? 'Developing' : 'Needs Foundation';
+  return { score, status, strong };
+}
+const BANDS = { 'Developing': 50, 'Permit Test Ready': 70, 'Highway Confident': 85 };
+const CLASSES = { 'Class C': 45, 'Class B': 65, 'Class A': 80, 'Class A+': 90 };
+
+test('readiness matches the owner formula on 20,000 random learners, and every next step is honest', () => {
+  let seed = 17;
+  const random = () => (seed = (seed * 1103515245 + 12345) % 2147483648) / 2147483648;
+  for (let run = 0; run < 20000; run++) {
+    const masteries = Array.from({ length: 1 + Math.floor(random() * 24) }, () => random() < 0.2 ? 0 : random() * 1.4 - 0.2);
+    const total = 24, completed = Math.floor(random() * 25);
+    const real = readinessOf(masteries, { completed, total });
+    const expected = ownerReadiness(masteries, completed, total);
+    const label = `run ${run}: ${completed}/${total}, ${masteries.length} topics`;
+    assert.equal(real.score, expected.score, label);
+    assert.equal(real.status, expected.status, label);
+    assert.equal(real.strongTopics, expected.strong, label);
+    assert.ok(Number.isInteger(real.score) && real.score >= 0 && real.score <= 100, label);
+
+    // Permit/other: doing exactly what the step says reaches its label, and the label is the next one up.
+    const step = nextReadinessStep('permit', real);
+    if (real.status === 'Highway Confident') assert.equal(step, null, label);
+    else if (step.label === 'Highway Confident') {
+      assert.ok(real.score + step.points >= 85 && real.strongTopics + step.topics >= Math.floor(masteries.length * 0.8), label);
+      assert.ok(step.points > 0 || step.topics > 0, label);
+    } else {
+      assert.equal(step.topics, 0, label);
+      assert.equal(real.score + step.points, BANDS[step.label], label);
+      assert.ok(step.points > 0, label);
+    }
+    // Driver: the next class is exactly score + points away, and none lies in between.
+    const drive = nextReadinessStep('driver', real);
+    if (real.score >= 90) assert.equal(drive, null, label);
+    else {
+      assert.equal(driverClass(real.score + drive.points), drive.label, label);
+      assert.notEqual(driverClass(real.score + drive.points - 1), drive.label, label);
+      assert.equal(real.score + drive.points, CLASSES[drive.label], label);
+    }
+    // One more completed lesson, or more mastery in one topic, never lowers the score.
+    if (completed < total) assert.ok(readinessOf(masteries, { completed: completed + 1, total }).score >= real.score, label);
+    const better = masteries.map((m, i) => i === 0 ? Math.min(1, Math.max(0, m) + 0.3) : m);
+    assert.ok(readinessOf(better, { completed, total }).score >= real.score, label);
+  }
+});
+
+test('readiness at the edges: nothing done, everything done, and the 80/20 split', () => {
+  assert.equal(readinessOf([], { completed: 0, total: 24 }).score, 0);
+  assert.equal(readinessOf([0, 0], { completed: 0, total: 0 }).score, 0, 'an empty catalog never divides by zero');
+  assert.equal(readinessOf([0, 0, 0], { completed: 24, total: 24 }).score, 80, 'completion alone caps at 80');
+  assert.equal(readinessOf([1, 1, 1], { completed: 0, total: 24 }).score, 20, 'mastery alone caps at 20');
+  assert.deepEqual(readinessOf([1, 1, 1, 1, 1], { completed: 24, total: 24 }), { score: 100, status: 'Highway Confident', strongTopics: 5, topics: 5 });
+  assert.equal(readinessOf([2, -1], { completed: 30, total: 24 }).score, 90, 'out-of-range inputs are clamped');
+  // 1 of 24 lessons is 3.33 points: rounding happens once, on the total.
+  assert.equal(readinessOf([0.5], { completed: 1, total: 24 }).score, 13);
 });

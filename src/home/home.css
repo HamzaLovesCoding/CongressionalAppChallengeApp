@@ -37,16 +37,16 @@ body:has(.home-preview) { touch-action:auto; }
 .home-dial-tick { stroke:var(--lane-line); stroke-width:3; }
 .home-dial-tick.is-passed { stroke:var(--lane-ink); }
 .home-dial-knob { fill:var(--lane-surface); stroke:var(--lane-ink); stroke-width:4; }
-.home-dial-readout { position:absolute; inset:32% 0 auto; display:flex; flex-direction:column; align-items:center; gap:var(--sp-2); }
-.home-goal-value { display:flex; align-items:baseline; gap:var(--sp-1); white-space:nowrap; font-variant-numeric:tabular-nums; }
-.home-goal-value strong { font-size:var(--fs-hero); line-height:1; font-weight:var(--fw-bold); letter-spacing:-.04em; }
-.home-goal-value>span { color:var(--lane-muted); font-size:var(--fs-body); }
-.home-goal-status { display:inline-flex; align-items:center; min-height:28px; padding:var(--sp-1) var(--sp-3); border-radius:999px; font-size:var(--fs-caption); font-weight:var(--fw-bold); white-space:nowrap; }
+/* The score is the dial's one focal point, centered on the arc's hub (y 118 of 176), larger than --fs-hero on purpose. */
+.home-dial-readout { position:absolute; left:0; right:0; top:67%; transform:translateY(-50%); display:flex; flex-direction:column; align-items:center; gap:var(--sp-1); font-variant-numeric:tabular-nums; }
+.home-dial-readout strong { font-size:84px; line-height:.9; font-weight:700; letter-spacing:-.035em; }
+.home-dial-readout>span { color:var(--lane-muted); font-size:var(--fs-caption); font-weight:var(--fw-bold); letter-spacing:.06em; }
+.home-goal-status { align-self:center; margin-top:calc(-1 * var(--sp-3)); display:inline-flex; align-items:center; min-height:28px; padding:var(--sp-1) var(--sp-3); border-radius:999px; font-size:var(--fs-caption); font-weight:var(--fw-bold); white-space:nowrap; }
 .home-goal-status.is-start { background:var(--lane-accent-soft); color:var(--lane-accent-ink); }
 .home-goal-status.is-build { background:var(--lane-accent); color:var(--lane-ink); }
 .home-goal-status.is-ready { background:var(--lane-success-soft); color:var(--lane-success); box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--lane-success) 35%,transparent); }
 .home-goal-status.is-top { background:var(--lane-success); color:var(--lane-surface); }
-.home-goal-next { margin-top:calc(-1 * var(--sp-1)); color:var(--lane-accent-ink); font-weight:var(--fw-bold); text-align:center; text-wrap:balance; }
+.home-goal-next { color:var(--lane-accent-ink); font-weight:var(--fw-bold); text-align:center; text-wrap:balance; }
 .home-goal-completed { color:var(--lane-support); font-size:var(--fs-caption); }
 .home-goal-footer { display:flex; align-items:center; justify-content:space-between; gap:var(--sp-3); }
 .home-goal-more { display:inline-flex; align-items:center; gap:2px; flex:none; font-weight:var(--fw-bold); }
@@ -139,4 +139,4 @@ body:has(.home-preview) { touch-action:auto; }
 .home-review-row b { font-size:var(--fs-body); }
 .home-review-row small { font-size:var(--fs-caption); color:var(--lane-support); }
 .home-review-row svg { flex:none; width:20px; height:20px; }
-@media(max-width:350px){.home-content{padding-inline:16px}.home-preview .home-sign-face{padding:20px 16px 16px}.home-sign-title{font-size:24px}.home-week-bars{gap:6px}.home-streak-title{font-size:23px}.home-streak-emblem{width:56px;height:56px}.home-lesson h2{font-size:24px}}
+@media(max-width:350px){.home-content{padding-inline:16px}.home-preview .home-sign-face{padding:20px 16px 16px}.home-sign-title{font-size:24px}.home-week-bars{gap:6px}.home-streak-title{font-size:23px}.home-streak-emblem{width:56px;height:56px}.home-dial-readout strong{font-size:72px}.home-lesson h2{font-size:24px}}

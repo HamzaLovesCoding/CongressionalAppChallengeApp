@@ -86,8 +86,9 @@ export function mountHome(root: HTMLElement): View {
           <span class="home-goal-heading"><span>${esc(readinessTitle)}</span><small>${copy.allTime}</small></span>
           <span class="home-dial-wrap">
             ${readinessDial(goal.score, steps.map(([at]) => at), readinessTitle)}
-            <span class="home-dial-readout"><span class="home-goal-value"><strong data-goal-detail>${goal.score}</strong><span>/ 100</span></span><span class="home-goal-status is-${tone}">${esc(readinessDetail)}</span></span>
+            <span class="home-dial-readout"><strong data-goal-detail>${goal.score}</strong><span>/ 100</span></span>
           </span>
+          <span class="home-goal-status is-${tone}">${esc(readinessDetail)}</span>
           <span class="home-goal-next">${esc(nextStep)}</span>
           <span class="home-goal-footer"><span class="home-goal-completed">${copy.lessonCount(learning.completed, learning.total)}</span><span class="home-goal-more">${copy.review}${icon('chevron')}</span></span>
         </a>

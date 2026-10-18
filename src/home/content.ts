@@ -18,9 +18,10 @@ export const homeContent = {
   outOf100: 'out of 100',
   viewReadiness: 'View readiness and review',
   review: 'Review',
-  nextStep: ({ label, points, topics }: { label: string; points: number; topics: number }) => points
-    ? `${points} ${points === 1 ? 'point' : 'points'} to ${label}`
-    : `${topics} more strong ${topics === 1 ? 'topic' : 'topics'} to ${label}`,
+  nextStep: ({ label, points, topics }: { label: string; points: number; topics: number }) => {
+    const need = [points && `${points} ${points === 1 ? 'point' : 'points'}`, topics && `${topics} more strong ${topics === 1 ? 'topic' : 'topics'}`].filter(Boolean);
+    return `${need.join(' and ')} to ${label}`;
+  },
   topStep: 'Top level in Lane reached',
   lessonCount: (done: number, total: number) => `${done} of ${total} lessons completed`,
   days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
