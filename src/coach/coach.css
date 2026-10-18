@@ -1,6 +1,6 @@
-/* Driver coach: the section on Practice and the full-screen chat (#/practice/coach). One plane like the
-   rest of Practice (DESIGN.md): the question box is the only bordered control, ochre only on Send, and
-   the learner's questions sit on the dark hero color so the two voices are easy to tell apart. */
+/* Driver coach: the card on Practice and the full-screen chat (#/practice/coach). Lane's palette
+   throughout (DESIGN.md): the learner's questions sit on the dark hero color, the coach's answers on the
+   light surface, and ochre is kept for Send and the handbook pages. */
 .coach-sr { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
 
 /* Practice section: one light card under the dark test card. The whole card opens the chat; its field
@@ -12,8 +12,8 @@
 .practice a.coach-card:focus-visible { outline:3px solid var(--lane-accent-ink); outline-offset:3px; }
 .practice .coach-card-top { display:flex; align-items:center; gap:var(--sp-3); }
 .practice .coach-card-top h2 { font-size:var(--fs-title); line-height:1.2; font-weight:var(--fw-bold); letter-spacing:-.01em; }
-.practice .coach-card-mark, .practice .coach-empty-icon { display:grid; place-items:center; flex:none; width:40px; height:40px; border-radius:var(--radius-md); background:var(--lane-accent-soft); color:var(--lane-accent-ink); }
-.practice .coach-card-mark svg, .practice .coach-empty-icon svg { width:22px; height:22px; }
+.practice .coach-card-mark { display:grid; place-items:center; flex:none; width:40px; height:40px; border-radius:var(--radius-md); background:var(--lane-accent-soft); color:var(--lane-accent-ink); }
+.practice .coach-card-mark svg { width:22px; height:22px; }
 .practice .coach-card-lede { font-size:var(--fs-body); line-height:1.45; color:var(--lane-support); }
 .practice .coach-card-field { display:flex; align-items:center; gap:var(--sp-2); min-height:56px; padding:var(--sp-1) var(--sp-1) var(--sp-1) 14px; border:1px solid var(--lane-line); border-radius:var(--radius-md); background:var(--lane-page); }
 .practice .coach-card-search { display:grid; flex:none; color:var(--lane-muted); }
@@ -24,100 +24,135 @@
 .practice .coach-card-go svg { width:20px; height:20px; }
 @media (hover:hover) and (pointer:fine) { .practice a.coach-card:hover { box-shadow:var(--shadow-raised); } }
 
-/* Question box */
-.practice .coach-composer { display:flex; align-items:flex-end; gap:var(--sp-2); padding:var(--sp-1) var(--sp-1) var(--sp-1) 14px; border:1.5px solid var(--lane-ink); border-radius:var(--radius-md); background:var(--lane-surface); box-shadow:var(--shadow-soft); }
-.practice .coach-composer:focus-within { border-color:var(--lane-accent-ink); box-shadow:var(--shadow-soft), var(--glow-accent); }
-/* 16px is the smallest text iOS Safari does not zoom into on focus. */
-.practice .coach-composer textarea { flex:1; min-width:0; height:44px; max-height:132px; margin:0; padding:11px 0; border:0; background:transparent; color:var(--lane-ink); font:inherit; font-size:16px; line-height:22px; resize:none; outline:none; }
-.practice .coach-composer textarea::placeholder { color:var(--lane-muted); opacity:1; }
-.practice .coach-send { display:grid; place-items:center; flex:none; width:44px; height:44px; padding:0; border:1.5px solid var(--lane-ink); border-radius:10px; background:var(--lane-accent); color:var(--lane-ink); box-shadow:var(--shadow-cta); }
-.practice .coach-send svg { width:22px; height:22px; }
-.practice .coach-send:disabled { border-color:var(--lane-line); background:var(--lane-soft); color:var(--lane-muted); box-shadow:none; cursor:default; transform:none; }
-.practice .coach-send.is-stop { background:var(--lane-ink); color:var(--lane-surface); box-shadow:var(--shadow-soft); }
-.practice .coach-count { font-size:var(--fs-caption); color:var(--lane-muted); text-align:right; }
-.practice .coach-count:not(:empty) { margin-top:var(--sp-1); }
+/* Chat screen: a column the height of the visible area, so the question box sits above the keyboard.
+   Controls float on the page with hairline edges and soft shadows; one soft ochre glow sits behind the top,
+   like the readiness dial's on Home. */
+.coach-page { --coach-edge:color-mix(in srgb,var(--lane-ink) 12%,transparent); --coach-fade:20px; }
+.coach-page .coach-screen { position:fixed; top:var(--coach-top, 0px); left:0; right:0; display:flex; flex-direction:column; height:var(--coach-height, 100dvh); min-height:0; background:radial-gradient(120% 340px at 50% -120px, var(--lane-accent-soft), transparent 100%), var(--lane-page); }
 
-/* Starter questions */
-.practice .coach-prompts { display:flex; flex-wrap:wrap; gap:var(--sp-2); margin:var(--sp-3) 0 0; padding:0; list-style:none; }
-.practice .coach-prompts.is-stacked { flex-direction:column; }
-.practice .coach-prompt { min-height:44px; padding:var(--sp-2) var(--sp-3); border:1px solid var(--lane-line); border-radius:var(--radius-md); background:transparent; color:var(--lane-ink); font-size:var(--fs-body); line-height:1.3; text-align:left; }
-.practice .coach-prompts.is-stacked .coach-prompt { width:100%; background:var(--lane-surface); }
-@media (hover:hover) and (pointer:fine) { .practice .coach-prompt:hover { border-color:var(--lane-ink); } }
+/* Header: back, the title pill, new chat. */
+.coach-page .coach-top { flex:none; display:grid; grid-template-columns:44px minmax(0,1fr) 44px; align-items:center; gap:var(--sp-3); padding:max(var(--sp-3), env(safe-area-inset-top)) 16px var(--sp-2); }
+.coach-page .coach-round { display:grid; place-items:center; width:44px; height:44px; padding:0; border:1px solid var(--coach-edge); border-radius:50%; background:var(--lane-surface); color:var(--lane-ink); box-shadow:var(--shadow-soft); transition:transform 160ms var(--ease-out), opacity 200ms var(--ease-out), visibility 200ms; }
+.coach-page .coach-round svg { width:20px; height:20px; }
+.coach-page .coach-round:active { transform:scale(.92); }
+/* Hidden in an empty chat, but it keeps its place so the title stays centered. */
+.coach-page .coach-new[hidden] { display:grid; visibility:hidden; opacity:0; transform:scale(.8); }
+.coach-page .coach-heading { justify-self:center; display:flex; align-items:center; gap:var(--sp-2); min-width:0; max-width:100%; min-height:44px; padding:0 8px 0 18px; border:1px solid var(--coach-edge); border-radius:999px; background:var(--lane-surface); box-shadow:var(--shadow-soft); }
+.coach-page .coach-heading h1 { overflow:hidden; font-size:var(--fs-body); line-height:1.2; font-weight:var(--fw-bold); white-space:nowrap; text-overflow:ellipsis; outline:none; }
+.coach-page .coach-heading .ui-chip { flex:none; min-height:26px; padding:2px 9px; border-color:transparent; border-radius:999px; background:var(--lane-accent-soft); color:var(--lane-accent-ink); }
 
-/* Chat screen: a column the height of the visible area, so the question box sits above the keyboard. */
-.coach-page .coach-screen { position:fixed; top:var(--coach-top, 0px); left:0; right:0; display:flex; flex-direction:column; height:var(--coach-height, 100dvh); min-height:0; }
-.coach-page .coach-top { flex:none; display:flex; align-items:center; gap:var(--sp-3); padding:max(var(--sp-3), env(safe-area-inset-top)) 20px var(--sp-3); border-bottom:1px solid var(--lane-line); }
-.coach-page .coach-heading { flex:1; min-width:0; display:flex; align-items:center; gap:var(--sp-2); }
-.coach-page .coach-heading h1 { overflow:hidden; font-size:var(--fs-title); line-height:1.2; font-weight:var(--fw-bold); letter-spacing:-.01em; white-space:nowrap; text-overflow:ellipsis; outline:none; }
-.coach-page .coach-new { flex:none; display:flex; align-items:center; justify-content:center; gap:var(--sp-2); min-width:44px; min-height:44px; padding:0 var(--sp-3); border:1.5px solid var(--lane-ink); border-radius:var(--radius-md); background:var(--lane-surface); font-size:var(--fs-caption); font-weight:var(--fw-bold); box-shadow:var(--shadow-soft); }
-.coach-page .coach-new[hidden] { display:none; }
-.coach-page .coach-new svg { display:none; width:20px; height:20px; }
-.coach-page .coach-log { flex:1; min-height:0; overflow-y:auto; overscroll-behavior:contain; padding:var(--sp-5) 20px var(--sp-5); }
+/* The conversation scrolls between the header and the question box and fades out at both edges. */
+.coach-page .coach-log { flex:1; min-height:0; display:flex; flex-direction:column; overflow-y:auto; overscroll-behavior:contain; padding:var(--sp-4) 16px var(--sp-5); scrollbar-width:none;
+  -webkit-mask-image:linear-gradient(to bottom, transparent, #000 var(--coach-fade), #000 calc(100% - var(--coach-fade)), transparent);
+  mask-image:linear-gradient(to bottom, transparent, #000 var(--coach-fade), #000 calc(100% - var(--coach-fade)), transparent); }
+.coach-page .coach-log::-webkit-scrollbar { display:none; }
 
-.coach-page .coach-empty { display:grid; justify-items:start; gap:var(--sp-3); }
+/* Empty chat: centered welcome and three starter questions. */
+.coach-page .coach-empty { display:grid; justify-items:center; gap:var(--sp-3); margin-block:auto; padding-block:var(--sp-4); text-align:center; }
 .coach-page .coach-empty[hidden] { display:none; }
-.coach-page .coach-empty h2 { margin-top:var(--sp-1); font-size:var(--fs-display); line-height:1.15; font-weight:var(--fw-bold); letter-spacing:-.02em; }
-.coach-page .coach-empty p { font-size:var(--fs-body); line-height:1.5; color:var(--lane-support); }
-.coach-page .coach-empty .coach-prompts { justify-self:stretch; margin-top:var(--sp-2); }
+.coach-page .coach-empty-icon { display:grid; place-items:center; width:64px; height:64px; margin-bottom:var(--sp-1); border-radius:22px; background:var(--lane-accent-soft); color:var(--lane-accent-ink); box-shadow:var(--glow-accent); }
+.coach-page .coach-empty-icon svg { width:30px; height:30px; }
+.coach-page .coach-empty h2 { font-size:var(--fs-display); line-height:1.15; font-weight:var(--fw-bold); letter-spacing:-.02em; }
+.coach-page .coach-empty p { max-width:32ch; font-size:var(--fs-body); line-height:1.5; color:var(--lane-support); }
+.coach-page .coach-prompts { justify-self:stretch; display:grid; gap:var(--sp-2); margin:var(--sp-3) 0 0; padding:0; list-style:none; }
+.coach-page .coach-prompt { display:flex; align-items:center; justify-content:space-between; gap:var(--sp-3); width:100%; min-height:52px; padding:var(--sp-3) var(--sp-4) var(--sp-3) 18px; border:1px solid var(--coach-edge); border-radius:18px; background:var(--lane-surface); color:var(--lane-ink); font-size:var(--fs-body); line-height:1.35; text-align:left; box-shadow:var(--shadow-soft); transition:transform 160ms var(--ease-out), border-color 160ms; }
+.coach-page .coach-prompt svg { flex:none; width:18px; height:18px; color:var(--lane-accent-ink); }
+.coach-page .coach-prompt:active { transform:scale(.98); }
+@media (hover:hover) and (pointer:fine) { .coach-page .coach-prompt:hover { border-color:color-mix(in srgb,var(--lane-ink) 35%,transparent); } }
 .coach-page .coach-safety { margin-top:var(--sp-2); font-size:var(--fs-caption)!important; font-weight:var(--fw-bold); color:var(--lane-accent-ink)!important; }
 
-.coach-page .coach-thread { display:grid; gap:var(--sp-6); margin:0; padding:0; list-style:none; }
-.coach-page .coach-exchange { display:grid; gap:var(--sp-4); }
-.coach-page .coach-question { justify-self:end; max-width:85%; padding:var(--sp-3) var(--sp-4); border-radius:var(--radius-lg) var(--radius-lg) var(--radius-sm) var(--radius-lg); background:var(--lane-hero); color:var(--lane-surface); font-size:var(--fs-body); line-height:1.45; white-space:pre-wrap; overflow-wrap:anywhere; animation:ui-rise 220ms var(--ease-out) both; }
-.coach-page .coach-answer { display:grid; gap:var(--sp-2); min-width:0; }
-.coach-page .coach-label { display:flex; align-items:center; gap:var(--sp-2); font-size:var(--fs-caption); font-weight:var(--fw-bold); color:var(--lane-support); }
-.coach-page .coach-mark { display:grid; place-items:center; width:28px; height:28px; border-radius:var(--radius-sm); background:var(--lane-accent-soft); color:var(--lane-accent-ink); }
-.coach-page .coach-mark svg { width:18px; height:18px; }
-.coach-page .coach-text { font-size:var(--fs-body); line-height:1.55; overflow-wrap:anywhere; }
+/* Messages: questions on the right in the hero color, answers on the left on the light surface. Both
+   bubbles shrink to short text; the tucked corner points at whoever wrote it. */
+.coach-page .coach-thread { display:grid; gap:var(--sp-5); margin:0; padding:0; list-style:none; }
+.coach-page .coach-exchange { display:grid; gap:var(--sp-3); }
+.coach-page .coach-question { justify-self:end; max-width:82%; padding:10px 16px; border-radius:22px 22px 6px 22px; background:var(--lane-hero); color:var(--lane-surface); font-size:var(--fs-body); line-height:1.45; white-space:pre-wrap; overflow-wrap:anywhere; box-shadow:var(--shadow-soft); }
+.coach-page .coach-answer { justify-self:start; min-width:0; max-width:92%; padding:14px 16px; border:1px solid var(--coach-edge); border-radius:6px 22px 22px 22px; background:var(--lane-surface); font-size:var(--fs-body); line-height:1.55; overflow-wrap:anywhere; box-shadow:var(--shadow-soft); }
+/* Limits and failures are notices, not corrections: calm and neutral, never error red. */
+.coach-page .coach-answer.is-notice { display:grid; justify-items:start; gap:var(--sp-3); border-color:transparent; background:var(--lane-soft); color:var(--lane-support); box-shadow:none; }
+.coach-page .coach-exchange.is-new .coach-question { transform-origin:100% 100%; animation:coach-in 360ms var(--ease-out) both; }
+.coach-page .coach-exchange.is-new .coach-answer { transform-origin:0 0; animation:coach-in 360ms var(--ease-out) 120ms both; }
+@keyframes coach-in { from { opacity:0; transform:translateY(12px) scale(.94); } }
+
 .coach-page .coach-text>*+* { margin-top:var(--sp-3); }
 .coach-page .coach-text :is(ul,ol) { display:grid; gap:var(--sp-1); margin-bottom:0; padding-left:1.3em; }
 .coach-page .coach-text ul { list-style:disc; }
 .coach-page .coach-text ol { list-style:decimal; }
 .coach-page .coach-text li::marker { color:var(--lane-accent-ink); }
 .coach-page .coach-text strong { font-weight:var(--fw-bold); }
-.coach-page .coach-waiting { display:flex; align-items:center; gap:var(--sp-2); font-size:var(--fs-body); color:var(--lane-muted); }
-.coach-page .coach-waiting span { display:flex; gap:3px; }
-.coach-page .coach-waiting i { width:5px; height:5px; border-radius:50%; background:var(--lane-accent); animation:coach-dot 1.1s ease-in-out infinite; }
-.coach-page .coach-waiting i:nth-child(2) { animation-delay:.15s; }
-.coach-page .coach-waiting i:nth-child(3) { animation-delay:.3s; }
-@keyframes coach-dot { 0%, 80%, 100% { opacity:.25; transform:translateY(0); } 40% { opacity:1; transform:translateY(-3px); } }
+.coach-page .coach-note { margin-top:var(--sp-2); font-size:var(--fs-caption); color:var(--lane-muted); }
+.coach-page .coach-waiting { display:flex; align-items:center; gap:10px; color:var(--lane-muted); }
+.coach-page .coach-dots { display:flex; gap:4px; }
+.coach-page .coach-dots i { width:6px; height:6px; border-radius:50%; background:var(--lane-accent); animation:coach-dot 1.1s ease-in-out infinite; }
+.coach-page .coach-dots i:nth-child(2) { animation-delay:.15s; }
+.coach-page .coach-dots i:nth-child(3) { animation-delay:.3s; }
+@keyframes coach-dot { 0%, 80%, 100% { opacity:.3; transform:translateY(0); } 40% { opacity:1; transform:translateY(-3px); } }
 
-/* Handbook pages the answer quoted; each opens the quoted lines. */
-.coach-page .coach-sources { display:flex; flex-wrap:wrap; align-items:center; gap:var(--sp-2); margin-top:var(--sp-1); }
-.coach-page .coach-sources-label { margin-right:var(--sp-1); font-size:var(--fs-caption); color:var(--lane-muted); }
-.coach-page .coach-cite { min-width:52px; min-height:44px; padding:0 var(--sp-3); border:1px solid color-mix(in srgb,var(--lane-accent-ink) 35%,transparent); border-radius:var(--radius-sm); background:var(--lane-accent-soft); color:var(--lane-accent-ink); font-size:var(--fs-caption); font-weight:var(--fw-bold); font-variant-numeric:tabular-nums; }
-.coach-page .coach-cite[aria-expanded="true"] { border-color:var(--lane-ink); background:var(--lane-ink); color:var(--lane-surface); }
-.coach-page .coach-quote { display:grid; gap:var(--sp-2); padding:var(--sp-3) var(--sp-4); border:1px solid var(--lane-line); border-radius:var(--radius-md); background:var(--lane-surface); animation:ui-rise 200ms var(--ease-out) both; }
+/* Under a finished answer: the handbook pages it quoted, then Copy and Ask again. The controls are 44px
+   targets drawn smaller. */
+.coach-page .coach-tools { display:flex; flex-wrap:wrap; align-items:center; gap:0 var(--sp-2); margin:var(--sp-3) -6px -8px 0; padding-top:var(--sp-1); border-top:1px solid var(--coach-edge); }
+.coach-page .coach-sources { display:flex; flex-wrap:wrap; align-items:center; gap:0 6px; min-width:0; }
+.coach-page .coach-sources-icon { display:grid; place-items:center; width:20px; margin-right:2px; color:var(--lane-accent-ink); }
+.coach-page .coach-sources-icon svg { width:18px; height:18px; }
+.coach-page :is(.coach-cite,.coach-action) { position:relative; isolation:isolate; height:44px; padding:0; border:0; background:none; }
+.coach-page :is(.coach-cite,.coach-action)::before { content:""; position:absolute; z-index:-1; transition:background-color 160ms, transform 160ms var(--ease-out); }
+.coach-page .coach-cite { min-width:44px; padding:0 12px; color:var(--lane-accent-ink); font-size:var(--fs-caption); font-weight:var(--fw-bold); font-variant-numeric:tabular-nums; transition:color 160ms; }
+.coach-page .coach-cite::before { inset:7px 0; border-radius:999px; background:var(--lane-accent-soft); }
+.coach-page .coach-cite[aria-expanded="true"] { color:var(--lane-surface); }
+.coach-page .coach-cite[aria-expanded="true"]::before { background:var(--lane-ink); }
+.coach-page .coach-actions { display:flex; margin-left:auto; }
+.coach-page .coach-action { display:grid; place-items:center; width:44px; color:var(--lane-muted); transition:color 160ms; }
+.coach-page .coach-action::before { inset:6px; border-radius:50%; }
+.coach-page .coach-action svg { width:19px; height:19px; }
+.coach-page .coach-action:active::before { background:var(--lane-soft); transform:scale(.9); }
+.coach-page .coach-action.is-done { color:var(--lane-success); }
+.coach-page .coach-action.is-done svg { animation:ui-pop 360ms var(--ease-out) both; }
+@media (hover:hover) and (pointer:fine) { .coach-page .coach-action:hover { color:var(--lane-ink); } .coach-page .coach-action:hover::before { background:var(--lane-soft); } }
+/* What a handbook page says, opened from its chip. */
+.coach-page .coach-quote { display:grid; gap:var(--sp-2); margin-top:var(--sp-2); padding:var(--sp-3) var(--sp-4); border-radius:var(--radius-md); background:var(--lane-page); box-shadow:inset 3px 0 0 var(--lane-accent); animation:ui-rise 220ms var(--ease-out) both; }
 .coach-page .coach-quote[hidden] { display:none; }
 .coach-page .coach-quote blockquote { margin:0; font-size:var(--fs-body); line-height:1.5; }
 .coach-page .coach-quote p { font-size:var(--fs-caption); color:var(--lane-muted); }
+.coach-page .coach-retry { display:inline-flex; align-items:center; gap:var(--sp-2); min-height:44px; padding:0 var(--sp-4) 0 14px; border:0; border-radius:999px; background:var(--lane-surface); color:var(--lane-ink); font-weight:var(--fw-bold); box-shadow:var(--shadow-soft); transition:transform 160ms var(--ease-out); }
+.coach-page .coach-retry svg { width:18px; height:18px; }
+.coach-page .coach-retry:active { transform:scale(.96); }
 
-.coach-page .coach-note { font-size:var(--fs-caption); color:var(--lane-muted); }
-/* Limits and failures are notices, not corrections: calm and neutral. */
-.coach-page .coach-problem { display:grid; justify-items:start; gap:var(--sp-3); padding:var(--sp-3) var(--sp-4); border-radius:var(--radius-md); background:var(--lane-soft); color:var(--lane-support); font-size:var(--fs-body); line-height:1.5; }
-.coach-page .coach-retry { min-height:44px; padding:0 var(--sp-4); border:1.5px solid var(--lane-ink); border-radius:var(--radius-md); background:var(--lane-surface); color:var(--lane-ink); font-weight:var(--fw-bold); }
-
-/* The question box stays at the bottom of the screen. */
-.coach-page .coach-dock { flex:none; padding:var(--sp-3) 20px max(var(--sp-3), env(safe-area-inset-bottom)); border-top:1px solid var(--lane-line); background:var(--lane-page); }
+/* The question box floats at the bottom; the jump button rides just above it. */
+.coach-page .coach-dock { position:relative; flex:none; padding:var(--sp-1) 16px max(var(--sp-3), env(safe-area-inset-bottom)); }
+.coach-page .coach-jump { position:absolute; left:calc(50% - 22px); bottom:calc(100% + var(--sp-1)); z-index:1; display:grid; place-items:center; width:44px; height:44px; padding:0; border:1px solid var(--coach-edge); border-radius:50%; background:var(--lane-surface); color:var(--lane-ink); box-shadow:var(--shadow-raised); animation:coach-in 240ms var(--ease-out) both; }
+.coach-page .coach-jump[hidden] { display:none; }
+.coach-page .coach-jump svg { width:20px; height:20px; }
+.coach-page .coach-composer { display:flex; align-items:flex-end; gap:var(--sp-2); padding:5px 5px 5px 20px; border:1px solid var(--coach-edge); border-radius:27px; background:var(--lane-surface); box-shadow:var(--shadow-raised); transition:border-color 200ms, box-shadow 200ms; }
+.coach-page .coach-composer:focus-within { border-color:color-mix(in srgb,var(--lane-accent-ink) 45%,transparent); box-shadow:var(--shadow-raised), var(--glow-accent); }
+/* 16px is the smallest text iOS Safari does not zoom into on focus. */
+.coach-page .coach-composer textarea { flex:1; min-width:0; height:44px; max-height:132px; margin:0; padding:11px 0; border:0; background:transparent; color:var(--lane-ink); font:inherit; font-size:16px; line-height:22px; resize:none; outline:none; }
+.coach-page .coach-composer textarea::placeholder { color:var(--lane-muted); opacity:1; }
+.coach-page .coach-send { display:grid; place-items:center; flex:none; width:44px; height:44px; padding:0; border:0; border-radius:50%; background:var(--lane-accent); color:var(--lane-ink); box-shadow:var(--shadow-cta); transition:background-color 200ms, color 200ms, box-shadow 200ms, transform 160ms var(--ease-out); }
+.coach-page .coach-send svg { width:22px; height:22px; }
+.coach-page .coach-send:active:not(:disabled) { transform:scale(.9); }
+.coach-page .coach-send:disabled { background:var(--lane-soft); color:var(--lane-muted); box-shadow:none; cursor:default; }
+.coach-page .coach-send.is-stop { background:var(--lane-ink); color:var(--lane-surface); box-shadow:var(--shadow-soft); }
+.coach-page .coach-count { font-size:var(--fs-caption); color:var(--lane-muted); text-align:right; }
+.coach-page .coach-count:not(:empty) { margin-top:var(--sp-1); padding-right:var(--sp-3); }
 .coach-page .coach-foot { margin-top:var(--sp-2); font-size:var(--fs-caption); line-height:1.4; color:var(--lane-muted); text-align:center; }
 
 @media (max-width:350px) {
-  .practice .coach-prompt { font-size:var(--fs-caption); }
-  .coach-page :is(.coach-top,.coach-log,.coach-dock) { padding-inline:16px; }
-  /* Room for the title: New chat becomes its icon (it keeps its accessible name). */
-  .coach-page .coach-new { padding:0; }
-  .coach-page .coach-new svg { display:block; }
-  .coach-page .coach-new span { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
+  .coach-page :is(.coach-top,.coach-log,.coach-dock) { padding-inline:12px; }
+  .coach-page .coach-top { gap:var(--sp-2); }
+  .coach-page .coach-prompt { font-size:var(--fs-caption); }
 }
 /* Short landscape phones: keep room for the conversation. */
 @media (max-height:500px) {
-  .coach-page .coach-top { padding-block:max(var(--sp-2), env(safe-area-inset-top)) var(--sp-2); }
-  .coach-page .coach-log { padding-block:var(--sp-4); }
+  .coach-page { --coach-fade:12px; }
+  .coach-page .coach-top { padding-block:max(var(--sp-2), env(safe-area-inset-top)) var(--sp-1); }
+  .coach-page .coach-log { padding-block:var(--sp-3); }
+  .coach-page .coach-empty-icon { display:none; }
   .coach-page .coach-foot { display:none; }
 }
 @media (prefers-reduced-motion:reduce) {
+  .coach-page :is(.coach-question,.coach-answer,.coach-quote,.coach-jump,.coach-action svg) { animation:none!important; }
+  .coach-page :is(.coach-round,.coach-prompt,.coach-send,.coach-retry) { transition:none; }
+  .coach-page :is(.coach-cite,.coach-action)::before { transition:none; }
+  .coach-page .coach-dots i { animation:none; opacity:.6; }
   .practice a.coach-card { transition:none; }
   .practice a.coach-card:active { transform:none; }
-  .coach-page :is(.coach-question,.coach-quote) { animation:none; }
-  .coach-page .coach-waiting i { animation:none; opacity:.6; }
 }

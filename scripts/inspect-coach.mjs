@@ -53,7 +53,7 @@ async function handle(route) {
 const browser = await chromium.launch({ executablePath: process.env.CHROMIUM ?? '/Users/hamza/Library/Caches/ms-playwright/chromium-1228/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing' });
 const problems = [];
 async function open(viewport, { reducedMotion = 'no-preference', onboarded = true } = {}) {
-  const context = await browser.newContext({ viewport, deviceScaleFactor: 2, isMobile: true, hasTouch: true, reducedMotion });
+  const context = await browser.newContext({ viewport, deviceScaleFactor: 2, isMobile: true, hasTouch: true, reducedMotion, permissions: ['clipboard-read', 'clipboard-write'] });
   if (onboarded) await context.addInitScript(() => { if (!localStorage.getItem('roadloop-progress')) localStorage.setItem('roadloop-progress', JSON.stringify({ settings: { onboardedAt: '2026-10-16T00:00:00.000Z', termsAcceptedAt: '2026-10-16T00:00:00.000Z', goal: 'permit' } })); });
   await context.route('https://*.supabase.co/**', handle);
   const page = await context.newPage();
@@ -112,6 +112,16 @@ try {
   await settle(page);
   await page.screenshot({ path: `${out}/02-answer.png` });
 
+  // Copy puts the answer on the clipboard as plain text with its handbook pages.
+  const copyButton = lastAnswer(page).getByRole('button', { name: 'Copy answer' });
+  await copyButton.click();
+  await lastAnswer(page).getByRole('button', { name: 'Answer copied' }).waitFor();
+  const clipboard = await page.evaluate(() => navigator.clipboard.readText());
+  assert.match(clipboard, /^At an all-way stop, the driver who stops first goes first\./, 'copied without ** marks');
+  assert.match(clipboard, /- Pedestrians in the crosswalk always go first\./);
+  assert.match(clipboard, /California Driver’s Handbook, pages 30, 26$/);
+  await lastAnswer(page).getByRole('button', { name: 'Copy answer' }).waitFor({ timeout: 3000 });
+
   // 3. A page chip shows what that page says.
   const chip = lastAnswer(page).locator('.coach-cite', { hasText: 'p. 30' });
   await chip.click();
@@ -137,8 +147,18 @@ try {
   assert.equal(asked.at(-1).messages[2].text, 'Quiz me on that');
   assert.match(await page.locator('.coach-foot').innerText(), /4 questions left today/);
   assert.equal(await box.inputValue(), '', 'the box clears after sending');
+  assert.equal(await page.locator('.coach-exchange').first().locator('[data-again]').count(), 0, 'only the latest answer can be asked again');
   await settle(page);
   await page.screenshot({ path: `${out}/04-quiz.png` });
+  // Ask again replaces the latest answer in place, with the same context.
+  const beforeAgain = asked.length;
+  const replaced = await page.locator('.coach-exchange').last().elementHandle();
+  await lastAnswer(page).getByRole('button', { name: 'Ask again' }).click();
+  await page.waitForFunction(item => !item.isConnected, replaced);
+  await waitStatus(page, 'done', 2);
+  await lastAnswer(page).getByRole('button', { name: 'Ask again' }).waitFor();
+  assert.equal(asked.length, beforeAgain + 1);
+  assert.deepEqual(asked.at(-1).messages.map(message => message.text.slice(0, 15)), ['Who goes first ', 'At an all-way s', 'Quiz me on that']);
 
   // 5. The daily limit: a plain explanation, no retry.
   scenario = 'limit';
@@ -164,12 +184,26 @@ try {
   await send(page, 'Help me with my math homework', 'refused');
   assert.match(await lastAnswer(page).innerText(), /can’t help with that one/);
 
+  // The jump button appears when reading further up and brings the newest answer back.
+  const log = page.locator('.coach-log');
+  await page.waitForTimeout(800); // the glide down to the new answer finishes first
+  await log.evaluate(el => { el.scrollTop = 0; });
+  const jump = page.getByRole('button', { name: 'Show the latest answer' });
+  await jump.waitFor();
+  await settle(page);
+  await page.screenshot({ path: `${out}/05b-jump.png` });
+  await jump.click();
+  await page.waitForFunction(() => { const el = document.querySelector('.coach-log'); return el.scrollHeight - el.scrollTop - el.clientHeight < 2; });
+  await jump.waitFor({ state: 'hidden' });
+
   // 8. Stopping an answer that hasn't arrived.
   scenario = 'slow';
   await box.fill('How far ahead should I look?');
   await box.press('Enter');
   const stop = page.getByRole('button', { name: 'Stop the answer' });
   await stop.waitFor();
+  assert.equal(await page.locator('[data-again]').count(), 0, 'nothing can be asked again while an answer is coming');
+  await settle(page);
   await page.screenshot({ path: `${out}/06-waiting.png` });
   await stop.click();
   await waitStatus(page, 'stopped');

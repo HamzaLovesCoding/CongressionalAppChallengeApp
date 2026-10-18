@@ -5,7 +5,7 @@ import { HANDBOOK_PAGES, HANDBOOK_TEXT, HANDBOOK_TITLE } from '../supabase/funct
 import { SYSTEM_PROMPT } from '../supabase/functions/coach/prompt.ts';
 import { coachRequest, LIMITS, line, MODEL, pagesFor, parseTurns, streamState, translate } from '../supabase/functions/coach/coach.ts';
 import { parseEvent, readEvents } from '../src/coach/protocol.ts';
-import { formatAnswer } from '../src/coach/format.ts';
+import { formatAnswer, plainAnswer } from '../src/coach/format.ts';
 
 // Driver coach: the handbook text the model reads, the request it gets, and what the app makes of the
 // answer. No test calls Anthropic; scripts/inspect-coach.mjs covers the screens.
@@ -145,6 +145,11 @@ test('answers render as escaped text with paragraphs, lists and bold only', () =
   assert.equal(formatAnswer('## Heading\n<img src=x onerror=alert(1)> & "quotes"'), '<p>Heading<br>&lt;img src=x onerror=alert(1)&gt; &amp; &quot;quotes&quot;</p>');
   assert.equal(formatAnswer('A) You\nB) Them'), '<p>A) You<br>B) Them</p>', 'quiz choices stay on their own lines');
   assert.equal(formatAnswer('**unclosed'), '<p>**unclosed</p>');
+});
+
+test('a copied answer is plain text with the same lines', () => {
+  assert.equal(plainAnswer('## Rule\n**Stop** first.\n\n\n\n- Signal\n- Look **twice**\n'), 'Rule\nStop first.\n\n- Signal\n- Look twice');
+  assert.equal(plainAnswer('**unclosed and <b>'), '**unclosed and <b>', 'nothing else is changed');
 });
 
 test('the app and the function agree on limits and context size', () => {

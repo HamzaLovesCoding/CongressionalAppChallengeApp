@@ -28,3 +28,7 @@ export function formatAnswer(text: string): string {
   close();
   return html;
 }
+
+// The answer as plain text for copying: the same lines without the ** marks or heading #s.
+export const plainAnswer = (text: string) => text.replace(/\r/g, '').split('\n')
+  .map(line => line.trim().replace(/^#{1,6}\s+/, '').replace(/\*\*(.+?)\*\*/g, '$1')).join('\n').replace(/\n{3,}/g, '\n\n').trim();

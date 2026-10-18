@@ -1,6 +1,6 @@
 import { COACH } from './content';
 
-// The question box shared by the Practice section and the chat: a growing text area with one send button.
+// The chat's question box: a growing text area with one send button.
 export const QUESTION_LIMIT = 500; // supabase/functions/coach/coach.ts LIMITS.question
 const WARN_AT = 400;
 const arrow = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5m-6 6 6-6 6 6"/></svg>';

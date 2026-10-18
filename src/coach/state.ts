@@ -18,10 +18,6 @@ let exchanges: Exchange[] = [];
 let remaining: number | null = null;
 let running: AbortController | null = null;
 let nextId = 1;
-// A question typed on Practice while an answer was still coming in; the chat puts it back in its box.
-let draft = '';
-export function keepDraft(text: string) { draft = text; }
-export function takeDraft() { const text = draft; draft = ''; return text; }
 const listeners = new Set<() => void>();
 const notify = () => listeners.forEach(listener => listener());
 
@@ -77,7 +73,7 @@ export async function askQuestion(question: string) {
   }
 }
 
-// Asks the same question again in place of a failed answer.
+// Asks the same question again in place of a failed answer, or of the latest answer (Ask again).
 export function retry(id: number) {
   const exchange = exchanges.find(item => item.id === id);
   if (!exchange || running) return;
