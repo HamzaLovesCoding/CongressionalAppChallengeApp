@@ -1,21 +1,21 @@
 // Privacy Policy and Terms, version-controlled. Written from docs/lane/07-data-and-vendor-inventory.md
 // (what the code actually stores and sends); scripts/legal.test.mjs checks the two stay in step.
-// Facts only the owner can supply (operator, contact, effective date, governing law, deletion
-// timing) are shown as visible placeholders, never invented. Not legal advice; needs owner/legal review.
+// Operator, contact and effective date supplied by the owner on October 18, 2026.
+// Remaining policy decisions still need owner/legal review.
 
 export type LegalSection = { heading: string; body: string[] };
-export type LegalDocument = { id: 'privacy' | 'terms'; title: string; version: string; effective: string | null; sections: LegalSection[] };
+export type LegalDocument = { id: 'privacy' | 'terms'; title: string; version: string; effective: string; sections: LegalSection[] };
 
-export const OWNER_PLACEHOLDER = {
-  operator: 'The Lane project team (legal operator name to be added before public release)',
-  contact: 'Contact details will be added before public release.',
-  effective: 'Effective date to be set before public release.',
+export const LEGAL_OWNER = {
+  operator: 'Hamza Wadera',
+  contact: 'Contact: hamza.w.3790@gmail.com.',
+  effective: 'October 18, 2026',
 };
 
 export const PRIVACY: LegalDocument = {
-  id: 'privacy', title: 'Privacy Policy', version: '0.1 (draft)', effective: null,
+  id: 'privacy', title: 'Privacy Policy', version: '1.0', effective: LEGAL_OWNER.effective,
   sections: [
-    { heading: 'Who this covers', body: [`This policy describes what the Lane app stores and sends. Lane is operated by ${OWNER_PLACEHOLDER.operator}.`] },
+    { heading: 'Who this covers', body: [`This policy describes what the Lane app stores and sends. Lane is operated by ${LEGAL_OWNER.operator}.`] },
     { heading: 'What stays on your device', body: [
       'Lane keeps your learning progress in your browser’s storage on this device: which lessons you completed, your answers and how long they took, how much of each lesson video you watched, XP, streak days, your daily goal, liked and saved lessons, the cars you unlocked and selected, your Review later list, topic practice records, and practice scenario results.',
       'If you add them, it also keeps your permit test date and username, plus the main goal you chose when you started (with any words you typed for it) and when you agreed to these terms. The main goal stays on this device.',
@@ -49,15 +49,15 @@ export const PRIVACY: LegalDocument = {
     ] },
     { heading: 'Changes and contact', body: [
       'If this policy changes, the version and effective date above will change too.',
-      OWNER_PLACEHOLDER.contact,
+      LEGAL_OWNER.contact,
     ] },
   ],
 };
 
 export const TERMS: LegalDocument = {
-  id: 'terms', title: 'Terms of Service', version: '0.1 (draft)', effective: null,
+  id: 'terms', title: 'Terms of Service', version: '1.0', effective: LEGAL_OWNER.effective,
   sections: [
-    { heading: 'Using Lane', body: [`By using Lane you agree to these terms. Lane is operated by ${OWNER_PLACEHOLDER.operator}.`] },
+    { heading: 'Using Lane', body: [`By using Lane you agree to these terms. Lane is operated by ${LEGAL_OWNER.operator}.`] },
     { heading: 'What Lane is', body: [
       'Lane is a supplemental learning app about California driving rules. It is not affiliated with or endorsed by the California DMV. It is not driver training, legal advice, a certification of driving ability or a guarantee that you will pass any test. Labels such as “Permit Test Ready” or “Highway Confident” describe your practice in Lane. They can’t predict a test result or show that you’re ready to drive. Always follow the official California Driver’s Handbook, the law and your supervising driver.',
       'Some lesson questions and practice scenarios are still awaiting review against the handbook.',
@@ -77,7 +77,7 @@ export const TERMS: LegalDocument = {
     { heading: 'Privacy', body: ['The Privacy Policy explains what Lane stores and sends.'] },
     { heading: 'Changes, law and contact', body: [
       'If these terms change, the version and effective date above will change too. Governing law and any limitation of liability will be added after legal review, before public release.',
-      OWNER_PLACEHOLDER.contact,
+      LEGAL_OWNER.contact,
     ] },
   ],
 };

@@ -62,7 +62,7 @@ assert.ok(await denied('anon', null, 'select * from public.profiles')); ok('anon
 assert.equal((await as('authenticated', A, "select public.set_username('Road_Runner') r")).rows[0].r, 'ok'); ok('a learner claims a username');
 // 2. Learner A syncs; invalid lesson/attempt/sim rows are dropped; XP comes from the catalog only.
 const first = await as('authenticated', A, 'select public.sync_learner($1::jsonb) as r', [JSON.stringify(payload)]);
-assert.equal(first.rows[0].r.weeklyXp, 0); ok('no XP until the server has a correct answer for the lesson (client xp field ignored)');
+assert.equal(first.rows[0].r.weeklyXp, 20); ok('correct answers award catalog XP in the same backup (client xp field ignored)');
 await as('authenticated', A, 'select public.sync_learner($1::jsonb)', [JSON.stringify(payload)]);
 const again = await as('authenticated', A, 'select public.sync_learner($1::jsonb) as r', [JSON.stringify(payload)]);
 assert.equal(again.rows[0].r.weeklyXp, 20); ok('each completion with a recorded correct answer earns 10 XP, once (idempotent)');
@@ -79,8 +79,6 @@ assert.equal(kept.done, true); assert.ok(kept.watched_ratio > 0.9); ok('empty or
 
 // 4. Bad usernames and cars are refused or stored as null, never as markup; names are unique.
 const bPayload = JSON.stringify({ profile: { alias: '<script>x</script>', carId: 'tank' }, lessons: [{ id: 'school-bus', tries: 1, done: true, completedAt: now }], attempts: [{ id: 'attempt-bbbb-0001', lessonId: 'school-bus', topicId: 'sharing-the-road', kind: 'primary', correct: true, activeMs: 8000, at: now }] });
-// Twice: XP for a completion arrives on the backup after its correct answer is stored.
-await as('authenticated', B, 'select public.sync_learner($1::jsonb)', [bPayload]);
 await as('authenticated', B, 'select public.sync_learner($1::jsonb)', [bPayload]);
 const bProfile = (await as('authenticated', B, 'select alias, car_id from public.profiles')).rows[0];
 assert.equal(bProfile.alias, null); assert.equal(bProfile.car_id, null); ok('sync never sets a username; an invalid car is stored as null');
@@ -213,6 +211,20 @@ for (let i = 0; i < 5; i++) await call(C, 'select public.create_group()');
 assert.equal((await call(C, 'select public.create_group() r'))[0].r.status, 'limit'); ok('making groups is rate limited');
 const keptCode = (await call(C, 'select * from public.my_groups()'))[0].code;
 assert.equal((await call(A, `select public.join_group('${keptCode}') r`))[0].r, 'joined');
+
+// A completion and its answer may arrive in either order, but must both exist for XP.
+const syncD = async payload => (await as('authenticated', D, 'select public.sync_learner($1::jsonb) r', [JSON.stringify(payload)])).rows[0].r;
+const pendingLesson = { id: 'yellow-light', tries: 1, done: true, completedAt: now };
+const pendingAnswer = { id: 'attempt-dddd-0001', lessonId: 'yellow-light', topicId: 'signals', kind: 'primary', correct: false, activeMs: 1000, at: now };
+assert.equal((await syncD({ lessons: [pendingLesson], attempts: [pendingAnswer] })).weeklyXp, 0); ok('a completed lesson with only a wrong answer earns no XP');
+assert.equal((await syncD({ attempts: [{ ...pendingAnswer, id: 'attempt-dddd-0002', correct: true }] })).weeklyXp, 10); ok('a later correct answer awards pending XP without resending completion');
+assert.equal((await syncD({ attempts: [{ ...pendingAnswer, id: 'attempt-dddd-0003', correct: true }] })).weeklyXp, 10); ok('another correct answer cannot award duplicate XP');
+assert.equal((await syncD({ attempts: [{ ...pendingAnswer, id: 'attempt-dddd-0004', lessonId: 'front-curb', correct: true }] })).weeklyXp, 10); ok('a correct answer without completion earns no XP');
+assert.equal((await syncD({ lessons: [{ ...pendingLesson, id: 'front-curb' }] })).weeklyXp, 20); ok('completion arriving after its answer earns XP immediately');
+for (const role of ['anon', 'authenticated']) {
+  assert.equal((await db.query('select has_function_privilege($1, $2, $3) allowed', [role, 'public.lane_xp_on_answer()', 'EXECUTE'])).rows[0].allowed, false);
+}
+ok('the answer trigger cannot be called directly by a client');
 
 // 9. Delete my data.
 await as('authenticated', A, 'select public.delete_my_data()');

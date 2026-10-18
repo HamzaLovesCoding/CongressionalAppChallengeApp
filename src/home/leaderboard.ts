@@ -20,6 +20,7 @@ export function mountLeaderboard(root: HTMLElement, snapshots: Partial<Record<Sc
   let scope: Scope = 'global';
   const sync = appSync(CLIPS.map(clip => clip.id));
   let disposed = false;
+  let remoteVersion = 0, groupsVersion = 0;
   // Code groups: null until the server answers. `picked` survives refreshes within this Home visit.
   let groups: GroupRow[] | null = null, picked: string | null = null, joining = false, busy = false, groupStatus = '', nameWasTaken = false;
   const groupBoards = new Map<string, LeaderboardSnapshot>();
@@ -70,16 +71,18 @@ export function mountLeaderboard(root: HTMLElement, snapshots: Partial<Record<Sc
     panel.innerHTML = `${rankings(snapshot, copy[scope].list)}${note ? `<p class="home-board-note">${note}</p>` : ''}`;
   }
   async function loadGroups() {
+    const version = ++groupsVersion;
     const list = await sync.groups();
-    if (disposed || !list) return;
+    if (disposed || version !== groupsVersion || !list) return;
     groups = list;
     const group = selected();
-    if (group) { const rows = await sync.codeGroupLeaderboard(group.code); if (disposed) return; if (rows) groupBoards.set(group.code, toSnapshot(rows)); }
+    if (group) { const rows = await sync.codeGroupLeaderboard(group.code); if (disposed || version !== groupsVersion) return; if (rows) groupBoards.set(group.code, toSnapshot(rows)); }
     if (scope === 'group' && !joining) refresh();
   }
   async function loadRemote() {
+    const version = ++remoteVersion;
     const global = await sync.leaderboard();
-    if (disposed) return;
+    if (disposed || version !== remoteVersion) return;
     if (global) { snapshots.global = toSnapshot(global); if (scope === 'global') refresh(); }
     await loadGroups();
   }
@@ -164,8 +167,9 @@ export function mountLeaderboard(root: HTMLElement, snapshots: Partial<Record<Sc
   root.addEventListener('change', change);
   root.addEventListener('submit', submit);
   document.addEventListener('visibilitychange', visible);
+  const unsubscribe = sync.subscribe(status => { if (status.state === 'synced') void loadRemote(); });
   const timer = window.setInterval(visible, 60_000);
   refresh();
   void loadRemote();
-  return { refresh, dispose() { disposed = true; clearInterval(timer); document.removeEventListener('visibilitychange', visible); root.removeEventListener('click', click); root.removeEventListener('keydown', keydown); root.removeEventListener('change', change); root.removeEventListener('submit', submit); } };
+  return { refresh, dispose() { disposed = true; unsubscribe(); clearInterval(timer); document.removeEventListener('visibilitychange', visible); root.removeEventListener('click', click); root.removeEventListener('keydown', keydown); root.removeEventListener('change', change); root.removeEventListener('submit', submit); } };
 }

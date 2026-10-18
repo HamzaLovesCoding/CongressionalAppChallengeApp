@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { PRIVACY, TERMS, OWNER_PLACEHOLDER } from '../src/legal/documents.ts';
+import { PRIVACY, TERMS } from '../src/legal/documents.ts';
 import { VIDEO_CREDITS, OPEN_SOURCE } from '../src/legal/credits.ts';
 import { VIDEO_LESSONS } from '../src/feed/curriculum.ts';
 
@@ -20,14 +20,17 @@ test('the privacy policy names every category the sync payload sends', () => {
   assert.doesNotMatch(sync, /\n    (liked|saved|spentXp|ownedCars|xp):/, 'payload leaves out what the policy says is not sent');
 });
 
-test('no compliance, encryption or absolute-security claims, and owner facts stay visible placeholders', () => {
+test('no compliance, encryption or absolute-security claims, and the supplied owner facts appear in both policies', () => {
   for (const words of [privacy, terms]) {
     assert.doesNotMatch(words, /COPPA|FERPA|CCPA|CPRA|GDPR|fully compliant|encrypted|never shared|100% secure|guarantee(?!.*not)/i);
   }
   assert.match(privacy, /No system is perfectly secure/);
   for (const doc of [PRIVACY, TERMS]) {
-    assert.equal(doc.effective, null, 'effective date is set by the owner, not invented');
-    assert.match(JSON.stringify(doc), new RegExp(OWNER_PLACEHOLDER.contact.replace(/[.()]/g, '\\$&')));
+    assert.equal(doc.effective, 'October 18, 2026');
+    assert.equal(doc.version, '1.0');
+    assert.ok(text(doc).includes('Hamza Wadera'));
+    assert.ok(text(doc).includes('hamza.w.3790@gmail.com'));
+    assert.doesNotMatch(JSON.stringify(doc), /legal operator name to be added|Contact details will be added|0\.1 \(draft\)/);
   }
   assert.match(terms, /Never use Lane while driving/);
   assert.match(terms, /not affiliated with or endorsed by the California DMV/);

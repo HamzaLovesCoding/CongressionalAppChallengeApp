@@ -552,8 +552,8 @@ export function mountFeed(root: HTMLElement, target: FeedTarget = {}): View {
     const correct = index === q.answer;
     const activeMs = performance.now() - questionShownAt;
     const wasComplete = record(clip.id)?.done;
-    // A miss earlier this session or before a reload (stored tries without a first-try) rules out "first try".
-    const firstTry = kind === 'primary' && !missedPrimary.has(clip.id) && !questionMissed && (record(clip.id)?.tries ?? 0) === 0;
+    // Persisted lesson attempts guard the first check; later checks count only their own misses.
+    const firstTry = kind === 'primary' && !questionMissed && (questionIndex > 0 || (!missedPrimary.has(clip.id) && (record(clip.id)?.tries ?? 0) === 0));
     if (kind === 'harder') triedHarder.add(clip.id);
     // "I already know this" proves the whole lesson; otherwise the last check completes it.
     const finishing = kind === 'harder' || questionIndex === questions().length - 1;

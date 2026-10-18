@@ -1,4 +1,4 @@
-// Walks the quiz flow and simulation handoff in the built app (npm run build && npm run preview):
+// Walks the quiz flow and simulation handoff in the built app (npm run build:test && npm run preview:test):
 // wrong → rule → similar → second miss → recovery + Review Later; options menu; I already know this;
 // lesson completion → the challenge card follows → package mounts in the feed → Exit records once,
 // queues review and stays put; "Are you sure?" on an early swipe; old #/drive and #/sim links redirect. Screenshots: artifacts/learning-flow/.

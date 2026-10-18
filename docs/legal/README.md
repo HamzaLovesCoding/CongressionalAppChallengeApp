@@ -4,10 +4,12 @@
 
 These drafts were written by an AI coding assistant, not a lawyer. Before publishing, have a parent, teacher or attorney review them, especially the items below.
 
+The in-app policies in `src/legal/documents.ts` use Hamza Wadera, hamza.w.3790@gmail.com, and an effective date of October 18, 2026 (version 1.0), supplied by the owner. Those identity/date fields are also filled in these older review drafts; the remaining policy decisions below are still open.
+
 ## Fill in the placeholders
 
-- [ ] Team name and contact email, ideally a team address rather than a personal one. Optionally a school or mailing address.
-- [ ] Effective and last-updated dates.
+- [x] Team name and contact email: Hamza Wadera, hamza.w.3790@gmail.com.
+- [x] Effective and last-updated dates: October 18, 2026.
 - [ ] Hosting provider, what it logs (IP address, browser, pages) and for how long. Confirm it sets no cookies and serves Lane over HTTPS.
 - [ ] Software license for the code, if the team open-sources it.
 

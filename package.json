@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "vite --host 0.0.0.0",
     "build": "tsc --noEmit && vite build",
+    "build:test": "tsc --noEmit && VITE_SUPABASE_URL= VITE_SUPABASE_PUBLISHABLE_KEY= VITE_SUPABASE_ANON_KEY= vite build --outDir dist-test",
+    "preview:test": "vite preview --host 127.0.0.1 --outDir dist-test --port 4173 --strictPort",
     "preview": "vite preview --host 0.0.0.0",
     "inspect:feed": "node scripts/inspect-feed.mjs"
   },

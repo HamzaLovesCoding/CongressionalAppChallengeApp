@@ -57,9 +57,15 @@ async function handle(route) {
 
 const browser = await chromium.launch({ executablePath: process.env.CHROMIUM });
 const errors = [];
+// The auth shim uses one database session; keep concurrent browser requests in their own role.
+let requests = Promise.resolve();
 async function learner(name) {
   const context = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
-  await context.route(`${host}/**`, handle);
+  await context.route('https://*.supabase.co/**', route => {
+    assert.equal(new URL(route.request().url()).origin, host, 'never send walkthrough requests to the live project');
+    requests = requests.then(() => handle(route));
+    return requests;
+  });
   const page = await context.newPage();
   page.on('pageerror', error => errors.push(`${name}: ${error.message}`));
   return page;
@@ -84,15 +90,22 @@ async function onboard(page, name) {
 }
 await onboard(a, 'Road_Runner');
 await onboard(b, 'Brake_Light');
-// Each learner earns server XP: a correct answer and a finished lesson, synced twice (XP is granted once the answer is stored).
-const payload = (id, n) => ({ lessons: [{ id, tries: 1, firstTry: true, done: true, completedAt: new Date().toISOString() }], attempts: [{ id: `attempt-${n}-0001`, lessonId: id, topicId: 'road-awareness', kind: 'primary', correct: true, activeMs: 9000, at: new Date().toISOString() }] });
+// Use the app's backup path once; Home must update immediately, without a reload or its minute timer.
+async function completeAndSync(page, lessons) {
+  await page.evaluate(async lessons => {
+    const store = await import('/src/feed/progress.ts');
+    const { appSync } = await import('/src/data/sync.ts');
+    const { CLIPS } = await import('/src/feed/clips.ts');
+    for (const id of lessons) {
+      store.answer(id, true);
+      store.recordAttempt({ itemId: id, topicId: 'road-awareness', kind: 'primary', correct: true, activeMs: 9000 });
+    }
+    await appSync(CLIPS.map(clip => clip.id)).sync();
+  }, lessons);
+}
 for (const [page, lessons] of [[a, ['lane-end-scan', 'dark-signal']], [b, ['lane-end-scan']]]) {
-  const user = await page.evaluate(() => JSON.parse(localStorage.getItem('lane-auth')).session.userId);
-  for (const [i, id] of lessons.entries()) for (let k = 0; k < 2; k++) {
-    await db.exec(`reset role; select set_config('request.jwt.claim.sub', '${user}', false); set role authenticated;`);
-    await db.query('select public.sync_learner($1::jsonb)', [JSON.stringify(payload(id, `${user.slice(0, 4)}${i}`))]);
-    await db.exec('reset role');
-  }
+  await completeAndSync(page, lessons);
+  await page.waitForFunction(xp => document.querySelector('[data-board-you] .home-board-xp strong')?.textContent === String(xp), lessons.length * 10, { timeout: 5000 });
 }
 
 // The Global tab no longer says rankings are coming soon.
@@ -131,6 +144,12 @@ await a.locator('.home-leaderboard').scrollIntoViewIfNeeded();
 await a.click('[data-board-tab="group"]');
 await a.waitForFunction(() => document.querySelectorAll('#board-panel .home-board-row').length === 2);
 await shot(a, '05-owner-sees-friend');
+
+await completeAndSync(a, ['after-collision']);
+await a.waitForFunction(() => document.querySelector('[data-board-you] .home-board-xp strong')?.textContent === '30', null, { timeout: 5000 });
+await a.click('[data-board-tab="global"]');
+assert.equal(await a.locator('[data-board-you] .home-board-xp strong').innerText(), '30', 'both boards refresh after backup');
+await shot(a, '05b-xp-after-one-backup');
 
 b.on('dialog', dialog => dialog.accept());
 await b.click('[data-group-leave]');

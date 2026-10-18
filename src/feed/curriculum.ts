@@ -1,10 +1,10 @@
 import type { Clip } from './clips';
+import { HANDBOOK } from '../content/handbook.ts';
 
 // Video lessons 1–19 from the owner-supplied curriculum in AppMaterial/ (Video Lessons, Quizzes &
 // Decision Prompts deck, cross-checked against the Video Validation package). Clip licenses were
 // confirmed by the owner on October 13, 2026; creator names are not yet recorded.
 // Quick checks stay draft until a human approves them against the handbook.
-const HANDBOOK = 'California Quick Reference Driver’s Handbook (DL 600X, 2025)';
 const OTS = 'California Office of Traffic Safety, Novato 2023';
 const LOCAL = {
   general: 'In Novato in 2023, 134 people were killed or injured in fatal-and-injury crashes. Predictable, legal choices protect everyone sharing the road.',

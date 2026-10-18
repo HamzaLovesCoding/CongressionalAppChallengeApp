@@ -3,7 +3,7 @@ import { bindMenu, menuButton, menuSheetMarkup } from './menu';
 import type { View } from '../navigation';
 import { CLIPS } from '../feed/clips';
 import { onboarding, record, stats, XP_PER_CLIP } from '../feed/progress';
-import { DRIVER_CLASS_STEPS, goalReadiness, nextReadinessStep, STATUS_STEPS } from '../learning/scoring';
+import { DRIVER_CLASS_STEPS, goalReadiness, STATUS_STEPS } from '../learning/scoring';
 import { homeContent as copy } from './content';
 import { lessonProgress } from './model';
 import { currentReadiness, nextLessonId, savedEntries } from '../feed/plan';
@@ -42,15 +42,15 @@ export function mountHome(root: HTMLElement): View {
   const goal = goalReadiness(onboarding().goal, result);
   const isDriver = onboarding().goal === 'driver';
   const steps = isDriver ? DRIVER_CLASS_STEPS : STATUS_STEPS;
-  const step = nextReadinessStep(onboarding().goal, result);
-  const nextStep = step ? copy.nextStep(step) : copy.topStep;
   // The status pill warms from ochre to green as the learner passes each label's threshold.
   const passed = isDriver ? steps.filter(([at]) => goal.score >= at).length : (['Needs Foundation', 'Developing', 'Permit Test Ready', 'Highway Confident'] as const).indexOf(result.status);
   const tone = ['start', 'build', 'ready', 'top', 'top'][passed];
   const learning = lessonProgress(CLIPS, record, nextLessonId());
   const next = learning.next;
   const nextIndex = CLIPS.indexOf(next);
-  const readinessTitle = isDriver ? copy.readiness : goal.title;
+  // Home names the dial a score (owner, 2026-10-17); the permit goal keeps its own wording.
+  const readinessTitle = onboarding().goal === 'permit' ? goal.title : copy.readiness;
+  const lessonCount = copy.lessonCount(learning.completed, learning.total);
   const readinessDetail = isDriver ? goal.value : goal.detail;
   const daysThisWeek = s.week.filter(xp => xp > 0).length;
   // lit: today already counts. risk: a streak that ends at midnight without a lesson. new: nothing to lose yet.
@@ -82,15 +82,14 @@ export function mountHome(root: HTMLElement): View {
           <div><p class="home-streak-title" data-streak>${learning.allDone && !s.streak ? copy.streakComplete : copy.streak(s.streak)}</p><p class="home-streak-detail">${learning.allDone ? copy.allLessonsDone : s.xpToday ? copy.streakToday(s.streak + 1) : s.streak ? copy.streakPending : copy.streakStart}</p></div>
         </div>
         <ol class="home-week-bars" aria-label="${copy.weekActivity}">${s.week.map((xp, i) => `<li class="${i === s.todayIndex ? 'is-today' : i > s.todayIndex ? 'is-ahead' : ''}${xp ? ' is-done' : ''}"${i === s.todayIndex ? ' aria-current="date"' : ''}><span class="home-week-bar" aria-hidden="true">${copy.days[i][0]}</span><span class="home-sr-only">${copy.days[i]}: ${xp} XP</span></li>`).join('')}</ol>
-        <a class="home-goal-summary" href="#/review" aria-label="${esc(`${readinessTitle}: ${goal.score} ${copy.outOf100}. ${readinessDetail}. ${nextStep}. ${copy.lessonCount(learning.completed, learning.total)}. ${copy.viewReadiness}`)}">
+        <a class="home-goal-summary" href="#/review" aria-label="${esc(`${readinessTitle}: ${goal.score} ${copy.outOf100}. ${readinessDetail}. ${lessonCount}. ${copy.viewReadiness}`)}">
           <span class="home-goal-heading"><span>${esc(readinessTitle)}</span><small>${copy.allTime}</small></span>
           <span class="home-dial-wrap">
             ${readinessDial(goal.score, steps.map(([at]) => at), readinessTitle)}
             <span class="home-dial-readout"><strong data-goal-detail>${goal.score}</strong><span>/ 100</span></span>
           </span>
           <span class="home-goal-status is-${tone}">${esc(readinessDetail)}</span>
-          <span class="home-goal-next">${esc(nextStep)}</span>
-          <span class="home-goal-footer"><span class="home-goal-completed">${copy.lessonCount(learning.completed, learning.total)}</span><span class="home-goal-more">${copy.review}${icon('chevron')}</span></span>
+          <span class="home-goal-next" data-goal-lessons>${lessonCount}</span>
         </a>
       </section>
       <section class="home-leaderboard" aria-labelledby="home-leaderboard-title"></section>

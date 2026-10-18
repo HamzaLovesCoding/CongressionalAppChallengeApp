@@ -47,10 +47,6 @@ body:has(.home-preview) { touch-action:auto; }
 .home-goal-status.is-ready { background:var(--lane-success-soft); color:var(--lane-success); box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--lane-success) 35%,transparent); }
 .home-goal-status.is-top { background:var(--lane-success); color:var(--lane-surface); }
 .home-goal-next { color:var(--lane-accent-ink); font-weight:var(--fw-bold); text-align:center; text-wrap:balance; }
-.home-goal-completed { color:var(--lane-support); font-size:var(--fs-caption); }
-.home-goal-footer { display:flex; align-items:center; justify-content:space-between; gap:var(--sp-3); }
-.home-goal-more { display:inline-flex; align-items:center; gap:2px; flex:none; font-weight:var(--fw-bold); }
-.home-goal-more svg { width:18px; height:18px; }
 .home-shortcut { display:flex; align-items:center; gap:12px; min-height:69px; width:100%; padding:14px 0; border:0; border-bottom:1px solid var(--lane-line); background:transparent; text-align:left; }
 .home-shortcut-icon { display:grid; place-items:center; width:40px; height:40px; color:var(--lane-ink); border:1px solid var(--lane-ink); border-radius:12px; background:var(--lane-surface); }
 .home-shortcut-icon svg { width:21px; height:21px; }

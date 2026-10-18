@@ -64,7 +64,7 @@ try {
     assert.equal(await page.locator('.home-strip, .home-strip-card').count(), 0, 'the lesson strip is gone (Progress lists every lesson)');
     assert.equal(await page.locator('.home-week-bars li').count(), 7);
     assert.equal(await page.getByRole('progressbar').getAttribute('aria-valuenow'), '0');
-    assert.match(await goalArea(), /0 of 24 lessons completed/);
+    assert.match(await goalArea(), /0 out of 24 lessons completed/);
     assert.equal(await page.locator('[data-streak]').innerText(), 'Start a streak today');
     const fresh = await stored();
     assert.equal(fresh.xp ?? 0, 0); assert.deepEqual(Object.keys(fresh.clips ?? {}), [], 'onboarding writes no progress');
@@ -87,7 +87,7 @@ try {
     assert.match(await goalArea(), /Permit test readiness\s+All time\s+[1-9]\d*\s*\/ 100/, 'a right answer raises readiness');
     assert.equal(await page.locator('[data-streak]').innerText(), '1-day streak');
     assert.equal(await page.locator('.home-week-bars .is-today.is-done').count(), 1);
-    assert.match(await goalArea(), /1 of 24 lessons completed/);
+    assert.match(await goalArea(), /1 out of 24 lessons completed/);
     assert.equal(await page.locator('.home-week-bars .is-today .home-sr-only').innerText().then(text => text.endsWith(': 10 XP')), true);
     await page.screenshot({ path: `artifacts/home-progress-${name}.png` });
 
@@ -114,7 +114,7 @@ try {
     assert.equal(await page.locator('[data-goal-status]').innerText(), 'Saved.');
     if (name === 'narrow') await page.screenshot({ path: 'artifacts/settings-goal-narrow.png', fullPage: true });
     await page.goto(`${base}#/home`); await page.locator('.home-live').waitFor();
-    assert.match(await goalArea(), /Driver readiness\s+All time\s+\d+\s*\/ 100\s+(Learner|Class [A-C]\+?)/);
+    assert.match(await goalArea(), /Driver readiness score\s+All time\s+\d+\s*\/ 100\s+(Learner|Class [A-C]\+?)/);
     await page.goto(`${base}#/settings`); await page.getByLabel('Prepare for the permit test, then for driving').check();
     await page.getByRole('button', { name: 'Save goal', exact: true }).click();
     await page.goto(`${base}#/home`);
@@ -177,7 +177,7 @@ try {
     }, VIDEO_IDS);
     await page.reload({ waitUntil: 'load' });
     assert.equal(await page.locator('.home-sign-face').getAttribute('href'), '#/practice');
-    assert.match(await goalArea(), /Driver readiness\s+All time\s+\d+\s*\/ 100\s+(Learner|Class [A-C]\+?)/, 'the driver goal shows a score out of 100 and its class');
+    assert.match(await goalArea(), /Driver readiness score\s+All time\s+\d+\s*\/ 100\s+(Learner|Class [A-C]\+?)/, 'the driver goal shows a score out of 100 and its class');
     await page.screenshot({ path: `artifacts/home-complete-${name}.png` });
     await page.locator('.home-preview').evaluate(el => { el.scrollTop = el.scrollHeight; });
     await page.screenshot({ path: `artifacts/home-shortcuts-${name}.png` });

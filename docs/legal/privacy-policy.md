@@ -2,8 +2,8 @@
 
 > **Draft for review, not in effect.** Written October 15, 2026 from what the app actually does today. Text in [square brackets] is a placeholder the team must fill in. See `docs/legal/README.md` for open decisions and what an adult or lawyer should check before this is published.
 
-**Effective date:** [date]
-**Last updated:** [date]
+**Effective date:** October 18, 2026
+**Last updated:** October 18, 2026
 
 ## The short version
 
@@ -15,7 +15,7 @@
 
 ## 1. Who we are
 
-Lane is a driving-lesson app made by [team name] for the Congressional App Challenge. In this policy, "we" and "us" mean [team name], and "you" means anyone using Lane. Questions go to [contact email] (see section 14).
+Lane is a driving-lesson app made by Hamza Wadera for the Congressional App Challenge. In this policy, "we" and "us" mean Hamza Wadera, and "you" means anyone using Lane. Questions go to hamza.w.3790@gmail.com (see section 14).
 
 ## 2. What Lane saves on your device
 
@@ -81,7 +81,7 @@ Lane is made for teens about 14 to 16 who are getting ready for a learner's perm
 
 [Planned, decide before accounts launch: how Lane checks age at sign-up, and whether children under 13 are blocked or need verifiable parental consent under the Children's Online Privacy Protection Act (COPPA). Recommended: don't allow accounts for anyone under 13.]
 
-If you're a parent or guardian with questions, contact us at [contact email].
+If you're a parent or guardian with questions, contact us at hamza.w.3790@gmail.com.
 
 ## 10. Do Not Track
 
@@ -109,6 +109,6 @@ If we change this policy, we'll update the "Last updated" date. For important ch
 
 ## 14. Contact
 
-[Team name]
-[Contact email]
+Hamza Wadera
+hamza.w.3790@gmail.com
 [School or mailing address, if the team chooses to list one]

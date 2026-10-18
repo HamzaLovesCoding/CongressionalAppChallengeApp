@@ -39,7 +39,8 @@
 .lane-sub .review-card summary { display:flex; cursor:pointer; list-style:none; }
 .lane-sub .review-card summary::-webkit-details-marker { display:none; }
 .lane-sub .review-card p { margin:var(--sp-2) 0 var(--sp-3); }
-.lane-sub .review-band { flex:none; display:flex; gap:4px; }
+/* Child selector so it outranks `.sub-row>span`, which would stack the boxes as a grid column. */
+.lane-sub .sub-row>.review-band { flex:none; display:flex; gap:4px; }
 .lane-sub .review-band i { width:14px; height:14px; border:1.5px solid var(--lane-ink); border-radius:4px; background:var(--lane-surface); }
 .lane-sub .review-band i.is-on { background:var(--lane-accent); }
 /* Onboarding (#/welcome) */

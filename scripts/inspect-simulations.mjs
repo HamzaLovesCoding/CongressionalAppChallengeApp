@@ -1,4 +1,4 @@
-// Every vendored simulation, inside the feed (npm run build && npm run preview): its card opens at
+// Every vendored simulation, inside the feed (npm run build:test && npm run preview:test): its card opens at
 // #/feed/sim/:id, Start challenge mounts the package in the card and locks the feed; safe choice →
 // "safe" record → Continue moves to the next feed item; unsafe → "unsafe" + Review Later; Retry →
 // "retry"; letting the countdown run out → "timeout"; Exit → one "exit" record and the learner

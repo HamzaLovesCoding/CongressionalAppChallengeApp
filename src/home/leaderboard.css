@@ -24,12 +24,14 @@
 .home-board-group-head select { min-width:0; flex:1; min-height:44px; padding:0 var(--sp-3); border:1.5px solid var(--lane-ink); border-radius:var(--radius-md); background:var(--lane-surface); color:var(--lane-ink); font:inherit; font-weight:var(--fw-bold); }
 .home-board-code { display:flex; flex:none; align-items:baseline; gap:var(--sp-2); min-height:44px; padding:0 var(--sp-3); border:1.5px solid var(--lane-ink); border-radius:var(--radius-md); background:var(--lane-accent-soft); color:var(--lane-ink); font:inherit; font-weight:var(--fw-bold); letter-spacing:.08em; font-variant-numeric:tabular-nums; cursor:pointer; align-items:center; }
 .home-board-code small { font-size:var(--fs-caption); font-weight:var(--fw-regular); letter-spacing:0; color:var(--lane-support); }
-.home-board-actions { display:grid; grid-template-columns:1fr 1fr; gap:var(--sp-2); padding:var(--sp-3) var(--sp-4) 0; border-top:1px solid var(--lane-line); }
+/* The group controls end the card, so they carry its bottom padding (the status line under them is often empty). */
+.home-board-actions { display:grid; grid-template-columns:1fr 1fr; gap:var(--sp-2); padding:var(--sp-3) var(--sp-4) var(--sp-4); border-top:1px solid var(--lane-line); }
 .home-board-actions .ui-button { min-height:48px; padding:var(--sp-2); }
-.home-board-leave { margin-top:var(--sp-1); }
-.home-board-join { display:grid; grid-template-columns:1fr auto; gap:var(--sp-2); padding:var(--sp-3) var(--sp-4) 0; border-top:1px solid var(--lane-line); }
+.home-board-actions:has(+ .home-board-leave) { padding-bottom:0; }
+.home-board-leave { margin:var(--sp-1) 0 var(--sp-2); }
+.home-board-join { display:grid; grid-template-columns:1fr auto; gap:var(--sp-2); padding:var(--sp-3) var(--sp-4) var(--sp-2); border-top:1px solid var(--lane-line); }
 .home-board-join input { min-width:0; min-height:48px; padding:0 var(--sp-3); border:1.5px solid var(--lane-ink); border-radius:var(--radius-md); background:var(--lane-surface); color:var(--lane-ink); font:inherit; font-size:16px; font-weight:var(--fw-bold); letter-spacing:.08em; text-transform:uppercase; }
 .home-board-join .ui-button { width:auto; min-height:48px; }
 .home-board-join .is-quiet { grid-column:1 / -1; }
 .home-board-status:empty { display:none; }
-.home-board-card .home-board-status { border-top:0; }
+.home-board-card .home-board-status { border-top:0; padding-top:0; }

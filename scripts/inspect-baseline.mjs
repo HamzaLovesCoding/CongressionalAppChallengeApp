@@ -1,5 +1,5 @@
 // Visual baseline: every route at the five review viewports, fresh learner, no service worker.
-// Run against `npm run build && npm run preview`; screenshots go to artifacts/baseline/<label>/.
+// Run against `npm run build:test && npm run preview:test`; screenshots go to artifacts/baseline/<label>/.
 import { chromium, webkit } from 'playwright';
 import { mkdir, writeFile } from 'node:fs/promises';
 // Onboarding is covered by inspect-home.mjs; this walkthrough starts as a learner who finished it.

@@ -14,12 +14,17 @@ Status (2026-10-16): the owner pasted the foundation and streak-buddies migratio
 
 ## Go live (three steps)
 
+Update (October 18, 2026): `20261021000000_lane_xp_on_answer.sql` was applied to the live Lane project through the SQL editor. The `xp_on_answer` trigger on `public.learning_events` was verified as installed and enabled. Same-backup XP behavior passed the local Postgres checks; no hosted test learners were created for this change. The four-account cleanup below remains a manual operation.
+
 1. **Apply the migrations**, in order, in the project's SQL editor (Dashboard → SQL Editor → paste and run each file), or allow the connector’s `apply_migration` tool in claude.ai and ask the agent to apply them:
    - `migrations/20261015000000_lane_learner_foundation.sql`
    - `migrations/20261016000000_lane_streak_buddies.sql`
    - `migrations/20261017000000_lane_lesson_comments.sql`
    - `migrations/20261017010000_lane_comment_self_upvote.sql`
    - `migrations/20261018000000_lane_xp_needs_answer.sql` (lesson XP only after a correct answer is on the server)
+   - `migrations/20261019000000_lane_code_groups.sql`
+   - `migrations/20261020000000_lane_global_board_everyone.sql`
+   - `migrations/20261021000000_lane_xp_on_answer.sql` (awards a waiting completion as soon as its correct answer arrives, in the same backup; keeps the answer guard and one-award limit)
 2. **Allow anonymous sign-ins**: Dashboard → Authentication → Sign In / Providers → turn on **Allow anonymous sign-ins**. Learners never type an email or password; each device gets an anonymous account.
 3. **Point the app at it**: create `.env.local` (gitignored) with
 
@@ -54,8 +59,10 @@ After that, run the Supabase security advisor (Dashboard → Advisors) and repea
 
 ## Verify
 
+- Use `npm run build:test && npm run preview:test` for browser walkthroughs. The separate `dist-test/` build clears every Supabase setting, including those from `.env.local`; regular production builds remain connected when configured.
+- The one-off October 18 test-account cleanup is `maintenance/20261018_remove_demo_test_learners.sql`. It checks and deletes only the four UUIDs read from the live dashboard, with cascading learner data and the two comments owned by `yob`. It is separate from migrations and must be run manually; do not apply it to other environments.
 - Static checks: `node --test scripts/supabase-schema.test.mjs`.
-- Behavior on real Postgres with three learners (60 checks: ownership, no direct writes, XP validation, idempotency, usernames, leaderboard fields, buddy requests/acceptance/privacy, duo streak, group leaderboard, helper functions closed to direct calls, lesson comments, deletion):
+- Behavior on local Postgres with four learners (84 checks: ownership, no direct writes, same-backup XP, answer/completion arrival order, idempotency, usernames, leaderboard fields, buddy requests/acceptance/privacy, duo streak, code groups, helper functions closed to direct calls, lesson comments, deletion):
 
   ```sh
   npm install --no-save @electric-sql/pglite@0.5.8

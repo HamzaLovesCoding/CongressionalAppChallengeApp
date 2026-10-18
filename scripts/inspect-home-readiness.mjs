@@ -23,7 +23,7 @@ try {
     await page.goto(`${base}#/home`);
     await page.locator('.home-week').waitFor();
     assert.equal(await page.locator('[data-goal-detail]').innerText(), '52');
-    assert.match(await page.locator('.home-goal-completed').innerText(), /12 of 24/);
+    assert.match(await page.locator('[data-goal-lessons]').innerText(), /12 out of 24/);
     if (goal === 'driver') {
       await page.setViewportSize({ width: 390, height: 844 });
       await page.locator('.home-week').scrollIntoViewIfNeeded();
@@ -49,7 +49,7 @@ try {
     assert.ok(Number(afterLesson) > 52, 'completing a lesson raises the shared score');
     await page.goto(`${base}#/home`); await page.locator('.home-week').waitFor();
     assert.equal(await page.locator('[data-goal-detail]').innerText(), afterLesson, 'Home agrees with the lesson-complete summary');
-    assert.match(await page.locator('.home-goal-completed').innerText(), /13 of 24/);
+    assert.match(await page.locator('[data-goal-lessons]').innerText(), /13 out of 24/);
 
     // Old records outside the curriculum must not inflate the score; completion counts even without mastery.
     await page.evaluate(ids => {
@@ -72,7 +72,7 @@ try {
     }, CLIPS.map(clip => topicOf(clip.id)));
     await page.goto(`${base}#/home`); await page.reload(); await page.locator('.home-week').waitFor();
     assert.equal(await page.locator('[data-goal-detail]').innerText(), '100');
-    assert.match(await page.locator('.home-goal-completed').innerText(), /24 of 24/);
+    assert.match(await page.locator('[data-goal-lessons]').innerText(), /24 out of 24/);
     assert.equal(await page.locator('[data-streak]').innerText(), 'Every lesson completed');
     await page.addStyleTag({ content: ':root { --fs-caption:18px; --fs-body:22.5px; --fs-title:30px; --fs-display:39px; --fs-hero:72px; }' });
     await page.locator('.home-goal-summary').scrollIntoViewIfNeeded();

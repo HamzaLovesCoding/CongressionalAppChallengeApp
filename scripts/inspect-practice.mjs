@@ -31,7 +31,7 @@ try {
     await page.waitForURL(/#\/practice\/test$/);
     await page.locator('#pt-question').waitFor();
     assert.equal(await page.getByRole('navigation', { name: 'Main navigation' }).count(), 0, 'The test hides app navigation');
-    assert.equal(await page.locator('.pt-count').innerText(), '1 / 46');
+    assert.equal(await page.locator('.pt-count').innerText(), '1 / 43');
     const submit = page.getByRole('button', { name: 'Submit answer' });
     assert.equal(await submit.isDisabled(), true);
     await shot('question');
@@ -65,29 +65,29 @@ try {
     await shot('leave-dialog');
     await page.getByRole('button', { name: 'Keep going' }).click();
     assert.match(page.url(), /#\/practice\/test$/);
-    assert.equal(await page.locator('.pt-count').innerText(), '2 / 46');
+    assert.equal(await page.locator('.pt-count').innerText(), '2 / 43');
 
     await page.waitForTimeout(450);
     await page.getByRole('button', { name: 'Next question' }).click();
-    for (let i = 3; i <= 46; i++) {
-      assert.equal(await page.locator('.pt-count').innerText(), `${i} / 46`);
+    for (let i = 3; i <= 43; i++) {
+      assert.equal(await page.locator('.pt-count').innerText(), `${i} / 43`);
       await page.getByRole('radio').first().check();
       await page.getByRole('button', { name: 'Submit answer' }).click();
       await page.waitForTimeout(450);
-      await page.getByRole('button', { name: i === 46 ? 'See results' : 'Next question' }).click();
+      await page.getByRole('button', { name: i === 43 ? 'See results' : 'Next question' }).click();
     }
     await page.getByRole('heading', { name: 'Your results' }).waitFor();
-    assert.match(await page.locator('.pt-score').innerText(), /of 46 correct/);
+    assert.match(await page.locator('.pt-score').innerText(), /of 43 correct/);
     assert.ok(await noSideScroll());
     await shot('results');
 
     await page.getByRole('button', { name: 'Start again' }).click();
-    assert.equal(await page.locator('.pt-count').innerText(), '1 / 46');
+    assert.equal(await page.locator('.pt-count').innerText(), '1 / 43');
     await page.reload({ waitUntil: 'load' });
-    assert.equal(await page.locator('.pt-count').innerText(), '1 / 46', 'A reload starts a fresh attempt');
+    assert.equal(await page.locator('.pt-count').innerText(), '1 / 43', 'A reload starts a fresh attempt');
     assert.equal(await saved(), initialProgress, 'The practice test does not write lesson progress');
     assert.deepEqual(problems, []);
-    console.log(`${name}: practice tab, start, locked answers, sign image, leave confirmation, all 46 questions, results, restart, and reload passed.`);
+    console.log(`${name}: practice tab, start, locked answers, sign image, leave confirmation, all 43 questions, results, restart, and reload passed.`);
     await context.close();
   }
 } finally { await browser.close(); }

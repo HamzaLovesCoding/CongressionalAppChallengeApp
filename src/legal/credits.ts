@@ -1,4 +1,5 @@
 import { VIDEO_LESSONS } from '../feed/curriculum.ts';
+import { HANDBOOK } from '../content/handbook.ts';
 
 // The attribution register behind Credits & sources (docs/lane/08-credits-and-attribution-register.md).
 // Video rows come from each lesson's own credit record, so a new lesson is credited by its data.
@@ -20,7 +21,7 @@ export const VIDEO_CREDITS: VideoCredit[] = VIDEO_LESSONS.map(lesson => ({
 export const CC_BY_3 = 'https://creativecommons.org/licenses/by/3.0/';
 
 export const LEARNING_SOURCES = [
-  { title: 'California Quick Reference Driver’s Handbook (DL 600X, 2025)', publisher: 'California Department of Motor Vehicles', use: 'Rules, corrections and handbook page citations in every lesson and check.', url: 'https://www.dmv.ca.gov/portal/handbook/california-driver-handbook/' },
+  { title: HANDBOOK, publisher: 'California Department of Motor Vehicles', use: 'Rules, corrections and handbook page citations in every lesson and check.', url: 'https://www.dmv.ca.gov/portal/handbook/california-driver-handbook/' },
   { title: 'California Driver’s Handbook', publisher: 'California Department of Motor Vehicles', use: 'Handbook sections cited by the ten practice scenarios.', url: 'https://www.dmv.ca.gov/portal/handbook/california-driver-handbook/' },
   { title: 'Crash data for Novato, 2023', publisher: 'California Office of Traffic Safety', use: 'Local figures in each lesson’s “Why it matters here.”', url: null },
 ] as const;

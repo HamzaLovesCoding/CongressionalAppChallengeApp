@@ -378,26 +378,6 @@ export const PERMIT_BANK: PermitBank = {
       correctChoiceId: 'b',
     },
     {
-      id: 'ca-037', topicId: 'lanes', conceptId: 'bicycle-lane-turn', sourcePage: 11,
-      prompt: 'When is it okay to drive in a bicycle lane?',
-      choices: [
-        { id: 'a', text: 'when turning right within 200 feet of an intersection' },
-        { id: 'b', text: 'when the bicycle lane is unoccupied' },
-        { id: 'c', text: 'at all times, regardless of the situation.' },
-      ],
-      correctChoiceId: 'a',
-    },
-    {
-      id: 'ca-038', topicId: 'lanes', conceptId: 'paved-passing', sourcePage: 11,
-      prompt: 'Under NO circumstances are you allowed to:',
-      choices: [
-        { id: 'a', text: 'pass a vehicle on the left' },
-        { id: 'b', text: 'leave the roadway to pass another car' },
-        { id: 'c', text: 'leave the roadway to avoid a serious collision' },
-      ],
-      correctChoiceId: 'b',
-    },
-    {
       id: 'ca-039', topicId: 'yield', conceptId: 'school-bus', sourcePage: 11,
       prompt: 'Not stopping for a school bus that is unloading children can result in:',
       choices: [
@@ -446,16 +426,6 @@ export const PERMIT_BANK: PermitBank = {
         { id: 'c', text: 'Proceed slowly as long as the person is not directly in your lane.' },
       ],
       correctChoiceId: 'b',
-    },
-    {
-      id: 'ca-044', topicId: 'duties', conceptId: 'collision-reporting', sourcePage: 13,
-      prompt: 'Under what condition is it necessary to file a Report of Traffic Accident Occurring in California (SR-1)?',
-      choices: [
-        { id: 'a', text: 'You were involved in a collision with an injury.' },
-        { id: 'b', text: "Your driver's license has expired." },
-        { id: 'c', text: 'Your car failed a routine smog inspection.' },
-      ],
-      correctChoiceId: 'a',
     },
     {
       id: 'ca-045', topicId: 'signs', conceptId: 'hazardous-materials', sourcePage: 13,

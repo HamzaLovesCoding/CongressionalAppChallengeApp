@@ -2,8 +2,8 @@
 
 > **Draft for review, not in effect.** Written October 15, 2026 from what the app actually does today. Text in [square brackets] is a placeholder the team must fill in. See `docs/legal/README.md` for open decisions and what an adult or lawyer should check before this is published.
 
-**Effective date:** [date]
-**Last updated:** [date]
+**Effective date:** October 18, 2026
+**Last updated:** October 18, 2026
 
 ## The short version
 
@@ -15,7 +15,7 @@
 
 ## 1. Agreeing to these terms
 
-These terms are an agreement between you and [team name] ("we" or "us"), the team that makes Lane. By using Lane, you agree to them and to our [Privacy Policy](privacy-policy.md). If you don't agree, please don't use Lane.
+These terms are an agreement between you and Hamza Wadera ("we" or "us"), the team that makes Lane. By using Lane, you agree to them and to our [Privacy Policy](privacy-policy.md). If you don't agree, please don't use Lane.
 
 Lane is made for teens about 14 to 16. If you're under 18, a parent or guardian should read these terms with you and agree to them for you. [Planned, decide before accounts launch: whether children under 13 may use Lane. See the Privacy Policy, section 9.]
 
@@ -42,7 +42,7 @@ Don't watch lessons, answer questions or use the simulator while you're driving 
 - **Some questions are still being reviewed.** Lane's lesson questions are checked against the handbook by a person before they're final. Some are still being checked, and mistakes are possible.
 - **Laws change.** Rules can change after a lesson was written. Lane's information may be out of date.
 - **Other places have other rules.** Lane teaches California rules. Other states and countries may differ.
-- **Report mistakes.** If you think a lesson or answer is wrong, tell us at [contact email]. A wrong answer is the most serious problem Lane can have, and we'll fix it.
+- **Report mistakes.** If you think a lesson or answer is wrong, tell us at hamza.w.3790@gmail.com. A wrong answer is the most serious problem Lane can have, and we'll fix it.
 
 Lane gives general learning information. It isn't legal advice.
 
@@ -94,7 +94,7 @@ Lane plans to add sign-in and leaderboards that use friend or class codes. These
 
 ## 12. Who owns what
 
-- The Lane name, logo, app design, artwork and code belong to [team name]. [Team: add a software license here if you open-source the code.]
+- The Lane name, logo, app design, artwork and code belong to Hamza Wadera. [Team: add a software license here if you open-source the code.]
 - The California Driver's Handbook belongs to the California DMV.
 - Lesson videos belong to their creators (see section 5).
 
@@ -110,7 +110,7 @@ Lane is provided "as is." We work hard to make lessons accurate and safe, but we
 
 ## 15. Limits on our responsibility
 
-To the fullest extent the law allows, [team name] isn't responsible for any loss or harm that comes from using Lane or relying on its information, including driving decisions, test results or lost progress. Some places don't allow these limits, so they may not apply to you. [Team: have an adult who knows contract law review this section; see `README.md`.]
+To the fullest extent the law allows, Hamza Wadera isn't responsible for any loss or harm that comes from using Lane or relying on its information, including driving decisions, test results or lost progress. Some places don't allow these limits, so they may not apply to you. [Team: have an adult who knows contract law review this section; see `README.md`.]
 
 ## 16. Stopping use
 
@@ -126,6 +126,6 @@ These terms are governed by California law.
 
 ## 19. Contact
 
-[Team name]
-[Contact email]
+Hamza Wadera
+hamza.w.3790@gmail.com
 [School or mailing address, if the team chooses to list one]

@@ -8,7 +8,7 @@ import { go, type View } from '../navigation';
 import { WELCOME_COPY as copy } from './content';
 
 const esc = (value: string) => value.replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]!);
-const documentBody = (doc: LegalDocument) => doc.sections.map(section => `<h3>${esc(section.heading)}</h3>${section.body.map(paragraph => `<p>${esc(paragraph)}</p>`).join('')}`).join('');
+const documentBody = (doc: LegalDocument) => `<p class="sub-note">Version ${esc(doc.version)} · Effective ${esc(doc.effective)}</p>` + doc.sections.map(section => `<h3>${esc(section.heading)}</h3>${section.body.map(paragraph => `<p>${esc(paragraph)}</p>`).join('')}`).join('');
 
 // #/welcome: first launch only (main.ts). Step 1 picks a required username and accepts the Terms;
 // step 2 asks for the main goal, which only changes how Home words the readiness goal.

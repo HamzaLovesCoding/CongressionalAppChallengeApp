@@ -1,11 +1,13 @@
 // Feed cards: glossary terms, flashcards (active recall) and permit-test posts. Ported from the
 // owner's earlier implementation (git stash@{0}, src/content/cards.ts) on 2026-10-15, with page
-// numbers checked against the California Quick Reference Driver's Handbook (DL 600 X, 6/2025).
+// numbers checked against the California Quick Reference Driver's Handbook (DL 600X, 2025).
 // Glossary terms come from the owner-supplied Aceable glossary; definitions are rewritten in Lane's
 // words, and the handbook wins wherever the two differ. All are drafts awaiting human review.
 //
 // Each lesson's own flashcard lives with the lesson (src/content/learning.ts, `recall`); a lesson's
 // `glossary` field points at a card here. The planner (src/learning/planner.ts) places the rest.
+
+import { HANDBOOK } from './handbook.ts';
 
 export type CardSource = { draft: true; source: string };
 export type GlossaryCard = CardSource & { kind: 'glossary'; id: string; topicId: string; term: string; definition: string };
@@ -13,9 +15,8 @@ export type Flashcard = CardSource & { kind: 'flashcard'; id: string; topicId: s
 export type PermitPost = CardSource & { kind: 'permit-post'; id: string; topicId: string; title: string; body: string[] };
 export type ContentCard = GlossaryCard | Flashcard | PermitPost;
 
-const QRG = "California Quick Reference Driver's Handbook (DL 600 X, 6/2025)";
-const handbook = (section: string): CardSource => ({ draft: true, source: `${QRG}, ${section}` });
-const term = (word: string, section?: string): CardSource => ({ draft: true, source: `Term from the Aceable California Drivers Ed glossary (“${word}”), rewritten${section ? `; rule checked against ${QRG}, ${section}` : ''}` });
+const handbook = (section: string): CardSource => ({ draft: true, source: `${HANDBOOK}, ${section}` });
+const term = (word: string, section?: string): CardSource => ({ draft: true, source: `Term from the Aceable California Drivers Ed glossary (“${word}”), rewritten${section ? `; rule checked against ${HANDBOOK}, ${section}` : ''}` });
 
 export const GLOSSARY: GlossaryCard[] = [
   { kind: 'glossary', id: 'glossary-right-of-way', topicId: 'right-of-way', term: 'Right-of-way', definition: 'The rules for who goes first when drivers, bicyclists, and pedestrians meet. Never assume someone will give it to you, and give it up when that helps prevent a collision.', ...term('right-of-way', 'Section 5, Right-of-Way Rules, p. 30') },

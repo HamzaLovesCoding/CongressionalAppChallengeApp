@@ -1,6 +1,6 @@
 // Phone audit: every screen and dialog on real phone viewports, in WebKit (Safari's engine) and
 // Chromium, plus an iPhone opened from the home screen with notch and home-indicator insets.
-// Run against `npm run build && npm run preview`. Screenshots, contact sheets and a JSON report go to
+// Run against `npm run build:test && npm run preview:test`. Screenshots, contact sheets and a JSON report go to
 // artifacts/mobile/. Emulation catches layout faults; it does not prove performance on a real phone.
 import { chromium, webkit, devices } from '@playwright/test';
 import fs from 'node:fs/promises';
@@ -191,7 +191,7 @@ for (const phone of PHONES) {
           await welcome.screenshot({ path: file });
           (shots[`welcome-${step}`] ??= []).push({ file: file.replace(`${OUT}/`, ''), label: `${phone.name} ${state}` });
           if (await welcome.evaluate(() => document.documentElement.scrollWidth > innerWidth + 1)) report[key].screens[`welcome-${step}`] = ['horizontal overflow'];
-          if (step === 1) { await welcome.locator('.welcome-check input').check(); await welcome.locator('[data-account] button[type="submit"]').click(); await welcome.getByRole('heading', { name: 'What’s your main goal?' }).waitFor(); }
+          if (step === 1) { await welcome.locator('#welcome-name').fill('Phone_Test'); await welcome.locator('.welcome-check input').check(); await welcome.locator('[data-account] button[type="submit"]').click(); await welcome.getByRole('heading', { name: 'What’s your main goal?' }).waitFor(); }
         }
         await welcome.context().close();
       }
@@ -242,8 +242,6 @@ for (const phone of PHONES) {
         await page.locator('[data-recall-show]').click(); await capture('feed-flashcard-back', { reach: true });
       }
       await open('#/feed/school-bus'); await capture('feed-text-lesson', { reach: true });
-      await page.locator('.is-current [data-comments]').click(); await page.locator('.lane-comments[open]').waitFor(); await capture('feed-comments', { reach: true });
-      await page.keyboard.press('Escape'); await page.waitForTimeout(300);
       await open('#/feed/sim/four-way-stop'); await capture('feed-challenge-card', { reach: true });
       await page.locator('.is-current [data-sim-start]').click(); await page.locator('[data-start]').waitFor({ timeout: 20000 }); await page.waitForTimeout(600); await capture('feed-challenge-running');
       await open('#/review'); await capture('review', { reach: true });
@@ -266,6 +264,8 @@ for (const phone of PHONES) {
       // Answer the rest to reach results, capturing the first sign question on the way.
       let sign = false;
       while (await page.locator('[data-action]').count()) {
+        // Practice ignores taps for 400ms after submission to prevent accidental double advances.
+        await page.waitForTimeout(450);
         await page.locator('[data-action]').click();
         if (!await page.locator('.pt-option').count()) break;
         if (!sign && await page.locator('.pt-sign').count()) { await page.waitForFunction(() => document.querySelector('.pt-sign img').complete); await capture('practice-sign'); sign = true; }

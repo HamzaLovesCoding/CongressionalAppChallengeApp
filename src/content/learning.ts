@@ -9,6 +9,8 @@
 //   (frame-by-frame review, 2026-10-15; docs/lane/10-content-index.md). "Watch the important part" plays only it.
 // - recall is the lesson's flashcard (active recall); glossary links a card in src/content/cards.ts.
 
+import { HANDBOOK } from './handbook.ts';
+
 export type DraftQuestion = { question: string; options: string[]; answer: number; explanation: string; draft: true; source: string };
 export type DecisionChoice = { label: string; safe: boolean; feedback: string };
 export type DecisionActivity = { id: string; prompt: string; draft: true; source: string; choices: DecisionChoice[] };
@@ -43,7 +45,7 @@ export const LEARNING: Record<string, LessonLearning> = {
       "answer": 1,
       "explanation": "Scanning ahead gives you time to react and avoid last-minute moves, so you can signal and change lanes calmly.",
       "draft": true,
-      "source": "California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 6, Scan Your Surroundings, p. 44"
+      "source": `${HANDBOOK}, Section 6, Scan Your Surroundings, p. 44`
     },
     "harder": {
       "question": "Your lane ends ahead and you need to move left. Which order is correct?",
@@ -55,13 +57,13 @@ export const LEARNING: Record<string, LessonLearning> = {
       "answer": 1,
       "explanation": "Signal first, check your mirrors and traffic, look over your shoulder for your blind spot, and change lanes only when there is enough space.",
       "draft": true,
-      "source": "California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 4, Changing Lanes, p. 8"
+      "source": `${HANDBOOK}, Section 4, Changing Lanes, p. 8`
     },
     "activity": {
       "id": "decision-01",
       "prompt": "A right-lane-ends warning appears ahead on a busy multilane road. What do you do?",
       "draft": true,
-      "source": "Decision prompt adapted from Lane — California Driver Education: Video Lessons, Quizzes & Decision Prompts (owner curriculum); California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 4, Changing Lanes",
+      "source": `Decision prompt adapted from Lane — California Driver Education: Video Lessons, Quizzes & Decision Prompts (owner curriculum); ${HANDBOOK}, Section 4, Changing Lanes`,
       "choices": [
         {
           "label": "Signal, check mirrors and blind spot, then merge into a gap",
@@ -88,7 +90,7 @@ export const LEARNING: Record<string, LessonLearning> = {
       "front": "How far ahead should you scan while driving?",
       "back": "At least 10 seconds ahead of your car. Counting seconds works at any speed.",
       "draft": true,
-      "source": "California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 6, Scan Your Surroundings, p. 44"
+      "source": `${HANDBOOK}, Section 6, Scan Your Surroundings, p. 44`
     },
     "glossary": "glossary-visual-lead-time"
   },
@@ -105,7 +107,7 @@ export const LEARNING: Record<string, LessonLearning> = {
       "answer": 1,
       "explanation": "Call 911 right away if anyone is hurt. People who are injured get help faster when the road is not blocked by onlookers.",
       "draft": true,
-      "source": "California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 8, What to Do if You Are in a Collision"
+      "source": `${HANDBOOK}, Section 8, What to Do if You Are in a Collision`
     },
     "harder": {
       "question": "A collision caused about $1,500 in property damage and no injuries. Do you need to report it to DMV?",
@@ -117,13 +119,13 @@ export const LEARNING: Record<string, LessonLearning> = {
       "answer": 2,
       "explanation": "Report to DMV within 10 days if damage is over $1,000 or anyone is hurt, whether or not you caused it. Law enforcement does not file it for you.",
       "draft": true,
-      "source": "California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 8, Reporting a Collision"
+      "source": `${HANDBOOK}, Section 8, Reporting a Collision`
     },
     "activity": {
       "id": "decision-02",
       "prompt": "You are in a low-speed collision. No one is hurt, and your car can still move.",
       "draft": true,
-      "source": "Decision prompt adapted from Lane — California Driver Education: Video Lessons, Quizzes & Decision Prompts (owner curriculum); California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 8, What to Do if You Are in a Collision",
+      "source": `Decision prompt adapted from Lane — California Driver Education: Video Lessons, Quizzes & Decision Prompts (owner curriculum); ${HANDBOOK}, Section 8, What to Do if You Are in a Collision`,
       "choices": [
         {
           "label": "Move out of traffic, then call 911",
@@ -150,7 +152,7 @@ export const LEARNING: Record<string, LessonLearning> = {
       "front": "When must you report a collision to DMV?",
       "back": "Within 10 days, on form SR 1, if damage is over $1,000 or anyone is hurt or killed.",
       "draft": true,
-      "source": "California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 8, Reporting a Collision, p. 59"
+      "source": `${HANDBOOK}, Section 8, Reporting a Collision, p. 59`
     },
     "glossary": "glossary-collision"
   },
@@ -167,7 +169,7 @@ export const LEARNING: Record<string, LessonLearning> = {
       "answer": 1,
       "explanation": "Exit on the right side so you are away from traffic, and get back in from the right side.",
       "draft": true,
-      "source": "California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 6, If Your Vehicle Becomes Disabled on the Freeway"
+      "source": `${HANDBOOK}, Section 6, If Your Vehicle Becomes Disabled on the Freeway`
     },
     "harder": {
       "question": "You have pulled onto the right shoulder after a freeway breakdown. Where should you wait for help?",
@@ -179,7 +181,7 @@ export const LEARNING: Record<string, LessonLearning> = {
       "answer": 0,
       "explanation": "Stay inside with your seat belt on until help arrives. Use your emergency flashers so others can see you.",
       "draft": true,
-      "source": "California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 6, If Your Vehicle Becomes Disabled on the Freeway"
+      "source": `${HANDBOOK}, Section 6, If Your Vehicle Becomes Disabled on the Freeway`
     },
     "keySegment": {
       "start": 7,
@@ -189,7 +191,7 @@ export const LEARNING: Record<string, LessonLearning> = {
       "front": "Your car breaks down on the freeway. Where do you wait for help?",
       "back": "Pull safely onto the right shoulder, turn on your flashers, and stay inside with your seat belt on.",
       "draft": true,
-      "source": "California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 6, If Your Vehicle Becomes Disabled on the Freeway, p. 53"
+      "source": `${HANDBOOK}, Section 6, If Your Vehicle Becomes Disabled on the Freeway, p. 53`
     },
     "glossary": "glossary-shoulder"
   },
@@ -206,7 +208,7 @@ export const LEARNING: Record<string, LessonLearning> = {
       "answer": 1,
       "explanation": "Check for pedestrians and obey curb colors and posted signs. A reference point only helps you judge distance.",
       "draft": true,
-      "source": "California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 4, Parking at Colored Curbs; Illegal Parking"
+      "source": `${HANDBOOK}, Section 4, Parking at Colored Curbs; Illegal Parking`
     },
     "harder": {
       "question": "The curb beside an open space is painted red. What does that mean?",
@@ -218,13 +220,13 @@ export const LEARNING: Record<string, LessonLearning> = {
       "answer": 2,
       "explanation": "A red curb means no stopping, standing, or parking. Buses may stop at a red zone marked for buses.",
       "draft": true,
-      "source": "California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 4, Parking at Colored Curbs"
+      "source": `${HANDBOOK}, Section 4, Parking at Colored Curbs`
     },
     "activity": {
       "id": "decision-04",
       "prompt": "You are pulling slowly toward a front curb when a pedestrian starts crossing in front of you.",
       "draft": true,
-      "source": "Decision prompt adapted from Lane — California Driver Education: Video Lessons, Quizzes & Decision Prompts (owner curriculum); California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 5, Pedestrians",
+      "source": `Decision prompt adapted from Lane — California Driver Education: Video Lessons, Quizzes & Decision Prompts (owner curriculum); ${HANDBOOK}, Section 5, Pedestrians`,
       "choices": [
         {
           "label": "Stop and yield, then recheck your path before moving",
@@ -246,7 +248,7 @@ export const LEARNING: Record<string, LessonLearning> = {
       "front": "What does a red curb mean?",
       "back": "No stopping, standing, or parking.",
       "draft": true,
-      "source": "California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 4, Parking at Colored Curbs, p. 20"
+      "source": `${HANDBOOK}, Section 4, Parking at Colored Curbs, p. 20`
     },
     "glossary": "glossary-pedestrian"
   },
@@ -263,7 +265,7 @@ export const LEARNING: Record<string, LessonLearning> = {
       "answer": 0,
       "explanation": "Stop as if the intersection is controlled by STOP signs in all directions, then go cautiously when safe.",
       "draft": true,
-      "source": "California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 5, Traffic Light Not Working"
+      "source": `${HANDBOOK}, Section 5, Traffic Light Not Working`
     },
     "harder": {
       "question": "At a dark signal you stopped first, and another car stops after you on your right. What do you do?",
@@ -275,13 +277,13 @@ export const LEARNING: Record<string, LessonLearning> = {
       "answer": 1,
       "explanation": "The vehicle that arrives first has the right-of-way. Yield to the right only when you arrive at the same time.",
       "draft": true,
-      "source": "California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 5, Intersections"
+      "source": `${HANDBOOK}, Section 5, Intersections`
     },
     "activity": {
       "id": "decision-05",
       "prompt": "The signal is dark. You and a car on your right stop at the same moment.",
       "draft": true,
-      "source": "Decision prompt adapted from Lane — California Driver Education: Video Lessons, Quizzes & Decision Prompts (owner curriculum); California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 5, Traffic Light Not Working; Intersections",
+      "source": `Decision prompt adapted from Lane — California Driver Education: Video Lessons, Quizzes & Decision Prompts (owner curriculum); ${HANDBOOK}, Section 5, Traffic Light Not Working; Intersections`,
       "choices": [
         {
           "label": "Yield to the car on your right, then go when it is clear",
@@ -308,7 +310,7 @@ export const LEARNING: Record<string, LessonLearning> = {
       "front": "A traffic light is completely dark. How do you treat the intersection?",
       "back": "As if there are STOP signs in all directions.",
       "draft": true,
-      "source": "California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 5, Traffic Light Not Working, p. 25"
+      "source": `${HANDBOOK}, Section 5, Traffic Light Not Working, p. 25`
     },
     "glossary": "glossary-right-of-way"
   },
@@ -325,7 +327,7 @@ export const LEARNING: Record<string, LessonLearning> = {
       "answer": 1,
       "explanation": "Never stop in an intersection. Continue through it, then drive to the right edge and stop as soon as it is safe.",
       "draft": true,
-      "source": "California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 5, Emergency Vehicles, p. 35"
+      "source": `${HANDBOOK}, Section 5, Emergency Vehicles, p. 35`
     },
     "harder": {
       "question": "How close may you legally follow a fire engine that has its siren or flashing lights on?",
@@ -337,13 +339,13 @@ export const LEARNING: Record<string, LessonLearning> = {
       "answer": 0,
       "explanation": "It is against the law to follow within 300 feet of an emergency vehicle using its siren or flashing lights.",
       "draft": true,
-      "source": "California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 5, Emergency Vehicles"
+      "source": `${HANDBOOK}, Section 5, Emergency Vehicles`
     },
     "activity": {
       "id": "decision-06",
       "prompt": "You are in the middle of an intersection when you hear a siren and see red lights behind you.",
       "draft": true,
-      "source": "Decision prompt adapted from Lane — California Driver Education: Video Lessons, Quizzes & Decision Prompts (owner curriculum); California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 5, Emergency Vehicles",
+      "source": `Decision prompt adapted from Lane — California Driver Education: Video Lessons, Quizzes & Decision Prompts (owner curriculum); ${HANDBOOK}, Section 5, Emergency Vehicles`,
       "choices": [
         {
           "label": "Clear the intersection, then pull right and stop",
@@ -365,7 +367,7 @@ export const LEARNING: Record<string, LessonLearning> = {
       "front": "How close may you follow a fire engine that has its siren on?",
       "back": "No closer than 300 feet.",
       "draft": true,
-      "source": "California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 5, Emergency Vehicles, p. 35"
+      "source": `${HANDBOOK}, Section 5, Emergency Vehicles, p. 35`
     },
     "glossary": "glossary-yield"
   },
@@ -382,7 +384,7 @@ export const LEARNING: Record<string, LessonLearning> = {
       "answer": 1,
       "explanation": "Move to the right edge and stop until the emergency vehicle has passed.",
       "draft": true,
-      "source": "California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 5, Emergency Vehicles"
+      "source": `${HANDBOOK}, Section 5, Emergency Vehicles`
     },
     "harder": {
       "question": "Ahead, an emergency vehicle is stopped with its flashing lights on. What should you do?",
@@ -394,13 +396,13 @@ export const LEARNING: Record<string, LessonLearning> = {
       "answer": 0,
       "explanation": "When approaching a stationary emergency vehicle with flashing lights, move over and slow down.",
       "draft": true,
-      "source": "California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 5, Emergency Vehicles; Move Over and Slow Down"
+      "source": `${HANDBOOK}, Section 5, Emergency Vehicles; Move Over and Slow Down`
     },
     "activity": {
       "id": "decision-07",
       "prompt": "An ambulance with a siren and red lights appears behind you before you reach an intersection.",
       "draft": true,
-      "source": "Decision prompt adapted from Lane — California Driver Education: Video Lessons, Quizzes & Decision Prompts (owner curriculum); California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 5, Emergency Vehicles",
+      "source": `Decision prompt adapted from Lane — California Driver Education: Video Lessons, Quizzes & Decision Prompts (owner curriculum); ${HANDBOOK}, Section 5, Emergency Vehicles`,
       "choices": [
         {
           "label": "Move to the right edge and stop",
@@ -427,7 +429,7 @@ export const LEARNING: Record<string, LessonLearning> = {
       "front": "An emergency vehicle with a siren is behind you. Where do you go?",
       "back": "To the right edge of the road. Stop until it passes.",
       "draft": true,
-      "source": "California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 5, Emergency Vehicles, p. 35"
+      "source": `${HANDBOOK}, Section 5, Emergency Vehicles, p. 35`
     },
     "glossary": "glossary-yield"
   },
@@ -444,7 +446,7 @@ export const LEARNING: Record<string, LessonLearning> = {
       "answer": 1,
       "explanation": "At the same time, yield to the vehicle, pedestrian or bicyclist on your right.",
       "draft": true,
-      "source": "California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 5, Intersections, p. 30"
+      "source": `${HANDBOOK}, Section 5, Intersections, p. 30`
     },
     "harder": {
       "question": "At a T intersection with no STOP or YIELD signs, you are on the road that ends. Who has the right-of-way?",
@@ -456,13 +458,13 @@ export const LEARNING: Record<string, LessonLearning> = {
       "answer": 0,
       "explanation": "At a T intersection without signs, vehicles, bicyclists, and pedestrians on the through road have the right-of-way.",
       "draft": true,
-      "source": "California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 5, Intersections"
+      "source": `${HANDBOOK}, Section 5, Intersections`
     },
     "activity": {
       "id": "decision-08",
       "prompt": "You and a car on your right stop together at a four-way stop. A pedestrian is waiting to cross.",
       "draft": true,
-      "source": "Decision prompt adapted from Lane — California Driver Education: Video Lessons, Quizzes & Decision Prompts (owner curriculum); California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 5, Intersections; Pedestrians",
+      "source": `Decision prompt adapted from Lane — California Driver Education: Video Lessons, Quizzes & Decision Prompts (owner curriculum); ${HANDBOOK}, Section 5, Intersections; Pedestrians`,
       "choices": [
         {
           "label": "Yield to the pedestrian and the car on your right",
@@ -484,7 +486,7 @@ export const LEARNING: Record<string, LessonLearning> = {
       "front": "You and another car reach an intersection with no signs at the same time. Who goes first?",
       "back": "The one on your right. Yield to the vehicle, pedestrian or bicyclist on your right.",
       "draft": true,
-      "source": "California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 5, Intersections, p. 30"
+      "source": `${HANDBOOK}, Section 5, Intersections, p. 30`
     },
     "glossary": "glossary-uncontrolled-intersection"
   },
@@ -501,7 +503,7 @@ export const LEARNING: Record<string, LessonLearning> = {
       "answer": 0,
       "explanation": "Dim your high beams within 300 feet of a vehicle you are following.",
       "draft": true,
-      "source": "California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 3, Using Your Headlights"
+      "source": `${HANDBOOK}, Section 3, Using Your Headlights`
     },
     "harder": {
       "question": "You are driving at night in heavy fog. Which lights should you use?",
@@ -513,13 +515,13 @@ export const LEARNING: Record<string, LessonLearning> = {
       "answer": 1,
       "explanation": "Use low beams. High beams reflect off the fog and cause glare. Never drive using only parking or fog lights.",
       "draft": true,
-      "source": "California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 6, Fog or Heavy Smoke"
+      "source": `${HANDBOOK}, Section 6, Fog or Heavy Smoke`
     },
     "activity": {
       "id": "decision-09",
       "prompt": "You are on a dark, open road with your high beams on when an oncoming car appears.",
       "draft": true,
-      "source": "Decision prompt adapted from Lane — California Driver Education: Video Lessons, Quizzes & Decision Prompts (owner curriculum); California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 3, Using Your Headlights",
+      "source": `Decision prompt adapted from Lane — California Driver Education: Video Lessons, Quizzes & Decision Prompts (owner curriculum); ${HANDBOOK}, Section 3, Using Your Headlights`,
       "choices": [
         {
           "label": "Switch to low beams",
@@ -541,7 +543,7 @@ export const LEARNING: Record<string, LessonLearning> = {
       "front": "Fog, rain or snow: which headlights must you use?",
       "back": "Low beams.",
       "draft": true,
-      "source": "California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 3, Using Your Headlights, p. 4"
+      "source": `${HANDBOOK}, Section 3, Using Your Headlights, p. 4`
     }
   },
   "passing-bicyclist": {
@@ -557,7 +559,7 @@ export const LEARNING: Record<string, LessonLearning> = {
       "answer": 1,
       "explanation": "If you cannot give three feet, do not pass until you can.",
       "draft": true,
-      "source": "California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 5, Passing a Bicyclist, pp. 36–37"
+      "source": `${HANDBOOK}, Section 5, Passing a Bicyclist, pp. 36–37`
     },
     "harder": {
       "question": "You plan to turn right, and a bike lane runs next to you. When may you enter the bike lane?",
@@ -569,13 +571,13 @@ export const LEARNING: Record<string, LessonLearning> = {
       "answer": 1,
       "explanation": "You may drive in a bike lane within 200 feet of a turn. Check your blind spots for bicyclists first.",
       "draft": true,
-      "source": "California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 4, Bicycle Lanes; Section 5, Passing a Bicyclist"
+      "source": `${HANDBOOK}, Section 4, Bicycle Lanes; Section 5, Passing a Bicyclist`
     },
     "activity": {
       "id": "decision-10",
       "prompt": "A bicyclist is ahead of you on a two-lane street, and an oncoming car is coming.",
       "draft": true,
-      "source": "Decision prompt adapted from Lane — California Driver Education: Video Lessons, Quizzes & Decision Prompts (owner curriculum); California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 6, Choose Between Hazards",
+      "source": `Decision prompt adapted from Lane — California Driver Education: Video Lessons, Quizzes & Decision Prompts (owner curriculum); ${HANDBOOK}, Section 6, Choose Between Hazards`,
       "choices": [
         {
           "label": "Slow down and wait, then pass with at least 3 feet",
@@ -597,7 +599,7 @@ export const LEARNING: Record<string, LessonLearning> = {
       "front": "Minimum space when passing a bicyclist?",
       "back": "At least 3 feet. If you can’t give it, wait.",
       "draft": true,
-      "source": "California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 5, Passing a Bicyclist, pp. 36–37"
+      "source": `${HANDBOOK}, Section 5, Passing a Bicyclist, pp. 36–37`
     },
     "glossary": "glossary-vulnerable-road-users"
   },
@@ -614,7 +616,7 @@ export const LEARNING: Record<string, LessonLearning> = {
       "answer": 1,
       "explanation": "Use your mirrors and turn signal, and turn your head to look over your shoulder before merging.",
       "draft": true,
-      "source": "California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 4, Merging, p. 16"
+      "source": `${HANDBOOK}, Section 4, Merging, p. 16`
     },
     "harder": {
       "question": "How much space do you need to enter traffic on a highway?",
@@ -626,13 +628,13 @@ export const LEARNING: Record<string, LessonLearning> = {
       "answer": 1,
       "explanation": "When entering highway traffic, allow a gap of about a full block, roughly 300 feet. Half a block is the guide for city streets.",
       "draft": true,
-      "source": "California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 4, Crossing or Entering Traffic"
+      "source": `${HANDBOOK}, Section 4, Crossing or Entering Traffic`
     },
     "activity": {
       "id": "decision-11",
       "prompt": "In the acceleration lane, the opening ahead is too small, but a better gap may come up behind it.",
       "draft": true,
-      "source": "Decision prompt adapted from Lane — California Driver Education: Video Lessons, Quizzes & Decision Prompts (owner curriculum); California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 4, Merging",
+      "source": `Decision prompt adapted from Lane — California Driver Education: Video Lessons, Quizzes & Decision Prompts (owner curriculum); ${HANDBOOK}, Section 4, Merging`,
       "choices": [
         {
           "label": "Keep yielding and adjust speed until an adequate gap opens",
@@ -659,7 +661,7 @@ export const LEARNING: Record<string, LessonLearning> = {
       "front": "Merging onto a freeway: who has the right-of-way?",
       "back": "Traffic already on the freeway.",
       "draft": true,
-      "source": "California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 4, Merging, p. 15"
+      "source": `${HANDBOOK}, Section 4, Merging, p. 15`
     },
     "glossary": "glossary-interchange"
   },
@@ -676,7 +678,7 @@ export const LEARNING: Record<string, LessonLearning> = {
       "answer": 1,
       "explanation": "Merge only into a space large enough for your vehicle, and never cross a solid line to do it.",
       "draft": true,
-      "source": "California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 4, Merging"
+      "source": `${HANDBOOK}, Section 4, Merging`
     },
     "harder": {
       "question": "After merging, you need to cross several freeway lanes. How should you do it?",
@@ -688,13 +690,13 @@ export const LEARNING: Record<string, LessonLearning> = {
       "answer": 0,
       "explanation": "Cross lanes one at a time, signaling and checking for vehicles, motorcyclists, and bicyclists each time.",
       "draft": true,
-      "source": "California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 4, Merging"
+      "source": `${HANDBOOK}, Section 4, Merging`
     },
     "activity": {
       "id": "decision-12",
       "prompt": "You are near the end of the on-ramp. After your mirror, signal, and shoulder check, a large gap is open.",
       "draft": true,
-      "source": "Decision prompt adapted from Lane — California Driver Education: Video Lessons, Quizzes & Decision Prompts (owner curriculum); California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 4, Merging",
+      "source": `Decision prompt adapted from Lane — California Driver Education: Video Lessons, Quizzes & Decision Prompts (owner curriculum); ${HANDBOOK}, Section 4, Merging`,
       "choices": [
         {
           "label": "Merge into the gap at or near traffic speed",
@@ -716,7 +718,7 @@ export const LEARNING: Record<string, LessonLearning> = {
       "front": "Merging onto a freeway: may you cross a solid white line?",
       "back": "No. Do not cross any solid lines when merging.",
       "draft": true,
-      "source": "California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 4, Merging, p. 16"
+      "source": `${HANDBOOK}, Section 4, Merging, p. 16`
     }
   },
   "drive-test-readiness": {
@@ -732,7 +734,7 @@ export const LEARNING: Record<string, LessonLearning> = {
       "answer": 0,
       "explanation": "Leave enough space to see the rear wheels of the vehicle ahead.",
       "draft": true,
-      "source": "California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 4, Braking"
+      "source": `${HANDBOOK}, Section 4, Braking`
     },
     "harder": {
       "question": "Where should you stop at an intersection that has a limit line?",
@@ -744,7 +746,7 @@ export const LEARNING: Record<string, LessonLearning> = {
       "answer": 1,
       "explanation": "Stop behind the limit line. Without one, stop before the crosswalk; without a crosswalk, before the intersection.",
       "draft": true,
-      "source": "California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 4, Right Turns; Braking"
+      "source": `${HANDBOOK}, Section 4, Right Turns; Braking`
     },
     "keySegment": {
       "start": 14,
@@ -754,7 +756,7 @@ export const LEARNING: Record<string, LessonLearning> = {
       "front": "How far before a turn should you start signaling?",
       "back": "About 100 feet before the turn.",
       "draft": true,
-      "source": "California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 3, Signaling, pp. 3–4"
+      "source": `${HANDBOOK}, Section 3, Signaling, pp. 3–4`
     },
     "glossary": "glossary-drive-test"
   },
@@ -771,7 +773,7 @@ export const LEARNING: Record<string, LessonLearning> = {
       "answer": 1,
       "explanation": "Blind spots cannot be seen in mirrors. Only a look over your shoulder shows the space is clear.",
       "draft": true,
-      "source": "California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 6, Blind Spots, p. 45"
+      "source": `${HANDBOOK}, Section 6, Blind Spots, p. 45`
     },
     "harder": {
       "question": "Which of these also calls for a blind-spot check?",
@@ -783,13 +785,13 @@ export const LEARNING: Record<string, LessonLearning> = {
       "answer": 0,
       "explanation": "Check blind spots before you change lanes, turn, merge, back up, leave a parking space, pull out from the curb, or open your door.",
       "draft": true,
-      "source": "California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 6, Blind Spots"
+      "source": `${HANDBOOK}, Section 6, Blind Spots`
     },
     "activity": {
       "id": "decision-14",
       "prompt": "You plan to merge one lane left, and a bicyclist may be riding alongside.",
       "draft": true,
-      "source": "Decision prompt adapted from Lane — California Driver Education: Video Lessons, Quizzes & Decision Prompts (owner curriculum); California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 6, Blind Spots",
+      "source": `Decision prompt adapted from Lane — California Driver Education: Video Lessons, Quizzes & Decision Prompts (owner curriculum); ${HANDBOOK}, Section 6, Blind Spots`,
       "choices": [
         {
           "label": "Keep the car straight and look over your left shoulder",
@@ -816,7 +818,7 @@ export const LEARNING: Record<string, LessonLearning> = {
       "front": "Can your mirrors show your blind spots?",
       "back": "No. Turn your head and look over your shoulder.",
       "draft": true,
-      "source": "California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 6, Blind Spots, p. 45"
+      "source": `${HANDBOOK}, Section 6, Blind Spots, p. 45`
     },
     "glossary": "glossary-blind-spot"
   },
@@ -833,7 +835,7 @@ export const LEARNING: Record<string, LessonLearning> = {
       "answer": 1,
       "explanation": "Drive no faster than is safe for what you can see, and take one hazard at a time.",
       "draft": true,
-      "source": "California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 6, Choose Between Hazards, p. 52"
+      "source": `${HANDBOOK}, Section 6, Choose Between Hazards, p. 52`
     },
     "harder": {
       "question": "You cannot see whether traffic is coming around a curve ahead. Should you pass the slow car in front of you?",
@@ -845,13 +847,13 @@ export const LEARNING: Record<string, LessonLearning> = {
       "answer": 1,
       "explanation": "Do not pass when you cannot see if traffic is approaching. To pass safely, a hill or curve should be at least one-third of a mile ahead.",
       "draft": true,
-      "source": "California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 4, Passing"
+      "source": `${HANDBOOK}, Section 4, Passing`
     },
     "activity": {
       "id": "decision-15",
       "prompt": "In daylight, a blind curve ahead is narrowed by parked cars on both sides.",
       "draft": true,
-      "source": "Decision prompt adapted from Lane — California Driver Education: Video Lessons, Quizzes & Decision Prompts (owner curriculum); California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 6, Manage Your Speed",
+      "source": `Decision prompt adapted from Lane — California Driver Education: Video Lessons, Quizzes & Decision Prompts (owner curriculum); ${HANDBOOK}, Section 6, Manage Your Speed`,
       "choices": [
         {
           "label": "Slow early and keep to the right side of your lane",
@@ -878,7 +880,7 @@ export const LEARNING: Record<string, LessonLearning> = {
       "front": "What does California’s Basic Speed Law say?",
       "back": "Never drive faster than is safe for current conditions, even below the posted limit.",
       "draft": true,
-      "source": "California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 6, Manage Your Speed, p. 52"
+      "source": `${HANDBOOK}, Section 6, Manage Your Speed, p. 52`
     },
     "glossary": "glossary-lane-positioning"
   },
@@ -895,7 +897,7 @@ export const LEARNING: Record<string, LessonLearning> = {
       "answer": 1,
       "explanation": "Use caution, and reduce your speed or stop so the pedestrian can safely finish crossing.",
       "draft": true,
-      "source": "California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 5, Pedestrians, p. 32"
+      "source": `${HANDBOOK}, Section 5, Pedestrians, p. 32`
     },
     "harder": {
       "question": "What is the speed limit at a blind intersection?",
@@ -907,13 +909,13 @@ export const LEARNING: Record<string, LessonLearning> = {
       "answer": 1,
       "explanation": "An intersection is blind if it has no stop signs and your view is blocked. The limit is 15 mph; move slowly forward until you can see.",
       "draft": true,
-      "source": "California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 5, Blind Intersections"
+      "source": `${HANDBOOK}, Section 5, Blind Intersections`
     },
     "activity": {
       "id": "decision-16",
       "prompt": "On a narrow two-way street, parked cars at a blind bend may hide a pedestrian about to cross.",
       "draft": true,
-      "source": "Decision prompt adapted from Lane — California Driver Education: Video Lessons, Quizzes & Decision Prompts (owner curriculum); California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 6, Manage Your Speed; Section 5, Pedestrians",
+      "source": `Decision prompt adapted from Lane — California Driver Education: Video Lessons, Quizzes & Decision Prompts (owner curriculum); ${HANDBOOK}, Section 6, Manage Your Speed; Section 5, Pedestrians`,
       "choices": [
         {
           "label": "Slow down, stay right, and go only when the path is clear",
@@ -935,7 +937,7 @@ export const LEARNING: Record<string, LessonLearning> = {
       "front": "Speed limit at a blind intersection?",
       "back": "15 mph.",
       "draft": true,
-      "source": "California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 5, Blind Intersections, p. 39"
+      "source": `${HANDBOOK}, Section 5, Blind Intersections, p. 39`
     },
     "glossary": "glossary-pedestrian"
   },
@@ -952,7 +954,7 @@ export const LEARNING: Record<string, LessonLearning> = {
       "answer": 0,
       "explanation": "Driving alongside a large vehicle keeps you in its blind spot. Pass on the left, then move ahead of it.",
       "draft": true,
-      "source": "California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 5, Maneuvering (large vehicles)"
+      "source": `${HANDBOOK}, Section 5, Maneuvering (large vehicles)`
     },
     "harder": {
       "question": "Why should you not move in front of a large truck and then slow down?",
@@ -964,13 +966,13 @@ export const LEARNING: Record<string, LessonLearning> = {
       "answer": 1,
       "explanation": "A large vehicle at 55 mph can need up to 400 feet to stop, more than a car. It may not stop in time.",
       "draft": true,
-      "source": "California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 5, Braking (large vehicles)"
+      "source": `${HANDBOOK}, Section 5, Braking (large vehicles)`
     },
     "activity": {
       "id": "decision-17",
       "prompt": "A trailer-towing vehicle signals and begins moving into your lane ahead.",
       "draft": true,
-      "source": "Decision prompt adapted from Lane — California Driver Education: Video Lessons, Quizzes & Decision Prompts (owner curriculum); California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 6, Know What Is at Your Side",
+      "source": `Decision prompt adapted from Lane — California Driver Education: Video Lessons, Quizzes & Decision Prompts (owner curriculum); ${HANDBOOK}, Section 6, Know What Is at Your Side`,
       "choices": [
         {
           "label": "Ease off the accelerator and create a gap",
@@ -992,7 +994,7 @@ export const LEARNING: Record<string, LessonLearning> = {
       "front": "A car merges in too close ahead. What is your first move?",
       "back": "Take your foot off the accelerator to open space.",
       "draft": true,
-      "source": "California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 6, Tailgating, p. 44"
+      "source": `${HANDBOOK}, Section 6, Tailgating, p. 44`
     },
     "glossary": "glossary-no-zone"
   },
@@ -1009,7 +1011,7 @@ export const LEARNING: Record<string, LessonLearning> = {
       "answer": 2,
       "explanation": "Use the three-second rule to keep a safe following distance.",
       "draft": true,
-      "source": "California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 6, Tailgating, p. 44"
+      "source": `${HANDBOOK}, Section 6, Tailgating, p. 44`
     },
     "harder": {
       "question": "The road is covered in packed snow. How should your speed change?",
@@ -1021,13 +1023,13 @@ export const LEARNING: Record<string, LessonLearning> = {
       "answer": 1,
       "explanation": "On packed snow, reduce your speed by half. On ice, go no faster than 5 mph.",
       "draft": true,
-      "source": "California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 6, Slippery Roads"
+      "source": `${HANDBOOK}, Section 6, Slippery Roads`
     },
     "activity": {
       "id": "decision-18",
       "prompt": "On a dry road, a car merges closely in front of you near a marked crosswalk.",
       "draft": true,
-      "source": "Decision prompt adapted from Lane — California Driver Education: Video Lessons, Quizzes & Decision Prompts (owner curriculum); California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 6, Tailgating",
+      "source": `Decision prompt adapted from Lane — California Driver Education: Video Lessons, Quizzes & Decision Prompts (owner curriculum); ${HANDBOOK}, Section 6, Tailgating`,
       "choices": [
         {
           "label": "Lift off the accelerator and rebuild a three-second gap",
@@ -1049,7 +1051,7 @@ export const LEARNING: Record<string, LessonLearning> = {
       "front": "The road is wet. How should your speed change?",
       "back": "Reduce it by 5 to 10 mph.",
       "draft": true,
-      "source": "California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 6, Slippery Roads, p. 48"
+      "source": `${HANDBOOK}, Section 6, Slippery Roads, p. 48`
     },
     "glossary": "glossary-tailgating"
   },
@@ -1066,7 +1068,7 @@ export const LEARNING: Record<string, LessonLearning> = {
       "answer": 0,
       "explanation": "Create more space ahead when a tailgater is behind you, and when following motorcyclists over metal surfaces or gravel.",
       "draft": true,
-      "source": "California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 6, Tailgating, p. 44"
+      "source": `${HANDBOOK}, Section 6, Tailgating, p. 44`
     },
     "harder": {
       "question": "A tailgater is close behind you. What does the handbook recommend?",
@@ -1078,7 +1080,7 @@ export const LEARNING: Record<string, LessonLearning> = {
       "answer": 1,
       "explanation": "Maintain your course and speed, and when it is safe, merge right so the tailgater can pass.",
       "draft": true,
-      "source": "California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 6, Tailgating"
+      "source": `${HANDBOOK}, Section 6, Tailgating`
     },
     "keySegment": {
       "start": 12,
@@ -1088,7 +1090,7 @@ export const LEARNING: Record<string, LessonLearning> = {
       "front": "How do you check a three-second following gap?",
       "back": "Count from when the car ahead passes a fixed point until you reach it.",
       "draft": true,
-      "source": "California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 6, Tailgating, p. 44"
+      "source": `${HANDBOOK}, Section 6, Tailgating, p. 44`
     },
     "glossary": "glossary-three-second-rule"
   },
@@ -1105,7 +1107,7 @@ export const LEARNING: Record<string, LessonLearning> = {
       "answer": 1,
       "explanation": "A flashing yellow light is a warning: slow down and be alert. You do not need to stop.",
       "draft": true,
-      "source": "California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 5, Flashing Yellow Light"
+      "source": `${HANDBOOK}, Section 5, Flashing Yellow Light`
     },
     "harder": {
       "question": "You are already in the intersection, turning, when your yellow arrow appears. What do you do?",
@@ -1117,13 +1119,13 @@ export const LEARNING: Record<string, LessonLearning> = {
       "answer": 1,
       "explanation": "A yellow arrow means the protected turn is ending. If you are already in the intersection, cautiously complete the turn.",
       "draft": true,
-      "source": "California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 5, Yellow Arrow"
+      "source": `${HANDBOOK}, Section 5, Yellow Arrow`
     },
     "recall": {
       "front": "What does a solid yellow light mean?",
       "back": "The light is about to turn red. Stop if you can do so safely.",
       "draft": true,
-      "source": "California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 5, Solid Yellow Light, p. 24"
+      "source": `${HANDBOOK}, Section 5, Solid Yellow Light, p. 24`
     }
   },
   "roundabout": {
@@ -1139,7 +1141,7 @@ export const LEARNING: Record<string, LessonLearning> = {
       "answer": 0,
       "explanation": "Travel counterclockwise. Do not stop or pass inside the roundabout.",
       "draft": true,
-      "source": "California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 5, Roundabouts"
+      "source": `${HANDBOOK}, Section 5, Roundabouts`
     },
     "harder": {
       "question": "In a two-lane roundabout, you plan to turn right. Which lane should you use?",
@@ -1151,13 +1153,13 @@ export const LEARNING: Record<string, LessonLearning> = {
       "answer": 1,
       "explanation": "To turn right, choose the right lane and exit in the right lane.",
       "draft": true,
-      "source": "California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 5, Roundabouts"
+      "source": `${HANDBOOK}, Section 5, Roundabouts`
     },
     "recall": {
       "front": "Which way does traffic travel in a roundabout?",
       "back": "Counterclockwise. Yield to all traffic already in it.",
       "draft": true,
-      "source": "California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 5, Roundabouts, p. 31"
+      "source": `${HANDBOOK}, Section 5, Roundabouts, p. 31`
     }
   },
   "four-way-stop": {
@@ -1173,7 +1175,7 @@ export const LEARNING: Record<string, LessonLearning> = {
       "answer": 0,
       "explanation": "Pedestrians have the right-of-way in crosswalks, and arrivals at the same time yield to the road user on the right.",
       "draft": true,
-      "source": "California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 5, Intersections; Pedestrians"
+      "source": `${HANDBOOK}, Section 5, Intersections; Pedestrians`
     },
     "harder": {
       "question": "You stopped first at a four-way stop. What do you do before proceeding?",
@@ -1185,13 +1187,13 @@ export const LEARNING: Record<string, LessonLearning> = {
       "answer": 2,
       "explanation": "After a full stop, check traffic in all directions before proceeding.",
       "draft": true,
-      "source": "California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 5, STOP Sign"
+      "source": `${HANDBOOK}, Section 5, STOP Sign`
     },
     "recall": {
       "front": "You stopped first at a four-way stop. Who goes first?",
       "back": "You do, once it is safe.",
       "draft": true,
-      "source": "California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 5, Intersections, p. 30"
+      "source": `${HANDBOOK}, Section 5, Intersections, p. 30`
     },
     "glossary": "glossary-yield-line"
   },
@@ -1208,7 +1210,7 @@ export const LEARNING: Record<string, LessonLearning> = {
       "answer": 0,
       "explanation": "Leave extra space when following motorcyclists on metal surfaces or gravel, and when a tailgater is behind you.",
       "draft": true,
-      "source": "California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 6, Tailgating"
+      "source": `${HANDBOOK}, Section 6, Tailgating`
     },
     "harder": {
       "question": "How do you check a three-second following gap?",
@@ -1220,13 +1222,13 @@ export const LEARNING: Record<string, LessonLearning> = {
       "answer": 2,
       "explanation": "Pick a fixed point such as a sign and count as the car ahead passes it. Reaching it before three seconds means you are too close.",
       "draft": true,
-      "source": "California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 6, Tailgating"
+      "source": `${HANDBOOK}, Section 6, Tailgating`
     },
     "recall": {
       "front": "Rain, night, or a tailgater behind you: how much following space?",
       "back": "More than three seconds.",
       "draft": true,
-      "source": "California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 6, Tailgating, p. 44"
+      "source": `${HANDBOOK}, Section 6, Tailgating, p. 44`
     },
     "glossary": "glossary-three-second-rule"
   },
@@ -1243,7 +1245,7 @@ export const LEARNING: Record<string, LessonLearning> = {
       "answer": 1,
       "explanation": "Flashing yellow lights warn you to slow down and prepare to stop.",
       "draft": true,
-      "source": "California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 5, Around Children"
+      "source": `${HANDBOOK}, Section 5, Around Children`
     },
     "harder": {
       "question": "A school bus with flashing red lights is stopped on the other side of a divided highway. Must you stop?",
@@ -1255,13 +1257,13 @@ export const LEARNING: Record<string, LessonLearning> = {
       "answer": 1,
       "explanation": "You do not need to stop for a bus on the other side of a divided or multilane highway. Watch for children anyway.",
       "draft": true,
-      "source": "California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 5, Around Children"
+      "source": `${HANDBOOK}, Section 5, Around Children`
     },
     "recall": {
       "front": "A school bus on a two-lane road flashes red lights. What do you do?",
       "back": "Stop, and stay stopped until the red lights stop flashing.",
       "draft": true,
-      "source": "California Quick Reference Driver's Handbook (DL 600 X, 6/2025), Section 5, Around Children (stopped school buses), pp. 38–39"
+      "source": `${HANDBOOK}, Section 5, Around Children (stopped school buses), pp. 38–39`
     }
   }
 };

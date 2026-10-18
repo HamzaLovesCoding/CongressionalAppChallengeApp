@@ -1,5 +1,5 @@
 import { CC_BY_3, LEARNING_SOURCES, OPEN_SOURCE, ORIGINAL_MATERIALS, VIDEO_CREDITS } from '../legal/credits';
-import { OWNER_PLACEHOLDER, PRIVACY, TERMS, type LegalDocument } from '../legal/documents';
+import { PRIVACY, TERMS, type LegalDocument } from '../legal/documents';
 import type { View } from '../navigation';
 import { subpage } from './subpage';
 
@@ -11,7 +11,7 @@ const row = (url: string | null, title: string, detail: string) => url
 
 function mountDocument(root: HTMLElement, doc: LegalDocument): View {
   const view = subpage(root, { title: doc.title, back: '#/settings', backLabel: 'Back to settings', className: 'legal-page' });
-  view.body.innerHTML = `<p class="sub-note">Version ${esc(doc.version)} · ${esc(doc.effective ?? OWNER_PLACEHOLDER.effective)}</p>
+  view.body.innerHTML = `<p class="sub-note">Version ${esc(doc.version)} · Effective ${esc(doc.effective)}</p>
     ${doc.sections.map(section => `<h2>${esc(section.heading)}</h2>${section.body.map(paragraph => `<p>${esc(paragraph)}</p>`).join('')}`).join('')}`;
   return view;
 }

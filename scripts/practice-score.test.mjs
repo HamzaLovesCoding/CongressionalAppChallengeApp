@@ -10,7 +10,7 @@ const question = (id, topicId, conceptId) => ({ id, topicId, conceptId, sourcePa
 test('every bank question has a unique id, a valid key, a labeled topic, and described artwork', () => {
   const ids = new Set(PERMIT_BANK.questions.map(q => q.id));
   assert.equal(ids.size, PERMIT_BANK.questions.length);
-  assert.equal(PERMIT_BANK.questions.length, 46);
+  assert.equal(PERMIT_BANK.questions.length, 43);
   for (const q of PERMIT_BANK.questions) {
     assert.ok(q.choices.some(c => c.id === q.correctChoiceId), `${q.id} key matches a choice`);
     assert.equal(new Set(q.choices.map(c => c.id)).size, q.choices.length, `${q.id} choice ids are unique`);

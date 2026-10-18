@@ -1,4 +1,4 @@
-// Video start-up check, run against `npm run build && npm run preview`:
+// Video start-up check, run against `npm run build:test && npm run preview:test`:
 // 1. WebKit (Safari's engine, iPhone 15 viewport): does every lesson clip actually play?
 // 2. Chromium on a throttled phone connection: how long until the first frame when the feed opens,
 //    and after each swipe while the previous clip played for a few seconds?
