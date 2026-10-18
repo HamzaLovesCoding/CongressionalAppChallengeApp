@@ -10,7 +10,7 @@ import { clipById } from '../feed/clips';
 import { topicRecord } from '../feed/progress';
 import { LEARNING, topicOf } from '../content/learning';
 import { reviewPriority, smoothMastery } from '../learning/scoring';
-import { bindCoachSection, coachSection } from '../coach/entry';
+import { coachSection } from '../coach/entry';
 
 const esc = (value: string | number) => String(value).replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]!);
 const targetPct = Math.round(bank.target * 100);
@@ -58,7 +58,6 @@ export function mountPractice(root: HTMLElement): View {
     ${homeNavigation('practice')}
   </div>`;
   root.append(page);
-  bindCoachSection(page);
   page.querySelector<HTMLElement>('main')!.focus({ preventScroll: true });
   return { dispose() { page.remove(); } };
 }

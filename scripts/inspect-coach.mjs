@@ -1,4 +1,4 @@
-// Driver coach walkthrough: the Practice section, the full-screen chat, cited handbook pages, follow-up
+// Driver coach walkthrough: the Practice card, the full-screen chat, cited handbook pages, follow-up
 // context, limits, refusals, retries, stopping an answer and a new chat. Screenshots: artifacts/coach/.
 //
 // The backend is stood in by Playwright, so no request reaches Supabase or Anthropic. Needs a dev server
@@ -87,14 +87,18 @@ try {
   const order = await page.evaluate(() => [...document.querySelectorAll('.practice-content > section')].map(section => section.getAttribute('aria-labelledby')));
   assert.deepEqual(order, ['practice-test-title', 'coach-title', 'practice-topics-title'], 'coach section comes right after the practice test');
   assert.equal(await page.locator('.coach-entry .ui-chip').innerText(), 'AI', 'the coach is labelled as AI');
-  assert.equal(await page.locator('.coach-entry .coach-send').isDisabled(), true, 'nothing to send yet');
+  assert.equal(await page.locator('.coach-entry textarea').count(), 0, 'Practice shows a card, not a question box');
+  assert.equal(await page.locator('.coach-card').getAttribute('href'), '#/practice/coach', 'the whole card opens the chat');
   assert.ok(await noSideScroll(page));
   await page.locator('.coach-entry').scrollIntoViewIfNeeded();
   await page.screenshot({ path: `${out}/01-practice-section.png` });
 
-  // 2. A starter question opens the chat and the cited answer comes in.
-  await page.getByRole('button', { name: 'Who goes first at a four-way stop?' }).click();
+  // 2. The card opens the empty chat; a starter question there brings in the cited answer.
+  await page.locator('.coach-card').click();
   await page.waitForURL(/#\/practice\/coach$/);
+  await page.getByRole('heading', { name: 'Ask the driver coach' }).waitFor();
+  assert.equal(asked.length, 0, 'opening the chat asks nothing');
+  await page.getByRole('button', { name: 'Who goes first at a four-way stop?' }).click();
   await waitStatus(page, 'done');
   assert.equal(await page.getByRole('navigation', { name: 'Main navigation' }).count(), 0, 'the chat hides app navigation like the practice test');
   assert.equal(asked.at(-1).messages.length, 1);
@@ -167,14 +171,6 @@ try {
   const stop = page.getByRole('button', { name: 'Stop the answer' });
   await stop.waitFor();
   await page.screenshot({ path: `${out}/06-waiting.png` });
-  // A question asked on Practice while this answer is still coming waits in the chat's box instead of vanishing.
-  await page.getByRole('link', { name: 'Back to practice' }).click();
-  await page.waitForURL(/#\/practice$/);
-  await page.locator('#coach-question').fill('What about at night?');
-  await page.locator('#coach-question').press('Enter');
-  await page.waitForURL(/#\/practice\/coach$/);
-  assert.equal(await page.locator('.coach-dock textarea').inputValue(), 'What about at night?');
-  await page.locator('.coach-dock textarea').fill('');
   await stop.click();
   await waitStatus(page, 'stopped');
   assert.match(await lastAnswer(page).innerText(), /You stopped this answer/);
@@ -184,11 +180,11 @@ try {
   // 9. Back on Practice: continue the chat; a new chat clears it.
   await page.getByRole('link', { name: 'Back to practice' }).click();
   await page.waitForURL(/#\/practice$/);
-  assert.match(await page.locator('.coach-continue').innerText(), /Continue your chat[\s\S]*How far ahead should I look\?/);
+  assert.match(await page.locator('.coach-card').innerText(), /Continue your chat[\s\S]*How far ahead should I look\?/);
   await settle(page);
   await page.locator('.coach-entry').scrollIntoViewIfNeeded();
   await page.screenshot({ path: `${out}/07-practice-continue.png` });
-  await page.locator('.coach-continue').click();
+  await page.locator('.coach-card').click();
   await page.waitForURL(/#\/practice\/coach$/);
   await page.getByRole('button', { name: 'New chat' }).click();
   await page.waitForFunction(() => document.querySelectorAll('.coach-exchange').length === 0);
@@ -200,13 +196,9 @@ try {
   await settle(page);
   await page.screenshot({ path: `${out}/08-empty.png` });
 
-  // 10. Asking from the Practice box; the coach function not deployed yet.
+  // 10. The coach function not deployed yet.
   scenario = 'missing';
-  await page.goto(`${base}#/practice`, { waitUntil: 'networkidle' });
-  await page.locator('#coach-question').fill('Can I turn right on a red light?');
-  await page.locator('.coach-entry .coach-send').click();
-  await page.waitForURL(/#\/practice\/coach$/);
-  await waitStatus(page, 'problem');
+  await send(page, 'Can I turn right on a red light?', 'problem');
   assert.match(await lastAnswer(page).innerText(), /isn’t switched on yet/);
   await context.close();
 
@@ -230,7 +222,9 @@ try {
   const { context: fresh, page: first } = await open({ width: 390, height: 844 }, { onboarded: false });
   await first.goto(`${base}#/practice`, { waitUntil: 'networkidle' });
   assert.match(await first.locator('.coach-entry').innerText(), /Finish setting up Lane to use the coach/);
-  assert.equal(await first.locator('.coach-entry textarea').count(), 0, 'no question box before the Terms are agreed');
+  assert.equal(await first.locator('.coach-card').getAttribute('href'), '#/welcome', 'the card leads to setup before the Terms are agreed');
+  await first.locator('.coach-entry').scrollIntoViewIfNeeded();
+  await first.screenshot({ path: `${out}/11-practice-setup.png` });
   await fresh.close();
 
   assert.deepEqual(problems, []);

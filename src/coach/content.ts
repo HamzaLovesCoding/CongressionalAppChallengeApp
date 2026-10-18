@@ -3,7 +3,7 @@
 export const COACH = {
   title: 'Driver coach',
   tag: 'AI',
-  lede: 'Ask about driving rules, real situations or your permit test. Answers cite the California Driver’s Handbook.',
+  lede: 'Ask about road rules, real situations or your permit test.',
   placeholder: 'Ask a driving question',
   followUp: 'Ask a follow-up question',
   inputLabel: 'Your question for the driver coach',
@@ -46,7 +46,7 @@ export const COACH = {
     'local-key': 'No API key yet. Paste it into supabase/functions/.env after ANTHROPIC_API_KEY=, then try again.',
     failed: 'The coach couldn’t answer just now. Try again.',
   },
-  // Shown instead of the question box on Practice when the coach can't be used yet.
+  // Shown on the Practice card when the coach can't be used yet.
   needsSetup: 'Finish setting up Lane to use the coach.',
   setupLink: 'Set up Lane',
 } as const;

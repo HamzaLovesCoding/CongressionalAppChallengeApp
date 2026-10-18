@@ -3,19 +3,26 @@
    the learner's questions sit on the dark hero color so the two voices are easy to tell apart. */
 .coach-sr { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
 
-/* Practice section */
-.practice .coach-entry { margin-top:var(--sp-6); }
-.practice .coach-entry .home-section-heading { justify-content:flex-start; margin-top:0; }
-.practice .coach-lede { margin-bottom:var(--sp-4); font-size:var(--fs-body); line-height:1.5; color:var(--lane-support); }
-.practice .coach-note { font-size:var(--fs-body); line-height:1.5; color:var(--lane-support); }
-.practice .coach-note a { color:var(--lane-accent-ink); font-weight:var(--fw-bold); text-decoration:underline; text-underline-offset:3px; }
-.practice .coach-continue { display:flex; align-items:center; gap:var(--sp-3); min-height:64px; margin-bottom:var(--sp-4); padding:var(--sp-3) 0; border-top:1px solid var(--lane-line); border-bottom:1px solid var(--lane-line); }
-.practice .coach-continue>span:nth-child(2) { flex:1; min-width:0; display:grid; gap:2px; }
-.practice .coach-continue b { font-weight:var(--fw-bold); }
-.practice .coach-continue small { overflow:hidden; font-size:var(--fs-caption); color:var(--lane-muted); white-space:nowrap; text-overflow:ellipsis; }
-.practice .coach-continue>i { font-style:normal; font-size:var(--fs-title); color:var(--lane-support); }
-.practice .coach-continue-icon, .practice .coach-empty-icon { display:grid; place-items:center; flex:none; width:40px; height:40px; border-radius:var(--radius-md); background:var(--lane-accent-soft); color:var(--lane-accent-ink); }
-.practice .coach-continue-icon svg, .practice .coach-empty-icon svg { width:22px; height:22px; }
+/* Practice section: one light card under the dark test card. The whole card opens the chat; its field
+   only looks like the question box, and the dark round button echoes the test's Start action without
+   competing with its ochre. */
+.practice .coach-entry { margin-top:var(--sp-5); }
+.practice .coach-card { display:grid; gap:var(--sp-3); padding:var(--sp-4); border:1.5px solid var(--lane-ink); border-radius:var(--radius-xl); background:var(--lane-surface); color:var(--lane-ink); box-shadow:var(--shadow-soft); text-decoration:none; transition:transform 140ms var(--ease-out), box-shadow 160ms; }
+.practice a.coach-card:active { transform:scale(.985); }
+.practice a.coach-card:focus-visible { outline:3px solid var(--lane-accent-ink); outline-offset:3px; }
+.practice .coach-card-top { display:flex; align-items:center; gap:var(--sp-3); }
+.practice .coach-card-top h2 { font-size:var(--fs-title); line-height:1.2; font-weight:var(--fw-bold); letter-spacing:-.01em; }
+.practice .coach-card-mark, .practice .coach-empty-icon { display:grid; place-items:center; flex:none; width:40px; height:40px; border-radius:var(--radius-md); background:var(--lane-accent-soft); color:var(--lane-accent-ink); }
+.practice .coach-card-mark svg, .practice .coach-empty-icon svg { width:22px; height:22px; }
+.practice .coach-card-lede { font-size:var(--fs-body); line-height:1.45; color:var(--lane-support); }
+.practice .coach-card-field { display:flex; align-items:center; gap:var(--sp-2); min-height:56px; padding:var(--sp-1) var(--sp-1) var(--sp-1) 14px; border:1px solid var(--lane-line); border-radius:var(--radius-md); background:var(--lane-page); }
+.practice .coach-card-search { display:grid; flex:none; color:var(--lane-muted); }
+.practice .coach-card-search svg { width:20px; height:20px; }
+.practice .coach-card-text { flex:1; min-width:0; overflow:hidden; font-size:var(--fs-body); color:var(--lane-muted); white-space:nowrap; text-overflow:ellipsis; }
+.practice .coach-card-field.is-filled .coach-card-text { color:var(--lane-ink); }
+.practice .coach-card-go { display:grid; place-items:center; flex:none; width:44px; height:44px; border-radius:50%; background:var(--lane-ink); color:var(--lane-surface); box-shadow:0 0 0 4px rgb(209 151 53 / .28); }
+.practice .coach-card-go svg { width:20px; height:20px; }
+@media (hover:hover) and (pointer:fine) { .practice a.coach-card:hover { box-shadow:var(--shadow-raised); } }
 
 /* Question box */
 .practice .coach-composer { display:flex; align-items:flex-end; gap:var(--sp-2); padding:var(--sp-1) var(--sp-1) var(--sp-1) 14px; border:1.5px solid var(--lane-ink); border-radius:var(--radius-md); background:var(--lane-surface); box-shadow:var(--shadow-soft); }
@@ -109,6 +116,8 @@
   .coach-page .coach-foot { display:none; }
 }
 @media (prefers-reduced-motion:reduce) {
+  .practice a.coach-card { transition:none; }
+  .practice a.coach-card:active { transform:none; }
   .coach-page :is(.coach-question,.coach-quote) { animation:none; }
   .coach-page .coach-waiting i { animation:none; opacity:.6; }
 }
