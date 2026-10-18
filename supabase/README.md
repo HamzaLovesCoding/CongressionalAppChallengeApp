@@ -25,6 +25,7 @@ Update (October 18, 2026): `20261021000000_lane_xp_on_answer.sql` was applied to
    - `migrations/20261019000000_lane_code_groups.sql`
    - `migrations/20261020000000_lane_global_board_everyone.sql`
    - `migrations/20261021000000_lane_xp_on_answer.sql` (awards a waiting completion as soon as its correct answer arrives, in the same backup; keeps the answer guard and one-award limit)
+   - `migrations/20261022000000_lane_driver_coach.sql` (daily question limits for the driver coach; see "Driver coach" below)
 2. **Allow anonymous sign-ins**: Dashboard → Authentication → Sign In / Providers → turn on **Allow anonymous sign-ins**. Learners never type an email or password; each device gets an anonymous account.
 3. **Point the app at it**: create `.env.local` (gitignored) with
 
@@ -57,6 +58,37 @@ After that, run the Supabase security advisor (Dashboard → Advisors) and repea
   - `delete_comment(comment)` deletes only your own; its votes go with it. There is no edit function.
   - `delete_my_data()` also removes your comments and votes. Remove an abusive comment from the dashboard (Table editor → lesson_comments).
 
+## Driver coach (AI)
+
+The coach on Practice is answered by the `coach` Edge Function (`functions/coach/`), which keeps the Anthropic API key on the server. The app never sees the key: anything in a `VITE_` variable ships inside the app's JavaScript, where anyone could copy it.
+
+Status (2026-10-18): built and tested against stand-ins only. The migration, the secret and the function are **not** on the live project yet.
+
+**Try it on this computer first** (no deploy, nothing sent to the live project): paste the key into `functions/.env`, run `npm run coach:local`, and open http://127.0.0.1:5180/#/practice. It runs the same handler under Deno (downloaded through npx the first time) on 127.0.0.1:8788 and a dev build of the app without Supabase settings. The key is re-read on every question, so no restart is needed after pasting it. Real questions are billed to the key.
+
+1. **Apply** `migrations/20261022000000_lane_driver_coach.sql` in the SQL editor (it uses `lane_today()` from the streak-buddies migration, which is live).
+2. **Paste the key** into `functions/.env` (gitignored; `functions/.env.example` is the template): `ANTHROPIC_API_KEY=sk-ant-…`
+3. **Send the key and deploy** from the repo root (the CLI runs through npx; `--use-api` needs no Docker):
+
+   ```sh
+   npx supabase login
+   npx supabase secrets set --env-file supabase/functions/.env --project-ref mtcphmkheqkzyvbvruey
+   npx supabase functions deploy coach --project-ref mtcphmkheqkzyvbvruey --no-verify-jwt --use-api
+   ```
+
+   `--no-verify-jwt` is deliberate: the function checks the learner itself by calling `coach_take_turn()` with the learner's token, which works with any JWT signing key setup. Without a key the function answers `not-configured` and the app says the coach isn't switched on yet.
+4. **Set a spend limit** in the Anthropic Console (Settings → Limits). The daily caps below bound normal use; the Console limit is the backstop.
+5. **Check it**: ask the coach a question on Practice, then open Dashboard → Edge Functions → coach → Logs. Each answer logs one line of token counts (never the question or answer). A second question within five minutes should show `cache_read_input_tokens` near the handbook's size, meaning the handbook was read from the prompt cache.
+
+How it works:
+
+- Model `claude-sonnet-5-5`, effort `low`, at most 4,096 output tokens. The system prompt (`functions/coach/prompt.ts`) keeps answers short, handbook-based, age-appropriate and on driving; it stops anyone who says they're driving and never predicts a pass.
+- The handbook goes with every question as a cited document (`functions/coach/handbook.ts`, about 90,000 characters, built by `scripts/extract-handbook.mjs` from the DMV PDF). It's cached for 5 minutes and shared by every learner, so only the first question after a quiet spell pays to load it. Citations come back as handbook page numbers with the quoted lines, which the app lists under each answer.
+- Server-side fallback (`fallbacks: "default"`) retries a request Anthropic's safety classifiers decline on another model where one applies; anything still declined shows "can't help with that one".
+- `coach_take_turn()` counts each question: **30 per learner per Pacific day, 500 for everyone together**. Change the numbers in the function and re-run it to adjust. Counts older than a week are deleted; `delete_my_data()` leaves them (it would otherwise reset the limit).
+- Nothing the learner types is stored. The app sends the last five exchanges as context; Anthropic receives a one-way hash of the account ID as `metadata.user_id`.
+- Rough cost (Sonnet 5.5: $2 input, $10 output, $2.50 cache write, $0.20 cache read per million tokens; handbook about 25,000 tokens): about $0.01 per question while the cache is warm, about $0.07 for the first question after five quiet minutes. 500 cold questions in a day would be roughly $35, which is why the Console spend limit matters.
+
 ## Verify
 
 - Use `npm run build:test && npm run preview:test` for browser walkthroughs. The separate `dist-test/` build clears every Supabase setting, including those from `.env.local`; regular production builds remain connected when configured.
@@ -73,6 +105,8 @@ After that, run the Supabase security advisor (Dashboard → Advisors) and repea
 
   These use PGlite with small shims for Supabase's `auth.uid()` and roles. They are strong evidence but not a hosted-project test.
 
+- The coach without spending the key: `node --test scripts/coach.test.mjs` (request shape, caching, citations, validation), `node supabase/tests/rls.check.mjs` (daily limits on Postgres), and `node scripts/inspect-coach.mjs` (every chat state against a stand-in backend; needs the fake-backend dev server on 5175).
+
 ## Not in this version
 
-Private messages, chat, comment moderation tools in the app (remove comments from the Supabase dashboard), class codes, push notifications, CMS, storing videos in Postgres, pulling remote data back onto a new device (needs real sign-in), generated database types.
+Private messages between learners, saved coach conversations, comment moderation tools in the app (remove comments from the Supabase dashboard), class codes, push notifications, CMS, storing videos in Postgres, pulling remote data back onto a new device (needs real sign-in), generated database types.

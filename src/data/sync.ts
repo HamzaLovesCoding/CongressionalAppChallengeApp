@@ -100,15 +100,16 @@ export function createSync(client: SupabaseClient | null, lessonIds: string[], s
     return next;
   }
   // Every backend call. An expired or revoked access token is renewed once and the call retried.
-  async function call<T>(fn: string, args: object): Promise<T> {
-    try { return await client!.rpc<T>(await session(), fn, args); }
+  async function authorized<T>(work: (current: Session) => Promise<T>): Promise<T> {
+    try { return await work(await session()); }
     catch (error) {
       if (!(error instanceof RemoteError && error.reason === 'unauthorized') || !auth.session) throw error;
       auth = { ...auth, session: { ...auth.session, expiresAt: 0 } };
       writeAuth(auth);
-      return client!.rpc<T>(await session(), fn, args);
+      return work(await session());
     }
   }
+  const call = <T>(fn: string, args: object) => authorized(current => client!.rpc<T>(current, fn, args));
   async function run(): Promise<SyncStatus> {
     if (!client) return status;
     set({ state: 'syncing', lastSyncedAt: auth.lastSyncedAt ?? null });
@@ -197,6 +198,12 @@ export function createSync(client: SupabaseClient | null, lessonIds: string[], s
     async deleteComment(commentId: string): Promise<ActionResult> {
       if (!client) return 'offline';
       try { return await call<boolean>('delete_comment', { comment: commentId }) ? 'ok' : 'refused'; } catch { return 'offline'; }
+    },
+    // The driver coach (supabase/functions/coach): the conversation goes up, the answer streams back for
+    // the caller to read. Nothing is stored on this device or the server besides a daily question count.
+    async coach(messages: { role: 'user' | 'assistant'; text: string }[], signal?: AbortSignal): Promise<Response> {
+      if (!client) throw new RemoteError('server', 'No backend');
+      return authorized(current => client.invoke(current, 'coach', { messages }, signal));
     },
     // The new anonymous account that follows reclaims this device's username on its first backup.
     async deleteRemote() {

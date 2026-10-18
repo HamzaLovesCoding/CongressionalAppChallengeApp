@@ -23,6 +23,14 @@ The in-app policies in `src/legal/documents.ts` use Hamza Wadera, hamza.w.3790@g
 - [ ] **Class codes.** If schools use Lane through class codes, California's Student Online Personal Information Protection Act (SOPIPA) and federal FERPA may apply. Ask a teacher or the school how they handle student apps.
 - [ ] Rewrite privacy section 12 and terms section 11 into present-tense rules, and show a notice in the app before the change.
 
+## Decide before the driver coach goes live (October 18, 2026)
+
+The in-app Privacy Policy and Terms (version 1.1) and these drafts now describe the AI driver coach. These drafts still describe the app as local-only elsewhere; the backend sections need the rewrite above.
+
+- [ ] **Anthropic's data terms.** The policy says Anthropic doesn't train on API data and deletes it within 30 days (Anthropic's Privacy Center, checked October 18, 2026; some third-party sites say 7 days). Confirm both in the Privacy Center and Anthropic's commercial terms for the account the key belongs to.
+- [ ] **Anthropic's rules for products minors use.** Anthropic's Usage Policy lets apps built on its API serve minors only with extra safeguards (such as age-appropriate content and safety measures, disclosure that the user is talking to an AI, and following child-safety and privacy laws). Lane labels the coach "AI", keeps it on driving and sends no personal details, but read the current policy and confirm the account meets it.
+- [ ] Whether the coach needs a parent or guardian notice beyond the Terms the learner agrees to at setup.
+
 ## Questions for a reviewer
 
 These are areas where the assistant was unsure and didn't want to guess:

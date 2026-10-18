@@ -40,6 +40,7 @@ const route = () => {
   else if (name === 'sim') { go(`#/feed/sim/${id ?? ''}`, true); return; }
   else if (name === 'drive') { go('#/feed/sim/yellow-light-stop', true); return; }
   else if (name === 'answered' && clip) view = mountFeed(root, { id: clip.id, quiz: true });
+  else if (name === 'practice' && id === 'coach') view = lazy(() => import('./coach/chat').then(m => m.mountCoach));
   else if (name === 'practice') view = id === 'test' ? mountPracticeTest(root) : mountPractice(root);
   else if (name === 'progress') view = mountLearningPath(root);
   else if (name === 'profile') view = mountProfile(root);
@@ -59,7 +60,7 @@ const TAB_ORDER = ['home', 'progress', 'practice', 'profile'];
 function place(hash: string) {
   const [name = '', id] = hash.replace(/^#\/?/, '').split('/');
   const tab = TAB_ORDER.indexOf(name || 'home');
-  if (tab < 0 || (name === 'practice' && id === 'test')) return { depth: 1, tab: -1 };
+  if (tab < 0 || (name === 'practice' && (id === 'test' || id === 'coach'))) return { depth: 1, tab: -1 };
   return { depth: 0, tab };
 }
 // iOS swipe-back already animates the page; a second transition on top of it looks broken.

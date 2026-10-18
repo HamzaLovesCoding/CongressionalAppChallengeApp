@@ -226,8 +226,27 @@ for (const role of ['anon', 'authenticated']) {
 }
 ok('the answer trigger cannot be called directly by a client');
 
+// 8d. Driver coach daily limits (counts only; the questions never reach the database).
+const turn = async who => (await call(who, 'select public.coach_take_turn() r'))[0].r;
+assert.ok(await denied('anon', null, 'select public.coach_take_turn()')); assert.ok(await denied('authenticated', null, 'select public.coach_take_turn()'));
+ok('the coach allowance needs a signed-in learner');
+assert.deepEqual(await turn(A), { status: 'ok', remaining: 29, learner: A }); ok('a question counts against the learner allowance');
+for (let i = 0; i < 29; i++) assert.equal((await turn(A)).status, 'ok');
+assert.deepEqual(await turn(A), { status: 'daily' }); assert.deepEqual(await turn(A), { status: 'daily' }); ok('30 coach questions per learner per day, then daily');
+assert.equal((await turn(B)).remaining, 29); ok("one learner's limit doesn't touch another's");
+assert.ok(await denied('authenticated', B, 'select * from public.coach_usage')); assert.ok(await denied('authenticated', B, `insert into public.coach_usage values ('${B}', current_date, 1)`));
+assert.ok(await denied('authenticated', B, `update public.coach_usage set questions = 0 where user_id = '${B}'`)); ok('coach counts have no direct reads or writes');
+await db.query(`insert into public.coach_usage values ($1, (now() at time zone 'America/Los_Angeles')::date, 470)`, [C]);
+assert.deepEqual(await turn(D), { status: 'busy' }); ok('500 questions a day across all learners, then busy');
+await db.query('delete from public.coach_usage where user_id = $1', [C]);
+await db.query(`insert into public.coach_usage values ($1, (now() at time zone 'America/Los_Angeles')::date - 8, 3)`, [C]);
+assert.equal((await turn(D)).status, 'ok');
+assert.equal((await db.query('select count(*)::int n from public.coach_usage where user_id = $1', [C])).rows[0].n, 0); ok('coach counts older than a week are deleted');
+assert.deepEqual(Object.keys((await db.query('select * from public.coach_usage limit 1')).rows[0]), ['user_id', 'day', 'questions']); ok('coach_usage holds an account, a day and a count, nothing else');
+
 // 9. Delete my data.
 await as('authenticated', A, 'select public.delete_my_data()');
+assert.deepEqual(await turn(A), { status: 'daily' }); ok("delete_my_data doesn't reset the coach limit");
 assert.equal((await as('authenticated', A, 'select count(*)::int n from public.xp_events')).rows[0].n, 0); ok('delete_my_data erases the caller rows');
 assert.equal((await as('authenticated', B, 'select count(*)::int n from public.xp_events')).rows[0].n, 1); ok("delete_my_data leaves other learners' rows");
 assert.equal((await as('authenticated', B, 'select count(*)::int n from public.buddy_links')).rows[0].n, 0); ok('delete_my_data removes buddy links on both sides');

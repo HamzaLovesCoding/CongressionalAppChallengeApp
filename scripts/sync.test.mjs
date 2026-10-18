@@ -248,3 +248,47 @@ test('ensureUsername claims the local name, and clears it when taken', async () 
   assert.equal(await sync.createSync(usernameClient([], { Mine: 'taken' }), [], progress).ensureUsername(), 'taken');
   assert.equal(progress.settings().displayAlias, null);
 });
+
+test('the coach call posts only the conversation, renewing an expired token once', async () => {
+  const { progress, sync } = await setup({ 'lane-auth': { session: { accessToken: 'old', refreshToken: 'r', expiresAt: Date.now() + 3600_000, userId: 'u1' } } });
+  const { RemoteError } = await import('../src/data/supabase.ts');
+  const calls = [];
+  const messages = [{ role: 'user', text: 'Who goes first at a four-way stop?' }];
+  const client = {
+    async signInAnonymously() { throw new Error('should not sign up'); },
+    async refresh() { calls.push('refresh'); return { accessToken: 'a2', refreshToken: 'r2', expiresAt: Date.now() + 3600_000, userId: 'u1' }; },
+    async invoke(session, fn, args) {
+      calls.push(`${fn}:${session.accessToken}`);
+      assert.deepEqual(args, { messages });
+      if (session.accessToken === 'old') throw new RemoteError('unauthorized', 'HTTP 401');
+      return new Response('{"type":"done","stop":"end_turn"}\n', { status: 200 });
+    },
+  };
+  const app = sync.createSync(client, [], progress);
+  const response = await app.coach(messages);
+  assert.equal(response.status, 200);
+  assert.deepEqual(calls, ['coach:old', 'refresh', 'coach:a2']);
+  await assert.rejects(sync.createSync(null, [], progress).coach(messages), error => error.reason === 'server', 'no backend, no request');
+});
+
+test('the fetch client invokes the coach function with the publishable key and bearer token', async () => {
+  const seen = [];
+  const reply = { status: 200 };
+  const fetcher = async (url, init) => { seen.push({ url, init }); return new Response(reply.status === 200 ? 'x\n' : '{"error":"daily-limit"}', { status: reply.status }); };
+  const client = createClient({ url: 'https://x.supabase.co', key: 'pub' }, fetcher, () => 0);
+  const session = { accessToken: 't', refreshToken: 'r', expiresAt: 1, userId: 'u' };
+  await client.invoke(session, 'coach', { messages: [] });
+  assert.equal(seen[0].url, 'https://x.supabase.co/functions/v1/coach');
+  assert.equal(seen[0].init.headers.apikey, 'pub');
+  assert.equal(seen[0].init.headers.Authorization, 'Bearer t');
+  assert.equal(seen[0].init.body, '{"messages":[]}');
+  reply.status = 429;
+  assert.equal((await client.invoke(session, 'coach', {})).status, 429, 'limits come back for the caller to read');
+  reply.status = 401;
+  await assert.rejects(client.invoke(session, 'coach', {}), error => error.reason === 'unauthorized');
+  const offline = createClient({ url: 'https://x.supabase.co', key: 'pub' }, async () => { throw new TypeError('offline'); });
+  await assert.rejects(offline.invoke(session, 'coach', {}), error => error.reason === 'offline');
+  const stopped = new AbortController(); stopped.abort();
+  const aborting = createClient({ url: 'https://x.supabase.co', key: 'pub' }, async () => { throw new DOMException('Aborted', 'AbortError'); });
+  await assert.rejects(aborting.invoke(session, 'coach', {}, stopped.signal), error => error.name === 'AbortError', 'a stopped answer is not reported as offline');
+});

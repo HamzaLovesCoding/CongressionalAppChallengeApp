@@ -46,6 +46,10 @@ Don't watch lessons, answer questions or use the simulator while you're driving 
 
 Lane gives general learning information. It isn't legal advice.
 
+### The AI driver coach (added October 18, 2026)
+
+The driver coach is an AI tool for learning. Its answers are based on the California Driver's Handbook but can be wrong or incomplete, so check the handbook pages it shows. It isn't legal advice or driving instruction, and it can't tell you that you're ready to drive or will pass a test. Ask it about driving only, don't try to make it say harmful things, and don't share personal details with it. Questions are limited each day, and the coach may sometimes be unavailable.
+
 ## 5. Lesson videos
 
 Lesson videos are made by independent creators and are used in Lane with permission or under their licenses. Each video lesson credits and links to its original video under **About this lesson**.

@@ -1,4 +1,4 @@
-import { CC_BY_3, LEARNING_SOURCES, OPEN_SOURCE, ORIGINAL_MATERIALS, VIDEO_CREDITS } from '../legal/credits';
+import { CC_BY_3, CC_BY_NC_4, HANDBOOK_LICENSE, LEARNING_SOURCES, OPEN_SOURCE, ORIGINAL_MATERIALS, SERVICES, VIDEO_CREDITS } from '../legal/credits';
 import { PRIVACY, TERMS, type LegalDocument } from '../legal/documents';
 import type { View } from '../navigation';
 import { subpage } from './subpage';
@@ -28,6 +28,9 @@ export function mountCredits(root: HTMLElement): View {
     <h2>Learning sources</h2>
     <ul class="sub-list">${LEARNING_SOURCES.map(source => row(source.url, source.title, `${esc(source.publisher)}. ${esc(source.use)}`)).join('')}</ul>
     <p class="sub-note">Lane is not affiliated with or endorsed by the California DMV or the Office of Traffic Safety.</p>
+    <h2>Driver coach</h2>
+    <ul class="sub-list">${SERVICES.map(item => row(item.url, item.name, esc(item.use))).join('')}
+      ${row(CC_BY_NC_4, 'Handbook text the coach answers from and quotes', `${esc(HANDBOOK_LICENSE)} Lane extracted the text, fixed encoding errors and described the pictures in words.`)}</ul>
     <h2>Open-source software</h2>
     <ul class="sub-list">${OPEN_SOURCE.map(item => row(item.url, item.name, `${esc(item.version)} · ${esc(item.license)} · ${esc(item.use)}`)).join('')}</ul>
     <h2>Lane materials</h2>

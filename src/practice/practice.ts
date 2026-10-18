@@ -10,6 +10,7 @@ import { clipById } from '../feed/clips';
 import { topicRecord } from '../feed/progress';
 import { LEARNING, topicOf } from '../content/learning';
 import { reviewPriority, smoothMastery } from '../learning/scoring';
+import { bindCoachSection, coachSection } from '../coach/entry';
 
 const esc = (value: string | number) => String(value).replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]!);
 const targetPct = Math.round(bank.target * 100);
@@ -47,6 +48,7 @@ export function mountPractice(root: HTMLElement): View {
         <div class="practice-test-facts"><span><b>${bank.questions.length}</b> questions</span><span><b>${targetPct}%</b> target</span></div>
         <a class="home-continue ui-button is-split" href="#/practice/test">Start test <span aria-hidden="true">→</span></a>
       </section>
+      ${coachSection()}
       <section aria-labelledby="practice-topics-title">
         <div class="home-section-heading"><h2 id="practice-topics-title">What’s covered</h2></div>
         <ul class="practice-list">${Object.entries(bank.topics).filter(([id]) => counts.has(id)).map(([id, label]) => `<li>${topicIcon(id)}<b>${esc(label)}</b><span>${plural(counts.get(id)!, 'question')}</span></li>`).join('')}</ul>
@@ -56,6 +58,7 @@ export function mountPractice(root: HTMLElement): View {
     ${homeNavigation('practice')}
   </div>`;
   root.append(page);
+  bindCoachSection(page);
   page.querySelector<HTMLElement>('main')!.focus({ preventScroll: true });
   return { dispose() { page.remove(); } };
 }

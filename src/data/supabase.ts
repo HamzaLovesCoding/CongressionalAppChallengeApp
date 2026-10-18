@@ -49,6 +49,18 @@ export function createClient(config: SupabaseConfig, fetcher: Fetch = fetch.bind
     async rpc<T>(session: Session, fn: string, args: object): Promise<T> {
       return request(fetcher, `${config.url}/rest/v1/rpc/${fn}`, { method: 'POST', headers: { ...json, Authorization: `Bearer ${session.accessToken}` }, body: JSON.stringify(args) });
     },
+    // An Edge Function whose response the caller reads itself (the driver coach streams its answer).
+    // A rejected token throws like rpc() so the session can be renewed; other statuses are returned.
+    async invoke(session: Session, fn: string, args: object, signal?: AbortSignal): Promise<Response> {
+      let response: Response;
+      try { response = await fetcher(`${config.url}/functions/v1/${fn}`, { method: 'POST', headers: { ...json, Authorization: `Bearer ${session.accessToken}` }, body: JSON.stringify(args), signal }); }
+      catch (error) {
+        if (signal?.aborted) throw error;
+        throw new RemoteError('offline', 'Network request failed');
+      }
+      if (response.status === 401 || response.status === 403) throw new RemoteError('unauthorized', `HTTP ${response.status}`);
+      return response;
+    },
   };
 }
 export type SupabaseClient = ReturnType<typeof createClient>;

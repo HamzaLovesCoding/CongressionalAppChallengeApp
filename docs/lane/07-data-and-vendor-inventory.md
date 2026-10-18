@@ -23,6 +23,7 @@ Derived from the code on branch `lane-integration` (2026-10-15). The Privacy Pol
 | Legacy simulator sound setting | `localStorage['amber-muted']` | removed simulator | none (no longer read) | — | — | clear site data |
 | App shell, posters, simulations (precache) | Cache Storage `amber-<build>` | service worker | offline use | `src/sw.js` | automatic | browser |
 | Watched lesson videos | Cache Storage `amber-videos-h264` | after a video reaches `ended` | offline replay | feed + `src/sw.js` | automatic | browser |
+| Driver coach chat (questions, answers, cited quotes) | memory only (`src/coach/state.ts`), never storage | learner questions, coach answers | the open conversation | Practice, `#/practice/coach` | optional | New chat; closing or reloading Lane |
 
 ## Remote (when configured) — Supabase
 
@@ -41,6 +42,14 @@ Derived from the code on branch `lane-integration` (2026-10-15). The Privacy Pol
 | `delete_my_data()` | — | erase caller's rows | caller only |
 
 Not sent: XP totals, likes, saves, car purchases/spending, raw watch ranges. Supabase (vendor) may process IP address and device information in its own logs.
+
+### Driver coach (added 2026-10-18; not yet deployed to the live project)
+
+| Piece | Data | Purpose | Retention |
+| --- | --- | --- | --- |
+| `coach` Edge Function (`supabase/functions/coach`) | the question plus up to the last five questions and answers of the open chat; the learner's access token | answer the question | not stored; logs hold token counts and error types only |
+| `coach_usage` table via `coach_take_turn()` | account ID, Pacific date, number of questions | 30-per-learner and 500-overall daily limits | rows deleted after 7 days; no direct access; kept by `delete_my_data()` so the limit can't be reset |
+| Anthropic (vendor, Claude Sonnet 5.5) | the same conversation, the handbook text, and `metadata.user_id`: a SHA-256 hash of the account ID | write the answer | Anthropic's API terms: no training on API data; deleted within 30 days unless needed for its usage policy or the law (owner to confirm, `docs/legal/README.md`) |
 
 ## Not collected anywhere
 

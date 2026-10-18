@@ -33,3 +33,14 @@ test('the lesson catalog, scenario list and car list match the app', () => {
 test('the leaderboard returns only rank, alias, car, weekly XP and is_you', () => {
   assert.match(sql, /returns table \(rank integer, alias text, car_id text, xp integer, is_you boolean\)/);
 });
+
+test('the driver coach migration stores counts only, behind one learner-only function', () => {
+  const coach = readFileSync(new URL('../supabase/migrations/20261022000000_lane_driver_coach.sql', import.meta.url), 'utf8');
+  assert.match(coach, /alter table public\.coach_usage enable row level security;/);
+  assert.match(coach, /revoke all on public\.coach_usage from anon, authenticated;/);
+  assert.doesNotMatch(coach, /create policy/i, 'no direct reads or writes');
+  assert.match(coach, /create function public\.coach_take_turn\(\) returns jsonb\nlanguage plpgsql security definer set search_path = '' as/);
+  assert.match(coach, /revoke all on function public\.coach_take_turn\(\) from public, anon, authenticated;\ngrant execute on function public\.coach_take_turn\(\) to authenticated;/);
+  assert.match(coach, /where u\.questions < 30/);
+  assert.match(coach, />= 500 then/);
+});

@@ -41,6 +41,15 @@ The app itself sends us nothing about you.
 
 Like any website, Lane is delivered by a hosting service, [hosting provider]. When your device downloads Lane's files, that service may automatically record basic technical information such as your IP address, browser type, the page requested and the time. We use it only to keep Lane running, and the hosting service keeps it for [retention period]. [Team: confirm what your host logs and for how long.]
 
+### The AI driver coach (added October 18, 2026)
+
+The driver coach on the Practice tab is an AI. It works only when backup is on. When you ask it something, Lane sends your question, with the last few questions and answers from the same chat, through Lane's server (Supabase) to Anthropic, the company that makes the Claude AI model, which writes the answer. Anthropic receives a one-way code made from your anonymous account, not the account itself.
+
+- Lane doesn't store your questions or the coach's answers. The chat stays in the app until you start a new chat or close or reload Lane.
+- Lane's server counts how many questions each account asks per day, for the daily limit, and deletes those counts after a week.
+- Anthropic uses the conversation to write the answer. Under its commercial terms it doesn't train its models on it and deletes it within 30 days unless it must keep it longer to enforce its usage policy or the law. [Team: confirm these terms in Anthropic's Privacy Center before publishing.]
+- Don't type personal details such as your full name, address, school or phone number into the coach.
+
 ## 4. What we don't collect
 
 Lane does not collect:

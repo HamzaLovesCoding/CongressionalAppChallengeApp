@@ -20,10 +20,19 @@ export const VIDEO_CREDITS: VideoCredit[] = VIDEO_LESSONS.map(lesson => ({
 
 export const CC_BY_3 = 'https://creativecommons.org/licenses/by/3.0/';
 
+// The coach quotes the handbook, whose license asks for this exact credit line (handbook copyright page).
+export const HANDBOOK_LICENSE = 'California Driver’s Handbook, California Department of Motor Vehicles, licensed under CC BY-NC 4.0.';
+export const CC_BY_NC_4 = 'https://creativecommons.org/licenses/by-nc/4.0/';
+
 export const LEARNING_SOURCES = [
-  { title: HANDBOOK, publisher: 'California Department of Motor Vehicles', use: 'Rules, corrections and handbook page citations in every lesson and check.', url: 'https://www.dmv.ca.gov/portal/handbook/california-driver-handbook/' },
+  { title: HANDBOOK, publisher: 'California Department of Motor Vehicles', use: 'Rules, corrections and handbook page citations in every lesson and check, and the driver coach’s source and quotes.', url: 'https://www.dmv.ca.gov/portal/handbook/california-driver-handbook/' },
   { title: 'California Driver’s Handbook', publisher: 'California Department of Motor Vehicles', use: 'Handbook sections cited by the ten practice scenarios.', url: 'https://www.dmv.ca.gov/portal/handbook/california-driver-handbook/' },
   { title: 'Crash data for Novato, 2023', publisher: 'California Office of Traffic Safety', use: 'Local figures in each lesson’s “Why it matters here.”', url: null },
+] as const;
+
+// Services behind a feature, rather than code the app ships.
+export const SERVICES = [
+  { name: 'Claude Sonnet 5.5, by Anthropic', use: 'Writes the driver coach’s answers from the California Driver’s Handbook. Anthropic does not endorse Lane.', url: 'https://www.anthropic.com/' },
 ] as const;
 
 export const OPEN_SOURCE = [

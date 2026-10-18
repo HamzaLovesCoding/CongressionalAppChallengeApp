@@ -52,6 +52,15 @@
         "--strictPort"
       ],
       "port": 5175
+    },
+    {
+      "name": "coach-local",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "coach:local"
+      ],
+      "port": 5180
     }
   ]
 }

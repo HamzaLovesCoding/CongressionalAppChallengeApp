@@ -16,6 +16,7 @@ const ROUTES = [
   ['feed-poster-lesson', '#/feed/yellow-light'],
   ['practice', '#/practice'],
   ['practice-test', '#/practice/test'],
+  ['practice-coach', '#/practice/coach'],
   ['profile', '#/profile'],
   ['lesson-progress', '#/lesson-progress'],
   ['review', '#/review'],

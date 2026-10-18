@@ -13,7 +13,7 @@ export const LEGAL_OWNER = {
 };
 
 export const PRIVACY: LegalDocument = {
-  id: 'privacy', title: 'Privacy Policy', version: '1.0', effective: LEGAL_OWNER.effective,
+  id: 'privacy', title: 'Privacy Policy', version: '1.1', effective: LEGAL_OWNER.effective,
   sections: [
     { heading: 'Who this covers', body: [`This policy describes what the Lane app stores and sends. Lane is operated by ${LEGAL_OWNER.operator}.`] },
     { heading: 'What stays on your device', body: [
@@ -33,6 +33,12 @@ export const PRIVACY: LegalDocument = {
     { heading: 'Leaderboards and groups', body: [
       'Leaderboards work when backup is on. Once you have earned XP in a week, other learners see you on the global weekly leaderboard with your selected car and that week’s XP. You choose a username when you start, and it is shown there; if your account has none (for example, someone else claimed it first), you appear as Anonymous. Don’t use your real name.',
       'You can make a group leaderboard, which gives you a 6-character code, or join one by typing a friend’s code. Lane has no search or list of groups, and a username is needed to make or join one. Members of a group see each other’s username, selected car and that week’s XP. You can leave a group at any time; the last member to leave deletes it.',
+    ] },
+    { heading: 'Driver coach (AI)', body: [
+      'The driver coach on Practice is an AI. It works only when backup is on. When you ask it something, Lane sends your question, along with the last few questions and answers from the same chat, through Lane’s server to Anthropic, the company that makes the Claude AI model, which writes the answer. Anthropic receives a one-way code made from your anonymous account instead of the account itself, so misuse can be stopped without identifying you.',
+      'Lane doesn’t store your questions or the coach’s answers. The chat stays in the app only until you start a new chat or close or reload Lane. Lane’s server counts how many questions each account asks per day, to apply the daily limit, and deletes those counts after a week.',
+      'Anthropic uses the conversation to write the answer. Under its commercial terms it doesn’t train its AI models on it, and it deletes it within 30 days unless it must keep it longer to enforce its usage policy or the law.',
+      'Don’t type personal details such as your full name, address, school or phone number into the coach.',
     ] },
     { heading: 'Links and sharing', body: [
       'Each lesson links to its original video on YouTube. Opening that link takes you to YouTube, whose own privacy policy applies. The Share button uses your device’s share sheet or copies a lesson link; Lane does not see what you share or with whom.',
@@ -55,7 +61,7 @@ export const PRIVACY: LegalDocument = {
 };
 
 export const TERMS: LegalDocument = {
-  id: 'terms', title: 'Terms of Service', version: '1.0', effective: LEGAL_OWNER.effective,
+  id: 'terms', title: 'Terms of Service', version: '1.1', effective: LEGAL_OWNER.effective,
   sections: [
     { heading: 'Using Lane', body: [`By using Lane you agree to these terms. Lane is operated by ${LEGAL_OWNER.operator}.`] },
     { heading: 'What Lane is', body: [
@@ -64,6 +70,10 @@ export const TERMS: LegalDocument = {
     ] },
     { heading: 'Safety', body: [
       'Never use Lane while driving or while supervising a driver. Lane is not an emergency service. In an emergency, call 911.',
+    ] },
+    { heading: 'Driver coach (AI)', body: [
+      'The driver coach is an AI tool for learning. Its answers are based on the California Driver’s Handbook but can be wrong or incomplete, so check the handbook pages it shows. It isn’t legal advice or driving instruction, and it can’t tell you that you’re ready to drive or will pass a test.',
+      'Ask it about driving only, don’t try to make it say harmful things, and don’t share personal details with it. Questions are limited each day, and the coach may sometimes be unavailable.',
     ] },
     { heading: 'Fair use', body: [
       'Don’t try to change XP, streaks or leaderboard results by tampering with the app, its storage or its server, and don’t interfere with the service or other learners. Usernames must not be offensive, include personal information or impersonate someone. Only share a group code with people you know.',

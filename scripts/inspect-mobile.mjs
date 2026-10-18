@@ -257,6 +257,7 @@ for (const phone of PHONES) {
 
       await open('#/practice'); await capture('practice', { reach: true });
       await scroller('.home-preview'); await capture('practice-bottom');
+      await open('#/practice/coach'); await capture('practice-coach', { reach: true });
       await open('#/practice/test'); await capture('practice-question', { reach: true });
       await page.locator('.pt-option').first().click(); await page.locator('[data-action]').click(); await capture('practice-feedback', { reach: true });
       await page.locator('[data-exit]').click(); await capture('practice-leave', { reach: true });
