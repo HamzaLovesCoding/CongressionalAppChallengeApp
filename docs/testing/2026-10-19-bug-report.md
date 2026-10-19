@@ -10,7 +10,7 @@
 | --- | --- | --- |
 | High (a judge is likely to see it, or it breaks consent/privacy for minors) | 2 | H1, H2 |
 | Medium (visible with some effort, data integrity, or safety design) | 8 | M1–M8 |
-| Low (polish, edge cases) | 11 | L1–L11 |
+| Low (polish, edge cases) | 13 | L1–L13 |
 | Test maintenance (the app is fine; the walkthrough is stale) | 6 | T1–T6 |
 
 **No wrong answers were found.** I checked all 24 lessons (main check, follow-up, similar, harder, recall card) and the 43-question practice bank against the handbook text bundled in the repo (DL 600X, 2025). See [Content check](#content-check).
@@ -46,7 +46,7 @@
 - **Proposed fix:** (1) when a renewal is rejected, set `pendingUsername` from the device's username before signing in again (as `deleteRemote()` already does). (2) Add a server function that lets a learner reclaim a name held only by an account with no live session or no activity for N days (or a one-time device "recovery" secret stored with the auth record). (3) Reword `nameTaken` so it doesn't blame "someone else". (4) Check the Supabase Auth session settings (inactivity timeout, refresh-token reuse interval) to find why refresh tokens are disappearing.
 
 ### M2 — When an account is deleted on the server, backups fail with HTTP 409 for up to an hour
-- **Evidence:** 17 live `sync_learner` 409s, each logged as `insert or update on table "profiles" violates foreign key constraint "profiles_user_id_fkey"`. I reproduced it locally.
+- **Evidence:** 17 live `sync_learner` responses were 409 (01:35–01:59 UTC), and the database logged the matching error each time: `insert or update on table "profiles" violates foreign key constraint "profiles_user_id_fkey"`. I reproduced it locally.
 - **Cause:** the access token is still valid but its user no longer exists. PostgREST maps the foreign-key error to 409, which the client treats as a generic `server` error and retries with the same token until it expires. Settings shows "couldn't back up just now" the whole time.
 - **Proposed fix:** at the top of `sync_learner`/`set_username`, raise `42501` when `auth.users` has no row for `auth.uid()` (the client already re-authenticates on 401/403), or treat a 409 from `sync_learner` as `unauthorized` in `request()`. Then M1's fix restores the username.
 
@@ -91,6 +91,8 @@
 | L9 | 37 of 72 handbook citations in `src/content/learning.ts` (similar/harder questions) have no page number, and they appear under answers. | Data. | Add page numbers (`CLAUDE.md` asks for the DL 600X page). |
 | L10 | Saving a lesson from the "Are you sure?" sheet before watching it puts it into *Today's review*, which then asks a question about "the video" the learner hasn't seen. | `savedReview` includes unfinished lessons. | Leave unwatched lessons out of the review quiz (list them, but don't quiz them) until the lesson is done. |
 | L11 | Desktop presentation: the app is a 430 px column on a plain white page. It's intentional per `DESIGN.md`, but it looks unfinished on a judge's laptop. | `--lane-surround: #fff` (`src/theme.css:13`). | Optional: use the cream surround colour or a subtle phone frame on wide screens. |
+| L12 | Home bell → "Add your permit test date" opens Settings, but Settings' back arrow always goes to Profile, not back to Home. | `back: '#/profile'` is fixed in `src/pages/settings.ts`. | Use `history.back()` when the previous entry is inside the app, falling back to Profile. |
+| L13 | When Lane is installed to an iPhone home screen (notch inset 59 px), Home's bell button overlaps the "Lesson N" tab of the next-lesson sign. Seen with the project's own inset emulation (`inspect-mobile`, *iphone-15-home-screen*). | `.home-toolbar` (`src/home/home.css:17`) has `height:88px` *and* `padding-top:env(safe-area-inset-top)` under `box-sizing:border-box`, leaving 29 px for the 44 px bell. | `height: calc(88px + env(safe-area-inset-top))` (or `min-height`). |
 
 ---
 
@@ -109,11 +111,34 @@ With T4's assertion skipped, `inspect-feed` passes in portrait and landscape (pl
 
 ---
 
+## Before judging: deployment checklist
+
+These aren't code bugs, but each one can sink a demo.
+1. **Coach:** deploy it (`supabase/README.md` → *Driver coach*) or hide it (H1/M8). Today a backend-connected build shows a broken coach.
+2. **Hosting path:** the build uses absolute URLs (`/assets/…`, `/fonts/…`, `/manifest.webmanifest`). Host at a domain root (Vercel, Netlify, Cloudflare Pages, a custom domain). On a GitHub Pages *project* URL (`…github.io/<repo>/`), set `base` in `vite.config.ts` or the page will be blank.
+3. **Backend variables:** a production build needs `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` at build time. Without them the leaderboards show only "You", comments say "coming soon", and Groups are unavailable.
+4. **Real iPhone pass:** Safari could not be tested here (see Limits). Check first-video autoplay with sound, the sound button, offline replay of a watched clip, and the home-screen install (L13).
+5. **Test accounts:** if you delete demo accounts on Supabase while devices are signed in, those devices hit M1/M2. Clear site data on demo devices afterwards.
+
+## Working as designed, but judges will notice
+
+These aren't bugs, and I'm not proposing changes. They're the moments a judge is most likely to remark on, so you can be ready for them.
+- **The "Are you sure?" sheet appears on most swipes.** 16 of the 19 video lessons (and all five text lessons) have safety ≥ 0.8, so a judge flicking through the feed to "see what's there" meets it on almost every card until they finish a lesson. If you want a lighter demo, consider showing it once per session per learner, or only from the second skip.
+- **Lessons start with sound on**, which can be loud in a judging room. The sound button is remembered.
+- **The Feed tab can open on a challenge instead of the lesson Home points to** for a returning learner on a new day (the "refresher" slot). Home's *Continue lesson* always opens the right lesson.
+- **Skipping to the end of a video gives a "Quick recall" card before *Lesson complete*** (the session scores as "developing"). That's the learning model working, but a judge who scrubs ahead may read it as an extra step.
+
 ## Content check
 
 The bundled handbook text (`supabase/functions/coach/handbook.ts`, DL 600X 2025) was searched for every rule I checked. All correct, including: scan 10 s ahead; collision → move out of traffic, then call 911; SR 1 within 10 days over $1,000; freeway breakdown → exit right, stay belted inside; red/white curbs; dark signal = all-way stop; 300 ft behind emergency vehicles; move over for stopped emergency vehicles; T-intersection through traffic; dim high beams within 500/300 ft; low beams in fog; 3 ft for bicyclists; bike lane within 200 ft of a turn; 300 ft gap to merge on the highway; blind intersection 15 mph; packed snow → half speed; wet → 5–10 mph slower; tailgater → keep speed, merge right; leave room to see the rear wheels ahead; roundabouts (counterclockwise, yield, don't stop or pass); school bus rules including divided/multilane highways; flashing yellow; yellow arrow while turning. In the practice bank: following distance, double-double yellow barrier, evading police, left turns one-way to one-way, SR 1, school zone 25 mph, railroad 15 mph, out-of-state registration 20 days, left on red, passing on the right.
 
 Content notes (not errors): M6 (answer positions) and L9 (missing page numbers).
+
+## Walkthroughs and layout audits (Chromium)
+- **Pass:** `inspect-home`, `inspect-progress`, `inspect-path-motion`, `inspect-profile`, `inspect-practice` (all 43 questions), `inspect-learning-flow`, `inspect-home-readiness`, `inspect-home-motion`, `inspect-groups`, `inspect-coach`, `inspect-simulations` (all 10), the Chromium half of `inspect-notifications`, and `inspect-feed` with T4's assertion skipped.
+- **Fail because the test is stale:** T1–T5.
+- **`inspect-baseline`** (every route at 360/375/390/768/1366 px, Chromium-only copy): 109 screens, no horizontal overflow, blur or clipping. One sub-44 px target: "Close lesson list" on desktop Profile.
+- **`inspect-mobile`** (Chromium-only copy; iPhone SE, iPhone 15 installed to the home screen, Galaxy S8; fresh and progressed learners; 251 screenshots of every screen and dialog): 0 errors. One note: the CC BY 3.0 link on Credits is 15–33 px tall. Visual review found L13.
 
 ## Backend checks
 - `node supabase/tests/rls.check.mjs`: **93/93 pass** (RLS, XP rules, comments, groups, coach limits, delete-my-data).
@@ -124,7 +149,7 @@ Content notes (not errors): M6 (answer positions) and L9 (missing page numbers).
 _Filled in below when the runs finish._
 
 ## How this was tested, and limits
-- Chromium (Playwright's build) only. **WebKit/Safari could not be downloaded in this environment**, so iPhone Safari behaviour (autoplay with sound, byte-range video, notch insets) is **untested**. Please check those on a real iPhone. The project's WebKit walkthroughs (`inspect-mobile`, `inspect-profile-states`, `inspect-notifications`, `inspect-video-load`, …) were not run as written.
+- Chromium (Playwright's build) only. **WebKit/Safari could not be downloaded in this environment**, so Safari-specific behaviour (autoplay with sound, byte-range video playback, offline video) is **untested**. Please check those on a real iPhone. iPhone screen sizes and notch insets were checked only by emulation in Chromium (Chromium-only copies of `inspect-mobile` and `inspect-baseline`). `inspect-profile-states`, `inspect-video-load` and the WebKit half of `inspect-notifications` did not run.
 - This Chromium can't decode H.264, so for playback tests I served WebM transcodes of the 19 clips in place of the MP4s (test copies only; nothing in `public/` changed). With the real MP4s, a clip that can't play falls back to its poster and an 8-second timer, which I also verified.
 - The live Supabase project was **not written to** (as `CLAUDE.md` asks). Backend behaviour was exercised with the PGlite SQL suite and a local HTTPS stand-in that mimics the failure modes seen in the live logs.
 - The coach was not run against the real Claude API (no key here); its request parameters were checked against the current API reference.
