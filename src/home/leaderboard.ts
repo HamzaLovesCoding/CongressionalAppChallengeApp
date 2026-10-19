@@ -171,5 +171,12 @@ export function mountLeaderboard(root: HTMLElement, snapshots: Partial<Record<Sc
   const timer = window.setInterval(visible, 60_000);
   refresh();
   void loadRemote();
-  return { refresh, dispose() { disposed = true; unsubscribe(); clearInterval(timer); document.removeEventListener('visibilitychange', visible); root.removeEventListener('click', click); root.removeEventListener('keydown', keydown); root.removeEventListener('change', change); root.removeEventListener('submit', submit); } };
+  // The bell's group notification opens that group's board.
+  function show(code: string) {
+    picked = code; joining = false; groupStatus = '';
+    activate('group');
+    root.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+    void loadGroups();
+  }
+  return { refresh, show, dispose() { disposed = true; unsubscribe(); clearInterval(timer); document.removeEventListener('visibilitychange', visible); root.removeEventListener('click', click); root.removeEventListener('keydown', keydown); root.removeEventListener('change', change); root.removeEventListener('submit', submit); } };
 }

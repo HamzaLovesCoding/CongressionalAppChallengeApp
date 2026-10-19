@@ -9,6 +9,7 @@ import { currentReadiness, nextLessonId, savedEntries } from '../feed/plan';
 import { icon } from './icons';
 import { homeNavigation } from './tabs';
 import { mountLeaderboard } from './leaderboard';
+import { mountNotifications, notificationButton, notificationSheet } from './notifications';
 
 const esc = (value: string | number) => String(value).replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]!);
 // The streak emblem's own two-part flame: the 24px line icon reads as a scribble at this size.
@@ -61,6 +62,7 @@ export function mountHome(root: HTMLElement): View {
     <main class="home-content" aria-labelledby="home-title">
       <header class="home-toolbar">
         <h1 id="home-title" class="home-wordmark"><span class="home-wordmark-art" role="img" aria-label="Lane"></span></h1>
+        ${notificationButton()}
       </header>
       <section class="home-sign" aria-labelledby="home-sign-title">
         <a class="home-sign-face" href="${learning.allDone ? '#/practice' : `#/feed/${esc(next.id)}`}" aria-label="${learning.allDone ? action : esc(`${action}: ${next.title}`)}">
@@ -93,8 +95,10 @@ export function mountHome(root: HTMLElement): View {
       <section class="home-leaderboard" aria-labelledby="home-leaderboard-title"></section>
     </main>
     ${homeNavigation('home')}
+    ${notificationSheet()}
   </div>`;
   root.append(page);
   const leaderboard = mountLeaderboard(page.querySelector<HTMLElement>('.home-leaderboard')!);
-  return { dispose() { leaderboard.dispose(); page.remove(); } };
+  const notes = mountNotifications(page, { showGroup: leaderboard.show });
+  return { dispose() { notes.dispose(); leaderboard.dispose(); page.remove(); } };
 }

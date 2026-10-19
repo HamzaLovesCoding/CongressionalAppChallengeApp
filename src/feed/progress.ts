@@ -33,6 +33,10 @@ type Stored = {
   soundOff?: boolean;
   // The lesson the learner last had on screen, so Home, Progress and the feed resume in one place.
   position?: { lessonId: string; at: string };
+  // Home's bell: ids of notifications the learner has opened. A device preference, never synced.
+  notificationsSeen?: string[];
+  // Per code group, this week's usernames behind the learner and those who moved ahead since. Device-only, never synced.
+  groupStandings?: Record<string, { week: string; behind: string[]; passedBy: string[] }>;
 };
 
 const KEY = 'roadloop-progress';
@@ -438,6 +442,35 @@ export function lastPosition(): { lessonId: string; at: string } | null {
 export function setPosition(lessonId: string, now = new Date()) {
   if (lastPosition()?.lessonId === lessonId) return;
   data.position = { lessonId, at: isoNow(now) };
+  save();
+}
+
+// Notifications are rebuilt from progress each time (src/home/notifications-model.ts); only which ones were seen is stored.
+const SEEN_LIMIT = 40;
+export function seenNotifications(): string[] {
+  return Array.isArray(data.notificationsSeen) ? data.notificationsSeen.filter((id): id is string => typeof id === 'string') : [];
+}
+export function markNotificationsSeen(ids: string[]) {
+  const seen = seenNotifications();
+  const added = ids.filter(id => !seen.includes(id));
+  if (!added.length) return;
+  data.notificationsSeen = [...seen, ...added].slice(-SEEN_LIMIT);
+  save();
+}
+type Standing = NonNullable<Stored['groupStandings']>[string];
+const names = (value: unknown) => Array.isArray(value) ? value.filter((name): name is string => typeof name === 'string') : [];
+export function groupStandings(): Record<string, Standing> {
+  if (!isRecord(data.groupStandings)) return {};
+  const result: Record<string, Standing> = {};
+  for (const [code, value] of Object.entries(data.groupStandings)) {
+    if (isRecord(value) && typeof value.week === 'string' && DATE_ONLY.test(value.week)) result[code] = { week: value.week, behind: names(value.behind), passedBy: names(value.passedBy) };
+  }
+  return result;
+}
+// Home re-reads group boards after every backup; writing only on a change keeps that from scheduling another backup.
+export function setGroupStandings(next: Record<string, Standing>) {
+  if (JSON.stringify(next) === JSON.stringify(groupStandings())) return;
+  data.groupStandings = next;
   save();
 }
 

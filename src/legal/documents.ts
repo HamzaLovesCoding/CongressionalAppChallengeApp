@@ -17,7 +17,7 @@ export const PRIVACY: LegalDocument = {
   sections: [
     { heading: 'Who this covers', body: [`This policy describes what the Lane app stores and sends. Lane is operated by ${LEGAL_OWNER.operator}.`] },
     { heading: 'What stays on your device', body: [
-      'Lane keeps your learning progress in your browser’s storage on this device: which lessons you completed, your answers and how long they took, how much of each lesson video you watched, XP, streak days, your daily goal, liked and saved lessons, the cars you unlocked and selected, your Review later list, topic practice records, and practice scenario results.',
+      'Lane keeps your learning progress in your browser’s storage on this device: which lessons you completed, your answers and how long they took, how much of each lesson video you watched, XP, streak days, your daily goal, liked and saved lessons, the cars you unlocked and selected, your Review later list, topic practice records, practice scenario results, and which Home notifications you have already opened. If you are in a group, it also remembers which group members ranked behind you this week, so it can tell you when one of them moves ahead.',
       'If you add them, it also keeps your permit test date and username, plus the main goal you chose when you started (with any words you typed for it) and when you agreed to these terms. The main goal stays on this device.',
       'Lesson videos you finish may be saved in the browser’s cache so they can play offline.',
     ] },

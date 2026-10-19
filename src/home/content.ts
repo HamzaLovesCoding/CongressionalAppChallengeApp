@@ -62,3 +62,32 @@ export const LEADERBOARD_COPY = {
   // Usernames are required at onboarding; this covers older saves and a name someone else claimed first.
   noAlias: 'Others see you as Anonymous. Choose a username in Settings.',
 } as const;
+
+// The bell on Home (src/home/notifications.ts). In-app only: nothing is pushed to the device.
+export const NOTIFICATION_COPY = {
+  button: 'Notifications',
+  buttonNew: (count: number) => `Notifications, ${count} new`,
+  title: 'Notifications',
+  close: 'Close notifications',
+  newLabel: 'New',
+  empty: 'You’re all caught up.',
+  emptyDetail: 'Reminders about your permit test, your streak, your groups and your Garage show up here.',
+  permitTitle: (days: number) => days === 0 ? 'Your permit test is today' : days === 1 ? 'Your permit test is tomorrow' : `Your permit test is in ${days} days`,
+  permitDetail: 'Today’s review covers your saved lessons and weaker topics.',
+  permitSoon: 'A short review now keeps the rules fresh.',
+  streakTitle: (days: number) => `Your ${days}-day streak ends tonight`,
+  streakDetail: (hours: number) => `${hours <= 1 ? 'Less than an hour' : `${hours} hours`} left. Finish one lesson to keep it.`,
+  groupLeadTitle: (name: string) => `You’re leading ${name}`,
+  groupLeadDetail: (gap: number) => `${gap} XP ahead on this week’s group leaderboard.`,
+  groupTiedTitle: (name: string) => `You’re tied for first in ${name}`,
+  groupTiedDetail: 'Finish a lesson to pull ahead this week.',
+  // Daily review grows as the test nears (REVIEW_LIMIT in src/learning/review.ts).
+  permitDateTitle: 'Add your permit test date',
+  permitDateDetail: 'Your daily review gets longer as the test gets closer.',
+  passedTitle: (name: string, group: string) => `${name} passed you in ${group}`,
+  passedManyTitle: (count: number, group: string) => `${count} people passed you in ${group}`,
+  passedDetail: (gap: number) => `They’re ${gap} XP ahead this week.`,
+  passedManyDetail: (rank: number) => `You’re rank ${rank} this week.`,
+  carTitle: (name: string) => `You can unlock the ${name}`,
+  carDetail: (price: number, available: number) => `It costs ${price} XP, and you have ${available} XP to spend.`,
+} as const;
