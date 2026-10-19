@@ -2,6 +2,7 @@ import { CLIPS } from './clips';
 import { settings } from './progress';
 import { appSync, type CommentRow } from '../data/sync';
 import { COMMENT_COPY as copy } from './content';
+import { isClean } from './moderation';
 
 const esc = (value: string) => value.replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]!);
 const when = (iso: string) => new Date(iso).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' });
@@ -77,6 +78,7 @@ export function commentsSheet(dialog: HTMLDialogElement) {
     const input = form.querySelector<HTMLTextAreaElement>('textarea')!, button = form.querySelector<HTMLButtonElement>('button')!;
     const message = input.value.trim();
     if (!message) return;
+    if (!isClean(message)) { status(copy.keepClean); return; }
     button.disabled = true; status(copy.posting);
     void sync.postComment(lessonId, message).then(result => {
       button.disabled = false;

@@ -87,6 +87,7 @@ export const COMMENT_COPY = {
   postingAs: (name: string) => `Posting as ${name}`,
   postingAnonymous: 'Posting as Anonymous',
   invalid: 'Comments can be 1–300 characters.',
+  keepClean: 'Keep it clean.',
   limit: 'You’ve posted a lot today. Try again tomorrow.',
   offline: 'Lane couldn’t connect. Try again in a moment.',
   voteRefused: 'Vote not saved.',
