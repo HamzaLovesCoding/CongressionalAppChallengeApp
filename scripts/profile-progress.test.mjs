@@ -76,6 +76,7 @@ test('days and first-try percentage use positive daily records and actual attemp
   assert.equal(api.stats().daysPracticed, 2);
   assert.equal(api.stats().firstTryPercentage, 67);
   assert.equal(api.stats().streak, 2);
+  assert.ok(api.stats().longestStreak >= 2);
   api.answer('new-lesson', false);
   assert.equal(api.stats().firstTryPercentage, 50);
   assert.equal(api.stats().daysPracticed, 2);

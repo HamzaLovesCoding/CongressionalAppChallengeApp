@@ -183,6 +183,19 @@ export function weeklyProgress(now = new Date()) {
   return { xp, resetsAt, daysUntilReset: 7 - dayIndex };
 }
 
+// Longest run of consecutive calendar days (YYYY-MM-DD keys).
+function longestRun(days: string[]) {
+  const sorted = [...days].sort();
+  let best = 0, run = 0, previous: Date | null = null;
+  for (const key of sorted) {
+    const date = new Date(key + 'T00:00:00');
+    run = previous && Math.round((date.getTime() - previous.getTime()) / 86_400_000) === 1 ? run + 1 : 1;
+    best = Math.max(best, run);
+    previous = date;
+  }
+  return best;
+}
+
 export function stats() {
   const now = new Date();
   const today = data.daily[dayKey(now)] ?? 0;
@@ -205,6 +218,7 @@ export function stats() {
     firstTryRight: attempted.filter(clip => clip.firstTry).length,
     firstTryPercentage: attempted.length ? Math.round(attempted.filter(clip => clip.firstTry).length / attempted.length * 100) : null,
     daysPracticed: Object.values(data.daily).filter(xp => xp > 0).length,
+    longestStreak: longestRun(Object.keys(data.daily).filter(key => data.daily[key] > 0)),
     done: attempted.filter(clip => clip.done).length,
   };
 }

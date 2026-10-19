@@ -123,8 +123,8 @@
 .lane-rule-content small { display:block; margin-top:var(--sp-2); color:var(--lane-muted); font-size:var(--fs-caption); }
 .lane-about-open { min-height:44px; margin-top:var(--sp-2); padding:8px 0; border:0; background:transparent; color:inherit; font-size:var(--fs-caption)!important; font-weight:var(--fw-bold)!important; text-decoration:underline; text-underline-offset:3px; }
 .lane-source { display:block; margin-top:var(--sp-2); color:var(--lane-support); font-size:var(--fs-caption); line-height:1.4; }
-.lane-about { width:var(--app-width); max-width:none; max-height:86dvh; margin:auto auto 0; padding:0; border:1.5px solid var(--lane-ink); border-bottom:0; border-radius:var(--radius-xl) var(--radius-xl) 0 0; background:var(--lane-surface); color:var(--lane-ink); box-shadow:0 -16px 40px -20px rgb(41 37 31 / .5); overscroll-behavior:contain; }
-.lane-about::backdrop { background:#29251f66; }
+.lane-about, .lane-comments { width:var(--app-width); max-width:none; max-height:86dvh; margin:auto auto 0; padding:0; border:1.5px solid var(--lane-ink); border-bottom:0; border-radius:var(--radius-xl) var(--radius-xl) 0 0; background:var(--lane-surface); color:var(--lane-ink); box-shadow:0 -16px 40px -20px rgb(41 37 31 / .5); overscroll-behavior:contain; }
+.lane-about::backdrop, .lane-comments::backdrop { background:#29251f66; }
 .lane-about-panel { padding:var(--sp-4) 20px max(var(--sp-5),env(safe-area-inset-bottom)); }
 .lane-about h2 { margin:0 0 var(--sp-2); font-size:var(--fs-title); line-height:1.25; letter-spacing:-.01em; }
 .lane-about p { margin:0; font-size:var(--fs-body); line-height:1.5; }
@@ -192,3 +192,29 @@
 /* On short screens (landscape phones) a card's content can be taller than the screen: it scrolls
    inside the card, and the feed takes over at either end. */
 .lane-card-body { min-height:0; max-height:100%; overflow-y:auto; box-sizing:border-box; }
+/* Lesson comments: a bottom sheet like About this lesson. */
+.lane-comments-panel { display:flex; flex-direction:column; max-height:86dvh; box-sizing:border-box; }
+.lane-comments .lane-sheet-head { align-items:center; }
+.lane-comments .lane-sheet-head h2 { margin:0; font-size:var(--fs-title); line-height:1.25; letter-spacing:-.01em; }
+.lane-comments-list { flex:1 1 auto; min-height:96px; overflow-y:auto; margin:var(--sp-3) 0 0; padding:0; list-style:none; border-top:1px solid var(--lane-line); }
+.lane-comment { padding:var(--sp-3) 0; border-bottom:1px solid var(--lane-line); }
+.lane-comment-head { display:flex; align-items:center; gap:var(--sp-2); }
+.lane-comment-head b { font-size:var(--fs-caption); font-weight:var(--fw-bold); overflow-wrap:anywhere; }
+.lane-comment-head time { color:var(--lane-muted); font-size:var(--fs-caption); }
+.lane-comment-more { margin-left:auto; width:44px; height:44px; display:grid; place-items:center; padding:10px; border:0; border-radius:var(--radius-md); background:transparent; color:var(--lane-ink); }
+.lane-comment-more svg, .lane-comment-votes svg { width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+.lane-comment-more svg circle { fill:currentColor; stroke:none; }
+.lane-comment-menu { display:flex; justify-content:flex-end; }
+.lane-comment-menu button { min-height:44px; padding:0 var(--sp-4); border:1.5px solid var(--lane-ink); border-radius:var(--radius-md); background:var(--lane-surface); color:var(--lane-ink); font:inherit; font-weight:var(--fw-bold); }
+.lane-comment p { margin:var(--sp-1) 0 var(--sp-2); font-size:var(--fs-body); line-height:1.45; overflow-wrap:anywhere; white-space:pre-line; }
+.lane-comment-votes { display:flex; align-items:center; gap:var(--sp-1); }
+.lane-comment-votes button { width:44px; height:44px; display:grid; place-items:center; padding:10px; border:1.5px solid var(--lane-line); border-radius:var(--radius-md); background:transparent; color:var(--lane-ink); }
+.lane-comment-votes button[aria-pressed=true] { border-color:var(--lane-ink); background:var(--lane-ink); color:var(--lane-accent); }
+.lane-comment-votes button:disabled { opacity:.4; }
+.lane-comment-votes span { min-width:2ch; text-align:center; font-weight:var(--fw-bold); font-variant-numeric:tabular-nums; }
+.lane-comments-empty { padding:var(--sp-4) 0; color:var(--lane-muted); font-size:var(--fs-body); list-style:none; }
+.lane-comments-form { display:flex; align-items:flex-end; gap:var(--sp-2); margin-top:var(--sp-3); }
+.lane-comments-form textarea { flex:1 1 0; min-width:0; min-height:48px; max-height:30dvh; padding:var(--sp-2) var(--sp-3); border:1.5px solid var(--lane-ink); border-radius:var(--radius-md); background:var(--lane-page); color:var(--lane-ink); font:inherit; font-size:16px; resize:vertical; }
+.lane-comments-form .ui-button { width:auto; flex:none; }
+.lane-comments-as, .lane-comments-status { margin:var(--sp-2) 0 0; color:var(--lane-muted); font-size:var(--fs-caption); }
+.lane-comments-status:empty { display:none; }

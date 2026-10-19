@@ -66,3 +66,30 @@ export const FEED_COPY = {
   scrollTime: 'Time in feed',
   endSession: (minutes: number) => minutes < 1 ? 'You just got started today.' : `You spent ${minutes} minute${minutes === 1 ? '' : 's'} learning in this session.`,
 } as const;
+
+// Lesson comments (src/feed/comments.ts).
+export const COMMENT_COPY = {
+  title: 'Comments',
+  close: 'Close comments',
+  add: 'Add a comment',
+  post: 'Post',
+  anonymous: 'Anonymous',
+  options: 'Comment options',
+  delete: 'Delete comment',
+  deleted: 'Comment deleted.',
+  upvote: 'Upvote',
+  downvote: 'Downvote',
+  score: (score: number) => `Score ${score}`,
+  loading: 'Loading comments…',
+  empty: 'No comments yet.',
+  posting: 'Posting…',
+  posted: 'Posted.',
+  postingAs: (name: string) => `Posting as ${name}`,
+  postingAnonymous: 'Posting as Anonymous',
+  invalid: 'Comments can be 1–300 characters.',
+  limit: 'You’ve posted a lot today. Try again tomorrow.',
+  offline: 'Lane couldn’t connect. Try again in a moment.',
+  voteRefused: 'Vote not saved.',
+  deleteRefused: 'Couldn’t delete this comment.',
+  comingSoon: 'Comments are coming soon.',
+} as const;

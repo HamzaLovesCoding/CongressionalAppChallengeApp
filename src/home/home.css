@@ -1,6 +1,8 @@
 /* Shared app shell and Home composition. Component styles are defined once here. */
 body:has(.home-preview) { touch-action:auto; }
-.home-preview { position:fixed; inset:0; overflow:auto; background:var(--lane-surround); color:var(--lane-ink); font:var(--fw-regular) var(--fs-body)/1.4 Plex,Arial,sans-serif; color-scheme:light; -webkit-font-smoothing:antialiased; }
+.home-preview { position:fixed; inset:0; overflow:auto; scrollbar-width:none; background:var(--lane-surround); color:var(--lane-ink); font:var(--fw-regular) var(--fs-body)/1.4 Plex,Arial,sans-serif; color-scheme:light; -webkit-font-smoothing:antialiased; }
+/* No classic scrollbar: it narrowed the scrolling column by 15px while the fixed header and tab bar stayed centered on the full width, shifting them about 7px apart on desktops that always show scrollbars. */
+.home-preview::-webkit-scrollbar { display:none; }
 .home-preview *, .home-preview *::before, .home-preview *::after { box-sizing:border-box; }
 .home-preview :is(button,input) { font:inherit; }
 .home-preview button { cursor:pointer; color:inherit; -webkit-tap-highlight-color:transparent; }

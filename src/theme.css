@@ -9,7 +9,8 @@
   --lane-surface: #fffaf0;
   --lane-soft: #e8dcc5;
   --lane-line: #b1a38b;
-  --lane-surround: #ded5c5;
+  /* Blank beside the phone-width column on desktop (owner, 2026-10-18). */
+  --lane-surround: #fff;
   --lane-primary: #29251f;
   --lane-primary-hover: #493f31;
   --lane-hero: #29251f;

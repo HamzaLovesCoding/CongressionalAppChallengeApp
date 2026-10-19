@@ -30,9 +30,10 @@ export const PRIVACY: LegalDocument = {
       'A sign-in token for that anonymous account is kept on this device so it can sync again later.',
       'Like any hosting provider, Supabase may process technical information such as your IP address to deliver the service.',
     ] },
-    { heading: 'Leaderboards and groups', body: [
+    { heading: 'Leaderboards, groups and comments', body: [
       'Leaderboards work when backup is on. Once you have earned XP in a week, other learners see you on the global weekly leaderboard with your selected car and that week’s XP. You choose a username when you start, and it is shown there; if your account has none (for example, someone else claimed it first), you appear as Anonymous. Don’t use your real name.',
       'You can make a group leaderboard, which gives you a 6-character code, or join one by typing a friend’s code. Lane has no search or list of groups, and a username is needed to make or join one. Members of a group see each other’s username, selected car and that week’s XP. You can leave a group at any time; the last member to leave deletes it.',
+      'Comments you post under a lesson are visible to other Lane learners with your username, or as Anonymous if you have none, along with the date and time. Lane stores each comment and its up and down votes with your anonymous account. You can delete your own comments at any time. Don’t put personal information in a comment.',
     ] },
     { heading: 'Driver coach (AI)', body: [
       'The driver coach on Practice is an AI. It works only when backup is on. When you ask it something, Lane sends your question, along with the last few questions and answers from the same chat, through Lane’s server to Anthropic, the company that makes the Claude AI model, which writes the answer. Anthropic receives a one-way code made from your anonymous account instead of the account itself, so misuse can be stopped without identifying you.',
@@ -45,7 +46,7 @@ export const PRIVACY: LegalDocument = {
     ] },
     { heading: 'Your choices', body: [
       'You can change or clear your permit test date and username at any time in Settings. You can remove all progress on this device by clearing this site’s data in your browser settings.',
-      'When backup is on, Settings includes Delete backed-up data, which removes your learning records, and group memberships from the server. To remove the anonymous account itself or ask about your data, use the contact below.',
+      'When backup is on, Settings includes Delete backed-up data, which removes your learning records, group memberships and comments from the server. To remove the anonymous account itself or ask about your data, use the contact below.',
     ] },
     { heading: 'Teens and families', body: [
       'Lane is designed for teens preparing for a learner’s permit. The age policy and any parent or guardian consent process will be set by the operator before public release.',
@@ -76,7 +77,7 @@ export const TERMS: LegalDocument = {
       'Ask it about driving only, don’t try to make it say harmful things, and don’t share personal details with it. Questions are limited each day, and the coach may sometimes be unavailable.',
     ] },
     { heading: 'Fair use', body: [
-      'Don’t try to change XP, streaks or leaderboard results by tampering with the app, its storage or its server, and don’t interfere with the service or other learners. Usernames must not be offensive, include personal information or impersonate someone. Only share a group code with people you know.',
+      'Don’t try to change XP, streaks or leaderboard results by tampering with the app, its storage or its server, and don’t interfere with the service or other learners. Usernames must not be offensive, include personal information or impersonate someone. Only share a group code with people you know. Keep comments about driving and the lessons: no bullying, hate, personal information, links or ads. The operator may remove comments that break these rules.',
     ] },
     { heading: 'Content and credits', body: [
       'Lesson videos come from their original creators and are listed in Credits & sources with links to the originals. Where a video differs from California law, the lesson’s California rule applies. If you believe content in Lane infringes your rights, use the contact below and it will be reviewed.',

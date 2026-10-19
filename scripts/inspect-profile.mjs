@@ -25,8 +25,7 @@ try {
     assert.equal(await page.locator('[data-car-name]').innerText(), 'Hatchback');
     assert.equal(await page.locator('[data-profile-xp]').innerText(), '0');
     assert.equal(await page.locator('[data-profile-streak]').innerText(), '0');
-    assert.equal(await page.locator('[data-profile-days]').innerText(), '0');
-    assert.equal(await page.locator('[data-profile-accuracy]').innerText(), '—');
+    assert.equal(await page.locator('[data-profile-best]').innerText(), '0');
     assert.equal(await page.locator('[data-car][aria-label$="locked"]').count(), 5);
     assert.equal(await saved(), null, 'Opening Profile does not rewrite old progress');
     assert.equal(await page.locator('.home-leaderboard').count(), 0, 'Leaderboard moved to Home');
@@ -104,8 +103,7 @@ try {
     const learningBefore = await saved();
     assert.equal(await page.locator('[data-profile-xp]').innerText(), '30');
     assert.equal(await page.locator('[data-profile-streak]').innerText(), '2');
-    assert.equal(await page.locator('[data-profile-days]').innerText(), '2');
-    assert.equal(await page.locator('[data-profile-accuracy]').innerText(), '67%');
+    assert.equal(await page.locator('[data-profile-best]').innerText(), '2');
     assert.equal(await page.locator('.profile-next-track').getAttribute('aria-valuenow'), '15');
     assert.match(await page.locator('[data-reward-item]').innerText(), /Ready to buy/);
     assert.equal(await page.locator('.profile-likes li').count(), 2);

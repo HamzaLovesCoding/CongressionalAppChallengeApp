@@ -5,7 +5,7 @@ export const WELCOME_COPY = {
   step: (n: number) => `Step ${n} of 2`,
   title: 'Welcome to Lane',
   usernameLabel: 'Username',
-  usernameNote: 'Shows on leaderboards. Skip your real name.',
+  usernameNote: 'Shows on leaderboards and comments. Skip your real name.',
   readTerms: 'Read the Terms of Service',
   readPrivacy: 'Read the Privacy Policy',
   agree: 'I agree to the Terms of Service and Privacy Policy.',

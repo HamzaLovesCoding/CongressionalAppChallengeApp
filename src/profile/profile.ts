@@ -1,12 +1,12 @@
 import './profile.css';
 import type { View } from '../navigation';
 import { CLIPS } from '../feed/clips';
-import { carState, buyCar, marked, record, selectCar, stats, toggleMark } from '../feed/progress';
+import { carState, buyCar, marked, selectCar, stats, toggleMark } from '../feed/progress';
 import { homeNavigation } from '../home/tabs';
 import { icon } from '../home/icons';
 import { bottomSheet, sheetMarkup } from '../home/sheet';
 import { bindMenu, menuButton, menuSheetMarkup } from '../home/menu';
-import { CARS, carById, carPreview } from './cars';
+import { CARS, carArt, carById, carPreview } from './cars';
 import { PROFILE_COPY as copy } from './content';
 
 const esc = (value: string) => value.replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]!);
@@ -14,29 +14,32 @@ const heart = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke
 const lock = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3m-4 5v2"/></svg>';
 type Item = typeof CARS[number];
 const itemArt = (item: Item) => carPreview(item.id);
+// The same car cropped closer so it fills the small next-unlock tile without overflowing it.
+const closeArt = (item: Item) => `<svg class="profile-car-art" viewBox="-25 -25 50 50" aria-hidden="true" focusable="false"><g transform="rotate(-28)">${carArt(item.id)}</g></svg>`;
 
 export function mountProfile(root: HTMLElement): View {
   const s = stats();
-  const allLessonsDone = CLIPS.every(clip => record(clip.id)?.done);
   const page = document.createElement('div');
   page.className = 'home-preview profile-page';
   page.innerHTML = `<div class="home-phone"><main class="profile-content" aria-label="${copy.title}" tabindex="-1">
     <header class="profile-heading ui-page-head"><h1>${copy.title}</h1>${menuButton()}</header>
     <section class="profile-identity" aria-label="${copy.identityLabel}"><div class="profile-current-car" data-current-car></div><div><p>${copy.carLabel}</p><h2 data-car-name></h2><p class="profile-character-detail">${copy.onHighway}</p><a href="#profile-collection" data-jump="garage">${copy.changeCar} <span aria-hidden="true">↓</span></a></div></section>
-    <section class="profile-stats" aria-labelledby="profile-stats-title"><h2 id="profile-stats-title">${copy.stats}</h2>
-      <div class="profile-streak${s.xpToday ? ' is-lit' : ''}">
-        <span class="profile-streak-flame" aria-hidden="true">${icon('flame')}</span>
-        <div><p class="profile-streak-value"><strong data-profile-streak>${s.streak}</strong><span>${copy.dayStreak(s.streak)}</span></p><p class="profile-streak-note">${allLessonsDone ? copy.streakComplete : s.xpToday ? copy.streakToday : s.streak ? copy.streakPending : copy.streakStart}</p></div>
+    <section class="profile-stats" aria-labelledby="profile-stats-title"><h2 id="profile-stats-title" class="profile-stats-title"><span>${copy.stats}</span></h2>
+      <div class="profile-row profile-streak${s.xpToday ? ' is-lit' : ''}">
+        <span class="profile-lamp profile-streak-flame"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path class="profile-flame-outer" d="M12.4 2.2c1.1 3.6-.6 5.7-2.6 8.1-1.3 1.6-2.3 3.1-2.3 5.2a5.5 5.5 0 0 0 11 0c0-2.4-1.1-4.3-2.6-5.9-.1 1.3-.7 2.3-1.6 2.8.6-3.5.3-7.1-1.9-10.2Z"/><path class="profile-flame-inner" d="M12 11.6c1.1 1.7 2.4 3.2 2.4 4.9a2.4 2.4 0 0 1-4.8 0c0-1.7 1.3-3.2 2.4-4.9Z"/></svg>${s.xpToday ? `<span class="profile-streak-badge" role="img" aria-label="${copy.today}">${icon('tick')}</span>` : ''}</span>
+        <div class="profile-row-body profile-streak-body">
+          <p class="profile-row-value profile-streak-value"><strong class="profile-streak-count" data-profile-streak>${s.streak}</strong><span class="profile-streak-label">${copy.dayStreak(s.streak)}</span>${s.streak ? `<span class="profile-streak-cheer" aria-hidden="true">${copy.cheers[Math.floor(Math.random() * copy.cheers.length)]}</span>` : ''}</p>
+          <p class="profile-row-note profile-streak-best">${copy.longestStreak} <b data-profile-best>${s.longestStreak}</b> ${copy.days(s.longestStreak)}</p>
+        </div>
       </div>
-      <div class="profile-reward">
-        <p class="profile-wallet"><span>${copy.balanceLabel}</span><span><strong data-available></strong> <span>${copy.xpUnit}</span></span></p>
-        <div class="profile-next" data-next-unlock></div>
+      <div class="profile-row profile-reward">
+        <span class="profile-lamp profile-lamp-xp" aria-hidden="true">${icon('star')}</span>
+        <div class="profile-row-body profile-wallet">
+          <p class="profile-row-value"><strong data-available></strong><span>${copy.balanceLabel}</span></p>
+          <p class="profile-row-note">${copy.totalEarned} <b data-profile-xp>${s.xpTotal}</b> ${copy.xpUnit}</p>
+        </div>
       </div>
-      <dl class="profile-metrics">
-        <div><dt>${copy.totalXp}</dt><dd data-profile-xp>${s.xpTotal}</dd><dd class="profile-stat-note">${copy.earned}</dd></div>
-        <div><dt>${copy.daysPracticed}</dt><dd data-profile-days>${s.daysPracticed}</dd><dd class="profile-stat-note">${copy.daysNote}</dd></div>
-        <div><dt>${copy.accuracyShort}</dt><dd data-profile-accuracy${s.firstTryPercentage === null ? ` aria-label="${copy.noAttempts}"` : ''}>${s.firstTryPercentage === null ? '—' : `${s.firstTryPercentage}%`}</dd><dd class="profile-stat-note">${s.attempted ? copy.accuracyCount(s.firstTryRight, s.attempted) : copy.noAttempts}</dd></div>
-      </dl>
+      <div class="profile-next" data-next-unlock></div>
     </section>
     <section class="profile-collection" aria-labelledby="profile-collection" tabindex="-1">
       <div class="profile-section-heading"><h2 id="profile-collection">${copy.garage}</h2><span class="profile-garage-count" data-garage-count></span></div>
@@ -82,9 +85,16 @@ export function mountProfile(root: HTMLElement): View {
     const upcoming = items.filter(item => !owns(item)).sort((a, b) => a.price - b.price)[0];
     const next = page.querySelector<HTMLElement>('[data-next-unlock]')!;
     const shortfall = upcoming ? Math.max(0, upcoming.price - state.available) : 0;
-    next.innerHTML = upcoming ? `<div class="profile-reward-target"><span>${copy.nextCar}</span><b>${esc(upcoming.name)} <span>· ${copy.price(upcoming.price)}</span></b></div>
-      <div class="profile-next-track${shortfall ? '' : ' is-ready'}" role="progressbar" aria-label="${esc(copy.nextUnlock(upcoming.name))}" aria-valuemin="0" aria-valuemax="${upcoming.price}" aria-valuenow="${Math.min(state.available, upcoming.price)}" aria-valuetext="${copy.carProgress(state.available, upcoming.price)}"><span style="width:${Math.min(1, state.available / upcoming.price) * 100}%"></span></div>
-      <button class="profile-reward-action${shortfall ? '' : ' is-ready'}" data-reward-item="${upcoming.id}" aria-haspopup="dialog" aria-label="${esc(copy.viewCar(upcoming.name))}"><span>${shortfall ? copy.xpRemaining(shortfall) : `${icon('check')}${copy.readyToBuy}`}</span><span>${copy.viewCar(upcoming.name)}${icon('chevron')}</span></button>` : `<p class="profile-reward-complete">${icon('check')}${copy.collectionComplete}</p>`;
+    // One banner, the whole surface is the button: art tile, the car's name, the road bar and the state line.
+    next.innerHTML = upcoming ? `<button class="profile-unlock${shortfall ? '' : ' is-ready'}" data-reward-item="${upcoming.id}" aria-haspopup="dialog" aria-label="${esc(`${copy.viewCar(upcoming.name)}. ${copy.carProgress(state.available, upcoming.price)}`)}">
+        <span class="profile-unlock-art">${closeArt(upcoming)}</span>
+        <span class="profile-unlock-body">
+          <span class="profile-reward-target"><span>${copy.nextCar}</span><b>${esc(upcoming.name)} <span>· ${copy.price(upcoming.price)}</span></b></span>
+          <span class="profile-next-track${shortfall ? '' : ' is-ready'}" role="progressbar" aria-label="${esc(copy.nextUnlock(upcoming.name))}" aria-valuemin="0" aria-valuemax="${upcoming.price}" aria-valuenow="${Math.min(state.available, upcoming.price)}" aria-valuetext="${copy.carProgress(state.available, upcoming.price)}"><span style="width:${Math.min(1, state.available / upcoming.price) * 100}%"></span></span>
+          <span class="profile-reward-action">${shortfall ? copy.xpRemaining(shortfall) : `${icon('check')}${copy.readyToBuy}`}</span>
+        </span>
+        <span class="profile-unlock-go" aria-hidden="true">${icon('chevron')}</span>
+      </button>` : `<p class="profile-reward-complete">${icon('check')}${copy.collectionComplete}</p>`;
     page.querySelector('[data-item-list]')!.innerHTML = items.map(item => {
       const selected = state.selected === item.id;
       const owned = owns(item);

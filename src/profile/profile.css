@@ -6,44 +6,59 @@
 .profile-page .profile-identity .profile-character-detail { margin-top:2px; color:var(--lane-accent-soft); font-size:var(--fs-caption); }
 .profile-identity a { display:inline-flex; align-items:center; gap:var(--sp-2); min-height:44px; font-size:var(--fs-caption); font-weight:var(--fw-bold); color:var(--lane-accent); }
 .profile-stats { margin-top:var(--sp-6); }
-.profile-page .profile-stats>h2 { font-size:var(--fs-title); font-weight:var(--fw-bold); letter-spacing:-.01em; margin-bottom:var(--sp-4); }
-.profile-streak { display:flex; align-items:center; gap:var(--sp-4); padding:var(--sp-2) 0 var(--sp-5); }
-.profile-streak-flame { display:grid; place-items:center; flex:none; width:64px; height:72px; border-radius:var(--radius-lg); background:var(--lane-accent-soft); color:var(--lane-accent-ink); }
-.profile-streak-flame svg { width:40px; height:40px; }
-.profile-streak.is-lit .profile-streak-flame svg { fill:var(--lane-accent); }
-.profile-streak>div { min-width:0; }
-.profile-streak-value { display:flex; flex-wrap:wrap; align-items:baseline; column-gap:var(--sp-2); }
-.profile-streak-value strong { font-size:var(--fs-hero); font-weight:var(--fw-bold); letter-spacing:-.04em; line-height:1; font-variant-numeric:tabular-nums; overflow-wrap:anywhere; }
-.profile-streak-value>span { font-size:var(--fs-body); font-weight:var(--fw-bold); }
-.profile-page .profile-streak-note { margin-top:var(--sp-2); font-size:var(--fs-caption); color:var(--lane-support); }
-.profile-reward { padding:var(--sp-4) 0 0; border-block:1px solid var(--lane-line); }
-.profile-wallet { display:flex; justify-content:space-between; align-items:baseline; gap:var(--sp-3); font-size:var(--fs-body); font-weight:var(--fw-bold); }
-.profile-wallet>span:last-child { flex:none; color:var(--lane-muted); font-size:var(--fs-caption); font-weight:var(--fw-regular); }
-.profile-wallet strong { font-size:var(--fs-display); color:var(--lane-ink); font-weight:var(--fw-bold); font-variant-numeric:tabular-nums; letter-spacing:-.02em; }
-.profile-metrics { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:var(--sp-3); margin:0; padding:var(--sp-5) 0 0; }
-.profile-metrics>div { display:flex; flex-direction:column; min-width:0; }
-.profile-metrics dt { min-height:36px; font-size:var(--fs-caption); color:var(--lane-support); }
-.profile-metrics dd { font-size:var(--fs-title); font-weight:var(--fw-bold); letter-spacing:-.02em; margin:var(--sp-1) 0 0; overflow-wrap:anywhere; font-variant-numeric:tabular-nums; }
-.profile-metrics .profile-stat-note { font-size:var(--fs-caption); font-weight:var(--fw-regular); letter-spacing:0; color:var(--lane-muted); margin-top:var(--sp-1); }
+/* Slab label with a rule running to the edge, like a sign plate. Zilla carries the label only; digits stay Plex so a zero never reads as an o. */
+.profile-page .profile-stats-title { display:flex; align-items:center; gap:var(--sp-3); margin-bottom:var(--sp-4); font-family:Zilla,Plex,Georgia,serif; font-size:var(--fs-body); font-weight:600; letter-spacing:.12em; text-transform:uppercase; color:var(--lane-accent-ink); }
+.profile-stats-title::after { content:''; flex:1; height:1.5px; background:var(--lane-line); }
+/* Stat rows: a round lamp, the value with its label on one baseline, a note beneath. Rows sit directly on the page; nothing nests inside them. */
+.profile-row { display:flex; align-items:center; gap:var(--sp-3); padding:var(--sp-3) var(--sp-4); border:1px solid var(--lane-line); border-radius:var(--radius-lg); background:var(--lane-surface); }
+.profile-row+.profile-row, .profile-row+.profile-next { margin-top:var(--sp-2); }
+.profile-lamp { position:relative; display:grid; place-items:center; flex:none; width:52px; height:52px; border:1.5px solid var(--lane-line); border-radius:50%; background:var(--lane-page); }
+.profile-lamp svg { width:28px; height:28px; display:block; }
+/* Indicator lamp: outline-only when unlit, ochre flame on the ink disc once today's lesson is done. */
+.profile-flame-outer { fill:var(--lane-line); }
+.profile-flame-inner { fill:var(--lane-surface); }
+.profile-streak.is-lit .profile-streak-flame { border-color:var(--lane-hero); background:var(--lane-hero); }
+.profile-streak.is-lit .profile-flame-outer { fill:var(--lane-accent); }
+.profile-streak.is-lit .profile-flame-inner { fill:var(--lane-accent-soft); }
+.profile-lamp-xp { border-color:color-mix(in srgb,var(--lane-accent-ink) 35%,transparent); background:var(--lane-accent-soft); color:var(--lane-accent-ink); }
+.profile-lamp-xp svg { width:24px; height:24px; }
+.profile-row-body { flex:1; min-width:0; }
+.profile-row-value { display:flex; flex-wrap:wrap; align-items:baseline; column-gap:var(--sp-2); }
+.profile-row-value strong { font-size:var(--fs-display); font-weight:var(--fw-bold); letter-spacing:-.03em; line-height:1; font-variant-numeric:tabular-nums; color:var(--lane-ink); }
+.profile-row-value>span { font-size:var(--fs-body); font-weight:var(--fw-bold); color:var(--lane-ink); }
+/* A small green check sits on the lamp once today counts; it reads as "Done today". */
+.profile-streak-badge { position:absolute; right:0; bottom:0; display:grid; place-items:center; width:22px; height:22px; border:2px solid var(--lane-surface); border-radius:50%; background:var(--lane-success); color:var(--lane-surface); }
+.profile-streak-badge svg { width:14px; height:14px; }
+.profile-streak-cheer { font-size:var(--fs-title); line-height:1; }
+.profile-page .profile-row-note { margin-top:var(--sp-1); font-size:var(--fs-caption); color:var(--lane-support); }
+.profile-row-note b { font-weight:var(--fw-bold); color:var(--lane-ink); font-variant-numeric:tabular-nums; }
+/* Next unlock: the one raised banner in the stats. The whole surface opens the car's sheet. */
+.profile-next { margin-top:var(--sp-2); }
+.profile-page .profile-unlock { display:flex; align-items:center; gap:var(--sp-3); width:100%; padding:var(--sp-3) var(--sp-4) var(--sp-3) var(--sp-3); border:1.5px solid var(--lane-ink); border-radius:var(--radius-lg); background:var(--lane-accent-soft); color:var(--lane-ink); text-align:left; box-shadow:var(--shadow-soft); }
+.profile-unlock-art { display:grid; place-items:center; flex:none; width:64px; height:64px; border-radius:var(--radius-md); background:var(--lane-hero); overflow:hidden; }
+.profile-unlock-art .profile-car-art { width:100%; height:100%; }
+.profile-unlock-body { flex:1; min-width:0; display:flex; flex-direction:column; gap:var(--sp-2); }
+.profile-reward-target { display:flex; flex-direction:column; gap:2px; font-size:var(--fs-caption); color:var(--lane-accent-ink); }
+.profile-reward-target>b { font-size:var(--fs-body); color:var(--lane-ink); font-weight:var(--fw-bold); }
+.profile-reward-target>b>span { font-size:var(--fs-caption); font-weight:var(--fw-regular); color:var(--lane-support); }
+/* A road: dashed center line on the track, the fill is the lane driven so far, with a marker at its head. */
+.profile-next-track { position:relative; display:block; height:12px; border-radius:var(--radius-sm); background:var(--lane-surface); overflow:hidden; }
+.profile-next-track::before { content:''; position:absolute; inset:5px 6px; height:2px; background:repeating-linear-gradient(90deg, var(--lane-track) 0 8px, transparent 8px 16px); pointer-events:none; }
+.profile-next-track>span { position:relative; display:block; height:100%; min-width:12px; max-width:100%; border-radius:inherit; background:var(--lane-accent-ink); }
+/* The marker sits inside the head of the fill so nothing overflows the track. */
+.profile-next-track>span::after { content:''; position:absolute; inset:1px 1px 1px auto; width:10px; border-radius:50%; background:var(--lane-surface); }
+.profile-next-track.is-ready>span { background:var(--lane-accent); }
+.profile-reward-action { display:flex; align-items:center; gap:var(--sp-1); font-size:var(--fs-caption); font-weight:var(--fw-bold); color:var(--lane-support); }
+.profile-reward-action svg { width:16px; height:16px; }
+.profile-unlock.is-ready .profile-reward-action { color:var(--lane-accent-ink); }
+.profile-unlock-go { display:grid; place-items:center; flex:none; width:32px; height:32px; border:1px solid var(--lane-ink); border-radius:50%; background:var(--lane-surface); }
+.profile-unlock-go svg { width:16px; height:16px; }
+.profile-page .profile-reward-complete { display:flex; align-items:center; gap:var(--sp-2); padding:var(--sp-3) var(--sp-4); border:1px solid var(--lane-line); border-radius:var(--radius-lg); background:var(--lane-surface); color:var(--lane-accent-ink); font-size:var(--fs-body); font-weight:var(--fw-bold); }
+.profile-reward-complete svg { width:20px; height:20px; }
 .profile-page .profile-footnote { font-size:var(--fs-caption); line-height:1.5; color:var(--lane-muted); margin-top:var(--sp-2); }
 .profile-collection { margin-top:var(--sp-6); scroll-margin-top:20px; outline:none; }
 .profile-section-heading { display:flex; align-items:center; justify-content:space-between; gap:var(--sp-3); margin-bottom:var(--sp-3); }
 .profile-page .profile-section-heading h2 { font-size:var(--fs-title); font-weight:var(--fw-bold); letter-spacing:-.01em; }
-.profile-next { padding-top:var(--sp-3); }
-.profile-reward-target { display:flex; justify-content:space-between; align-items:baseline; gap:var(--sp-3); margin-bottom:var(--sp-3); font-size:var(--fs-caption); color:var(--lane-muted); }
-.profile-reward-target>b { font-size:var(--fs-body); color:var(--lane-ink); font-weight:var(--fw-bold); text-align:right; }
-.profile-reward-target>b>span { font-size:var(--fs-caption); font-weight:var(--fw-regular); color:var(--lane-support); }
-.profile-next-track { height:8px; border-radius:var(--radius-sm); background:var(--lane-track); overflow:hidden; }
-.profile-next-track>span { display:block; height:100%; border-radius:inherit; background:var(--lane-accent-ink); }
-.profile-next-track.is-ready>span { background:var(--lane-accent); }
-.profile-page .profile-reward-action { display:flex; align-items:center; justify-content:space-between; gap:var(--sp-2); width:100%; min-height:48px; padding:var(--sp-2) 0; background:transparent; border:0; border-radius:var(--radius-sm); font-size:var(--fs-caption); text-align:left; }
-.profile-reward-action>span { display:flex; align-items:center; gap:var(--sp-1); }
-.profile-reward-action>span:first-child { color:var(--lane-muted); }
-.profile-reward-action>span:last-child { font-weight:var(--fw-bold); text-align:right; }
-.profile-reward-action svg { width:16px; height:16px; }
-.profile-reward-action.is-ready>span:first-child { color:var(--lane-accent-ink); }
-.profile-page .profile-reward-complete { display:flex; align-items:center; gap:var(--sp-2); padding-bottom:var(--sp-4); color:var(--lane-accent-ink); font-size:var(--fs-body); font-weight:var(--fw-bold); }
-.profile-reward-complete svg { width:20px; height:20px; }
 .profile-tiles { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:var(--sp-2); list-style:none; margin:0; padding:0; }
 .profile-tiles li { min-width:0; }
 .profile-tile { display:flex; flex-direction:column; align-items:center; width:100%; height:100%; min-height:164px; padding:var(--sp-2) var(--sp-1); border:1px solid var(--lane-line); border-radius:var(--radius-md); background:transparent; color:var(--lane-ink); text-align:center; }
@@ -93,7 +108,7 @@
 .profile-purchase-total strong { font-weight:var(--fw-bold); }
 .profile-page .profile-primary { margin-top:var(--sp-5); }
 .profile-page .profile-cancel { margin-top:var(--sp-1); }
-@media(max-width:350px){.profile-page .profile-content{padding-inline:16px}.profile-identity{gap:var(--sp-3);padding:16px 12px}.profile-streak{gap:var(--sp-3)}.profile-streak-flame{width:56px;height:64px}.profile-tiles{gap:var(--sp-1)}}
+@media(max-width:350px){.profile-page .profile-content{padding-inline:16px}.profile-identity{gap:var(--sp-3);padding:16px 12px}.profile-row{gap:var(--sp-2);padding-inline:var(--sp-3)}.profile-lamp{width:44px;height:44px}.profile-tiles{gap:var(--sp-1)}}
 @media(prefers-reduced-motion:reduce){.profile-status.is-unlock{animation:none}}
 
 .profile-current-car { display:grid; place-items:center; flex:none; width:136px; height:148px; border:1px solid var(--lane-line); border-radius:var(--radius-lg); background:var(--lane-soft); overflow:hidden; }

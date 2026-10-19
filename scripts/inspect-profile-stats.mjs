@@ -14,12 +14,12 @@ const browsers = {
 const day = ago => { const date = new Date(); date.setDate(date.getDate() - ago); return date.toLocaleDateString('en-CA', { timeZone: 'America/Los_Angeles' }); };
 const records = Object.fromEntries(CLIPS.slice(0, 3).map((clip, index) => [clip.id, { done: true, tries: index ? 1 : 2, firstTry: !!index }]));
 const cases = [
-  { name: 'fresh', seed: {}, streak: 0, balance: 0, value: 0, max: 15, next: 'sedan', accuracy: '—' },
-  { name: 'pending', seed: { xp: 10, daily: { [day(1)]: 10 }, clips: records }, streak: 1, balance: 10, value: 10, max: 15, next: 'sedan', accuracy: '67%', note: 'Finish a lesson today' },
-  { name: 'active', seed: { xp: 30, daily: { [day(0)]: 10, [day(1)]: 10, [day(2)]: 10 }, clips: records }, streak: 3, balance: 30, value: 15, max: 15, next: 'sedan', accuracy: '67%', note: 'Today’s done' },
-  { name: 'legacy-spending', seed: { xp: 40, spentXp: 25, ownedCars: ['hatchback', 'sedan'], ownedAvatars: ['sprout', 'sunny'], daily: { [day(3)]: 40 } }, streak: 0, balance: 15, value: 15, max: 25, next: 'wagon', accuracy: '—' },
-  { name: 'last-car', seed: { xp: 180, spentXp: 120, ownedCars: CARS.slice(0, -1).map(car => car.id) }, streak: 0, balance: 60, value: 60, max: 60, next: 'classic-coupe', accuracy: '—' },
-  { name: 'all-owned', seed: { xp: 240, spentXp: 180, ownedCars: CARS.map(car => car.id), clips: Object.fromEntries(CLIPS.map(clip => [clip.id, { done: true, tries: 1, firstTry: true }])) }, streak: 0, balance: 60, accuracy: '100%', note: 'All lessons completed.' },
+  { name: 'fresh', seed: {}, streak: 0, balance: 0, value: 0, max: 15, next: 'sedan' },
+  { name: 'pending', seed: { xp: 10, daily: { [day(1)]: 10 }, clips: records }, streak: 1, balance: 10, value: 10, max: 15, next: 'sedan' },
+  { name: 'active', seed: { xp: 30, daily: { [day(0)]: 10, [day(1)]: 10, [day(2)]: 10 }, clips: records }, streak: 3, balance: 30, value: 15, max: 15, next: 'sedan' },
+  { name: 'legacy-spending', seed: { xp: 40, spentXp: 25, ownedCars: ['hatchback', 'sedan'], ownedAvatars: ['sprout', 'sunny'], daily: { [day(3)]: 40 } }, streak: 0, balance: 15, value: 15, max: 25, next: 'wagon' },
+  { name: 'last-car', seed: { xp: 180, spentXp: 120, ownedCars: CARS.slice(0, -1).map(car => car.id) }, streak: 0, balance: 60, value: 60, max: 60, next: 'classic-coupe' },
+  { name: 'all-owned', seed: { xp: 240, spentXp: 180, ownedCars: CARS.map(car => car.id), clips: Object.fromEntries(CLIPS.map(clip => [clip.id, { done: true, tries: 1, firstTry: true }])) }, streak: 0, balance: 60 },
 ];
 try {
   for (const [name, engine, viewport] of [
@@ -37,8 +37,6 @@ try {
       await page.locator('.profile-stats').waitFor();
       assert.equal(await page.locator('[data-profile-streak]').innerText(), String(example.streak));
       assert.equal(await page.locator('[data-available]').innerText(), String(example.balance));
-      assert.equal(await page.locator('[data-profile-accuracy]').innerText(), example.accuracy);
-      if (example.note) assert.ok((await page.locator('.profile-streak-note').innerText()).includes(example.note));
       if (example.next) {
         assert.equal(await page.locator('[data-reward-item]').getAttribute('data-reward-item'), example.next);
         assert.equal(await page.locator('.profile-next-track').getAttribute('aria-valuenow'), String(example.value));
