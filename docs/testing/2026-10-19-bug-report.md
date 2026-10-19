@@ -146,7 +146,9 @@ Content notes (not errors): M6 (answer positions) and L9 (missing page numbers).
 - The coach Edge Function verifies the caller through `coach_take_turn` as the learner, so deploying with `--no-verify-jwt` is safe; per-learner (30/day) and global (500/day) caps bound cost.
 
 ## Monkey testing
-_Filled in below when the runs finish._
+Ten randomized runs, about **6,250 random actions** in total: seven phone runs (390×844 touch), two desktop runs (1280×800) and one phone run against the backend-connected build (stand-in server). Actions were random taps on any visible control, typing into fields, swipes, arrow/Escape/Tab/Enter/Space, seeking videos to their end, Back/Forward, reloads, and jumps to 21 routes, including old redirects (`#/sim/…`, `#/drive`, `#/buddies`) and invalid ones (`#/nonsense/route`, `#/feed/not-a-lesson`). After every action the run checked for page errors, console errors, a blank screen, lesson XP ≠ 10 × completed lessons, and XP spent > XP earned.
+
+**Result: no findings.** No page errors, no blank screens and no broken invariants. Invalid routes fall back to the feed. Honest limit: random tapping rarely finishes a lesson (most runs ended with 0–1 lessons done), so lesson completion, XP and recovery were covered by the targeted scripts above, not by the monkeys. (Four lines in seed 6's log are the harness pressing Back past the app's first page, not an app issue.)
 
 ## How this was tested, and limits
 - Chromium (Playwright's build) only. **WebKit/Safari could not be downloaded in this environment**, so Safari-specific behaviour (autoplay with sound, byte-range video playback, offline video) is **untested**. Please check those on a real iPhone. iPhone screen sizes and notch insets were checked only by emulation in Chromium (Chromium-only copies of `inspect-mobile` and `inspect-baseline`). `inspect-profile-states`, `inspect-video-load` and the WebKit half of `inspect-notifications` did not run.
