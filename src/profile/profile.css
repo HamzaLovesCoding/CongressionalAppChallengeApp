@@ -3,15 +3,16 @@
 .profile-page { --profile-hairline:color-mix(in srgb,var(--lane-ink) 12%,transparent); }
 .profile-page .profile-content { padding:0 20px calc(116px + env(safe-area-inset-bottom)); outline:none; }
 
-/* Cover: the same grainy asphalt as the tab bar, with a cream edge line and a dashed yellow center line. */
-.profile-cover { position:relative; display:flex; align-items:flex-start; justify-content:space-between; gap:var(--sp-3); height:calc(168px + env(safe-area-inset-top)); margin:0 -20px; padding:calc(var(--sp-4) + env(safe-area-inset-top)) 20px 0; overflow:hidden; background:var(--asphalt-grain), var(--asphalt-wear), color-mix(in srgb,var(--lane-support) 82%,var(--lane-muted)); background-size:220px 220px, 430px 160px, auto; color:var(--lane-surface); }
+/* Cover: the same grainy asphalt as the tab bar, with a cream edge line and a dashed yellow center line.
+   It is a short strip: the card covers its last 24px (one corner radius), so no road shows beside the card. */
+.profile-cover { position:relative; display:flex; align-items:flex-start; justify-content:space-between; gap:var(--sp-3); height:calc(128px + env(safe-area-inset-top)); margin:0 -20px; padding:calc(var(--sp-4) + env(safe-area-inset-top)) 20px 0; overflow:hidden; background:var(--asphalt-grain), var(--asphalt-wear), color-mix(in srgb,var(--lane-support) 82%,var(--lane-muted)); background-size:220px 220px, 430px 160px, auto; color:var(--lane-surface); }
 .profile-cover::before, .profile-cover::after { content:''; position:absolute; left:0; right:0; pointer-events:none; }
-.profile-cover::before { top:calc(76px + env(safe-area-inset-top)); height:2px; background:rgb(255 250 240 / .5); }
-.profile-cover::after { top:calc(110px + env(safe-area-inset-top)); height:4px; background:repeating-linear-gradient(90deg,var(--lane-accent) 0 28px,transparent 28px 52px); opacity:.85; }
+.profile-cover::before { top:calc(68px + env(safe-area-inset-top)); height:2px; background:rgb(255 250 240 / .5); }
+.profile-cover::after { top:calc(86px + env(safe-area-inset-top)); height:4px; background:repeating-linear-gradient(90deg,var(--lane-accent) 0 28px,transparent 28px 52px); opacity:.85; }
 .profile-page .profile-cover h1 { display:flex; align-items:center; min-height:44px; font-size:var(--fs-display); font-weight:var(--fw-bold); letter-spacing:-.02em; }
 
 /* Identity: the selected car as the avatar, username, goal, one dated fact, and the four milestones. */
-.profile-identity { position:relative; z-index:1; margin-top:-40px; padding:20px; border:1px solid var(--profile-hairline); border-radius:var(--radius-xl); background:var(--lane-surface); box-shadow:var(--shadow-raised); }
+.profile-identity { position:relative; z-index:1; margin-top:calc(-1 * var(--radius-xl)); padding:20px; border:1px solid var(--profile-hairline); border-radius:var(--radius-xl); background:var(--lane-surface); box-shadow:var(--shadow-raised); }
 .profile-who { display:flex; align-items:center; gap:var(--sp-4); }
 .profile-avatar { position:relative; display:block; flex:none; width:80px; height:80px; padding:0; border:1px solid var(--profile-hairline); border-radius:var(--radius-lg); background:var(--lane-soft); overflow:hidden; }
 /* The art's box is larger than the tile (the tilted car fills its middle); centring it absolutely keeps the car centred. */
