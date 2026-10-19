@@ -5,7 +5,7 @@
 .learning-path .path-content { min-height:100dvh; padding:var(--path-panel,140px) 20px 0; outline:none; }
 
 /* Trip panel. path.ts measures its height into --path-panel, which varies with the notch inset and text size. */
-.path-dashboard { position:fixed; z-index:4; top:0; left:50%; transform:translateX(-50%); width:var(--app-width); display:grid; grid-template-columns:minmax(0,1fr) auto; grid-template-areas:"title chips" "trip trip"; align-items:center; column-gap:var(--sp-3); row-gap:var(--sp-1); padding:max(12px,env(safe-area-inset-top)) 20px var(--sp-4); background:var(--lane-page); border-bottom:1px solid var(--lane-line); }
+.path-dashboard { position:fixed; z-index:4; top:0; left:50%; transform:translateX(-50%); width:var(--app-width); display:grid; grid-template-columns:minmax(0,1fr) auto; grid-template-areas:"title chips" "trip trip"; align-items:center; column-gap:var(--sp-3); row-gap:var(--sp-1); padding:max(12px,env(safe-area-inset-top)) 20px var(--sp-3); background:var(--lane-page); border-bottom:1px solid var(--lane-line); }
 .path-dashboard h1 { grid-area:title; font-size:var(--fs-display); line-height:1.15; font-weight:var(--fw-bold); letter-spacing:-.02em; }
 .path-chips { grid-area:chips; display:flex; align-items:center; gap:var(--sp-1); }
 .home-preview .path-chip-button { display:grid; place-items:center; min-width:44px; min-height:44px; padding:0; border:0; background:transparent; }
@@ -68,9 +68,10 @@
 
 /* Milestones stand by the road at the lesson that earns them. */
 .home-preview .path-mile { display:flex; align-items:center; gap:var(--sp-3); width:100%; min-height:56px; padding:var(--sp-1) 0; border:0; border-radius:var(--radius-md); background:transparent; text-align:left; }
-.path-mile-medal { display:grid; place-items:center; flex:none; width:44px; height:48px; border:1.5px dashed var(--lane-muted); border-radius:14px 14px 22px 22px; background:var(--lane-page); color:var(--lane-muted); }
-.path-mile-medal svg { width:22px; height:22px; }
-.path-mile.is-earned .path-mile-medal { border:1.5px solid var(--lane-accent-ink); background:var(--lane-accent-soft); color:var(--lane-accent-ink); box-shadow:inset 0 0 0 3px var(--lane-surface), var(--shadow-soft), var(--glow-accent); }
+/* Rosettes are Profile's (medals.ts); these only size them for each place. */
+.path-rosette { display:block; }
+.path-mile-medal { display:block; flex:none; width:44px; }
+.path-mile-medal .profile-medal-art { width:44px; height:49px; }
 .path-mile-text { flex:1; min-width:0; display:flex; flex-direction:column; gap:2px; }
 .path-mile-text small { font-size:var(--fs-caption); color:var(--lane-muted); }
 .path-mile-text strong { font-size:var(--fs-body); line-height:1.25; font-weight:var(--fw-bold); }
@@ -130,6 +131,8 @@
 .path-arrival.is-visible { animation:path-arrive 450ms var(--ease-spring) both; }
 .path-arrival-icon { display:grid; place-items:center; flex:none; width:36px; height:36px; border:1.5px solid var(--lane-ink); border-radius:50%; background:var(--lane-accent); }
 .path-arrival-icon svg { width:20px; height:20px; }
+.path-arrival-medal { display:block; flex:none; width:36px; }
+.path-arrival-medal .profile-medal-art { width:36px; height:40px; }
 .path-arrival strong { display:block; font-size:var(--fs-body); line-height:1.2; font-weight:var(--fw-bold); }
 .path-arrival small { display:block; margin-top:2px; font-size:var(--fs-caption); color:var(--lane-support); }
 
@@ -148,9 +151,7 @@
 .path-medals { list-style:none; padding:8px 0 0; margin:0; }
 .path-medals li { display:flex; align-items:center; gap:var(--sp-4); padding:var(--sp-4) 0; }
 .path-medals li+li { border-top:1px solid var(--lane-line); }
-.path-medal { display:grid; place-items:center; width:64px; height:72px; flex:none; border:1.5px dashed var(--lane-muted); border-radius:18px 18px 28px 28px; color:var(--lane-muted); }
-.path-medal svg { width:32px; height:32px; }
-.is-earned .path-medal { border:1.5px solid var(--lane-accent-ink); background:var(--lane-accent-soft); color:var(--lane-accent-ink); box-shadow:inset 0 0 0 4px var(--lane-surface), var(--shadow-soft), var(--glow-accent); }
+.path-medal { display:block; flex:none; width:60px; }
 .path-medals h3 { font-size:var(--fs-body); font-weight:var(--fw-bold); }
 .learning-path .path-medals p { margin-top:2px; font-size:var(--fs-caption); color:var(--lane-support); }
 .path-medals strong { display:flex; align-items:center; gap:var(--sp-1); margin-top:var(--sp-2); font-size:var(--fs-caption); font-weight:var(--fw-bold); color:var(--lane-muted); }
@@ -182,6 +183,7 @@
   .learning-path .path-arrival { top:max(4px,env(safe-area-inset-top)); padding-block:6px; }
   .path-arrival-icon { width:30px; height:30px; }
   .path-arrival-icon svg { width:17px; height:17px; }
+  .path-arrival-medal, .path-arrival-medal .profile-medal-art { width:30px; height:34px; }
   .path-arrival>span:last-child { display:flex; align-items:baseline; gap:var(--sp-2); min-width:0; }
   .path-arrival small { margin-top:0; white-space:nowrap; }
   /* The next sign keeps its lesson tab, title and action; the tags and topic stay in the lesson itself. */
@@ -191,5 +193,4 @@
   .home-preview .path-sign-go { min-height:44px; margin-top:0; }
 }
 @media (prefers-reduced-motion:reduce) { .path-arrival.is-visible, .path-sign.is-new, .path-mile.is-new .path-mile-medal, .path-meter-pin.is-new { animation:none; } }
-.path-readiness { display:flex; align-items:center; min-height:44px; font-size:var(--fs-caption); font-weight:var(--fw-bold); color:var(--lane-accent-ink); text-decoration:underline; text-underline-offset:3px; }
 .path-trophies .ui-chip small { margin-left:4px; font-weight:var(--fw-regular); }

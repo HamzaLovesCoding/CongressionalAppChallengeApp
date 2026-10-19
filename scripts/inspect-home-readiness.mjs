@@ -34,8 +34,8 @@ try {
     await page.locator('.review-page').waitFor();
     assert.match(await page.locator('.review-page').innerText(), /Driver readiness 52/);
     await page.goto(`${base}#/progress`);
-    await page.locator('.path-readiness').waitFor();
-    assert.match(await page.locator('.path-readiness').innerText(), /52/);
+    await page.locator('.path-dashboard').waitFor();
+    assert.equal(await page.locator('.path-readiness').count(), 0, 'Progress leaves readiness to Home and Review (owner, 2026-10-18)');
 
     await page.goto(`${base}#/feed/roundabout/quiz`);
     await page.locator('[data-answer="0"]').click();
@@ -62,8 +62,6 @@ try {
     await page.goto(`${base}#/home`); await page.reload();
     await page.locator('.home-week').waitFor();
     assert.equal(await page.locator('[data-goal-detail]').innerText(), '80');
-    await page.goto(`${base}#/progress`); await page.locator('.path-readiness').waitFor();
-    assert.match(await page.locator('.path-readiness').innerText(), /80/, 'legacy completions do not show an empty readiness state');
 
     await page.evaluate(ids => {
       const state = JSON.parse(localStorage.getItem('roadloop-progress'));

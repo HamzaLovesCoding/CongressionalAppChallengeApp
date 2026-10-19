@@ -1,5 +1,4 @@
 import './home.css';
-import { bindMenu, menuButton, menuSheetMarkup } from './menu';
 import type { View } from '../navigation';
 import { CLIPS } from '../feed/clips';
 import { onboarding, record, stats, XP_PER_CLIP } from '../feed/progress';
@@ -62,7 +61,6 @@ export function mountHome(root: HTMLElement): View {
     <main class="home-content" aria-labelledby="home-title">
       <header class="home-toolbar">
         <h1 id="home-title" class="home-wordmark"><span class="home-wordmark-art" role="img" aria-label="Lane"></span></h1>
-        ${menuButton()}
       </header>
       <section class="home-sign" aria-labelledby="home-sign-title">
         <a class="home-sign-face" href="${learning.allDone ? '#/practice' : `#/feed/${esc(next.id)}`}" aria-label="${learning.allDone ? action : esc(`${action}: ${next.title}`)}">
@@ -95,10 +93,8 @@ export function mountHome(root: HTMLElement): View {
       <section class="home-leaderboard" aria-labelledby="home-leaderboard-title"></section>
     </main>
     ${homeNavigation('home')}
-    ${menuSheetMarkup()}
   </div>`;
   root.append(page);
-  const menu = bindMenu(page);
   const leaderboard = mountLeaderboard(page.querySelector<HTMLElement>('.home-leaderboard')!);
-  return { dispose() { leaderboard.dispose(); menu.dispose(); page.remove(); } };
+  return { dispose() { leaderboard.dispose(); page.remove(); } };
 }

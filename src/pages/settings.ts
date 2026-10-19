@@ -1,5 +1,5 @@
 import { CLIPS } from '../feed/clips';
-import { cleanAlias, GOALS, onboarding, setDisplayAlias, setGoal, setPermitTestDate, settings, type Goal } from '../feed/progress';
+import { cleanAlias, GOALS, onboarding, setDisplayAlias, setGoal, setPermitTestDate, setSoundOff, settings, soundOff, type Goal } from '../feed/progress';
 import { WELCOME_COPY } from './content';
 import { appSync, type SyncStatus } from '../data/sync';
 import type { View } from '../navigation';
@@ -12,9 +12,9 @@ const statusText = (status: SyncStatus) => status.state === 'local-only' ? 'Your
   : status.state === 'syncing' ? 'Backing up…'
   : 'Lane couldn’t back up just now. Your progress is safe on this device and will back up later.';
 
-// #/settings, from the Home menu. Profile stays Garage-only (owner direction, 2026-10-14).
+// #/settings, from Profile's Settings card.
 export function mountSettings(root: HTMLElement): View {
-  const view = subpage(root, { title: 'Settings', back: '#/home', backLabel: 'Back to home', className: 'settings-page' });
+  const view = subpage(root, { title: 'Settings', back: '#/profile', backLabel: 'Back to profile', className: 'settings-page' });
   const sync = appSync(CLIPS.map(clip => clip.id));
   const current = settings(), goal = onboarding();
   view.body.innerHTML = `
@@ -37,6 +37,10 @@ export function mountSettings(root: HTMLElement): View {
       <p class="sub-note">It shows on leaderboards. Skip your real name. Use 3–20 letters, numbers, - or _.</p>
       <p class="sub-status" role="status" data-alias-status></p>
     </form>
+    <div class="sub-field">
+      <button class="sub-switch-row" type="button" role="switch" aria-checked="${!soundOff()}" aria-describedby="sound-note" data-sound><b>Lesson sound</b><span class="sub-switch" aria-hidden="true"></span></button>
+      <p class="sub-note" id="sound-note">Lesson videos start with sound when your phone allows it. The sound button on a lesson changes this too.</p>
+    </div>
     <section class="sub-field" aria-labelledby="sync-title">
       <h2 id="sync-title">Progress</h2>
       <p data-sync-status>${statusText(sync.status())}</p>
@@ -83,6 +87,8 @@ export function mountSettings(root: HTMLElement): View {
   body.addEventListener('click', event => {
     if (!(event.target instanceof Element)) return;
     if (event.target.closest('[data-sync-now]')) void sync.sync();
+    const sound = event.target.closest<HTMLElement>('[data-sound]');
+    if (sound) { setSoundOff(!soundOff()); sound.setAttribute('aria-checked', String(!soundOff())); }
     const remove = event.target.closest<HTMLButtonElement>('[data-delete-remote]');
     if (remove) {
       // Deleting server data can't be undone, so it asks once on the button itself.

@@ -20,7 +20,7 @@ export const mountTerms = (root: HTMLElement) => mountDocument(root, TERMS);
 
 // #/credits: rendered from the attribution register, so each video credit comes from its lesson data.
 export function mountCredits(root: HTMLElement): View {
-  const view = subpage(root, { title: 'Credits & sources', back: '#/settings', backLabel: 'Back to settings', className: 'legal-page' });
+  const view = subpage(root, { title: 'Credits & sources', back: '#/profile', backLabel: 'Back to profile', className: 'legal-page' });
   view.body.innerHTML = `
     <h2>Lesson videos</h2>
     <p class="sub-note">Each video is by the creator named below and is used under the <a href="${CC_BY_3}" target="_blank" rel="noopener">Creative Commons Attribution 3.0 license (CC BY 3.0)</a>. Lane re-encoded the videos for phones and shows them with its own titles and California rule notes. The creators do not endorse Lane.</p>

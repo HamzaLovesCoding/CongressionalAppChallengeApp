@@ -24,11 +24,6 @@ export const homeContent = {
 } as const;
 
 // The Home menu reaches screens that have no tab of their own.
-export const MENU_LINKS = [
-  { href: '#/settings', icon: 'settings', label: 'Settings' },
-  { href: '#/credits', icon: 'book', label: 'Credits & sources' },
-] as const;
-
 export const LEADERBOARD_COPY = {
   title: 'Weekly leaderboard',
   noRank: 'Rank not available yet',

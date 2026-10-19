@@ -1,104 +1,115 @@
-.profile-page .profile-content { padding:max(var(--sp-5),env(safe-area-inset-top)) 20px calc(116px + env(safe-area-inset-bottom)); outline:none; }
-.profile-heading>span { font-size:var(--fs-caption); color:var(--lane-muted); }
-.profile-identity { display:flex; align-items:center; gap:var(--sp-4); padding:var(--sp-5) 20px; border:1.5px solid var(--lane-ink); border-radius:var(--radius-xl); background:var(--lane-hero); color:var(--lane-surface); box-shadow:var(--shadow-raised); }
-.profile-page .profile-identity p { color:var(--lane-soft); font-size:var(--fs-caption); }
-.profile-page .profile-identity h2 { font-size:var(--fs-display); font-weight:var(--fw-bold); letter-spacing:-.02em; margin:var(--sp-1) 0 0; }
-.profile-page .profile-identity .profile-character-detail { margin-top:2px; color:var(--lane-accent-soft); font-size:var(--fs-caption); }
-.profile-identity a { display:inline-flex; align-items:center; gap:var(--sp-2); min-height:44px; font-size:var(--fs-caption); font-weight:var(--fw-bold); color:var(--lane-accent); }
-.profile-stats { margin-top:var(--sp-6); }
-/* Slab label with a rule running to the edge, like a sign plate. Zilla carries the label only; digits stay Plex so a zero never reads as an o. */
-.profile-page .profile-stats-title { display:flex; align-items:center; gap:var(--sp-3); margin-bottom:var(--sp-4); font-family:Zilla,Plex,Georgia,serif; font-size:var(--fs-body); font-weight:600; letter-spacing:.12em; text-transform:uppercase; color:var(--lane-accent-ink); }
-.profile-stats-title::after { content:''; flex:1; height:1.5px; background:var(--lane-line); }
-/* Stat rows: a round lamp, the value with its label on one baseline, a note beneath. Rows sit directly on the page; nothing nests inside them. */
-.profile-row { display:flex; align-items:center; gap:var(--sp-3); padding:var(--sp-3) var(--sp-4); border:1px solid var(--lane-line); border-radius:var(--radius-lg); background:var(--lane-surface); }
-.profile-row+.profile-row, .profile-row+.profile-next { margin-top:var(--sp-2); }
-.profile-lamp { position:relative; display:grid; place-items:center; flex:none; width:52px; height:52px; border:1.5px solid var(--lane-line); border-radius:50%; background:var(--lane-page); }
-.profile-lamp svg { width:28px; height:28px; display:block; }
-/* Indicator lamp: outline-only when unlit, ochre flame on the ink disc once today's lesson is done. */
-.profile-flame-outer { fill:var(--lane-line); }
-.profile-flame-inner { fill:var(--lane-surface); }
-.profile-streak.is-lit .profile-streak-flame { border-color:var(--lane-hero); background:var(--lane-hero); }
-.profile-streak.is-lit .profile-flame-outer { fill:var(--lane-accent); }
-.profile-streak.is-lit .profile-flame-inner { fill:var(--lane-accent-soft); }
-.profile-lamp-xp { border-color:color-mix(in srgb,var(--lane-accent-ink) 35%,transparent); background:var(--lane-accent-soft); color:var(--lane-accent-ink); }
-.profile-lamp-xp svg { width:24px; height:24px; }
-.profile-row-body { flex:1; min-width:0; }
-.profile-row-value { display:flex; flex-wrap:wrap; align-items:baseline; column-gap:var(--sp-2); }
-.profile-row-value strong { font-size:var(--fs-display); font-weight:var(--fw-bold); letter-spacing:-.03em; line-height:1; font-variant-numeric:tabular-nums; color:var(--lane-ink); }
-.profile-row-value>span { font-size:var(--fs-body); font-weight:var(--fw-bold); color:var(--lane-ink); }
-/* A small green check sits on the lamp once today counts; it reads as "Done today". */
-.profile-streak-badge { position:absolute; right:0; bottom:0; display:grid; place-items:center; width:22px; height:22px; border:2px solid var(--lane-surface); border-radius:50%; background:var(--lane-success); color:var(--lane-surface); }
-.profile-streak-badge svg { width:14px; height:14px; }
-.profile-streak-cheer { font-size:var(--fs-title); line-height:1; }
-.profile-page .profile-row-note { margin-top:var(--sp-1); font-size:var(--fs-caption); color:var(--lane-support); }
-.profile-row-note b { font-weight:var(--fw-bold); color:var(--lane-ink); font-variant-numeric:tabular-nums; }
-/* Next unlock: the one raised banner in the stats. The whole surface opens the car's sheet. */
-.profile-next { margin-top:var(--sp-2); }
-.profile-page .profile-unlock { display:flex; align-items:center; gap:var(--sp-3); width:100%; padding:var(--sp-3) var(--sp-4) var(--sp-3) var(--sp-3); border:1.5px solid var(--lane-ink); border-radius:var(--radius-lg); background:var(--lane-accent-soft); color:var(--lane-ink); text-align:left; box-shadow:var(--shadow-soft); }
-.profile-unlock-art { display:grid; place-items:center; flex:none; width:64px; height:64px; border-radius:var(--radius-md); background:var(--lane-hero); overflow:hidden; }
+/* Profile (owner, 2026-10-18): an asphalt cover, one identity card lifted over it, the next unlock as the featured
+   surface, the Garage, the lesson list, then Settings and Credits cards. Surfaces use hairline edges and soft shadows. */
+.profile-page { --profile-hairline:color-mix(in srgb,var(--lane-ink) 12%,transparent); }
+.profile-page .profile-content { padding:0 20px calc(116px + env(safe-area-inset-bottom)); outline:none; }
+
+/* Cover: the same grainy asphalt as the tab bar, with a cream edge line and a dashed yellow center line. */
+.profile-cover { position:relative; display:flex; align-items:flex-start; justify-content:space-between; gap:var(--sp-3); height:calc(168px + env(safe-area-inset-top)); margin:0 -20px; padding:calc(var(--sp-4) + env(safe-area-inset-top)) 20px 0; overflow:hidden; background:var(--asphalt-grain), var(--asphalt-wear), color-mix(in srgb,var(--lane-support) 82%,var(--lane-muted)); background-size:220px 220px, 430px 160px, auto; color:var(--lane-surface); }
+.profile-cover::before, .profile-cover::after { content:''; position:absolute; left:0; right:0; pointer-events:none; }
+.profile-cover::before { top:calc(76px + env(safe-area-inset-top)); height:2px; background:rgb(255 250 240 / .5); }
+.profile-cover::after { top:calc(110px + env(safe-area-inset-top)); height:4px; background:repeating-linear-gradient(90deg,var(--lane-accent) 0 28px,transparent 28px 52px); opacity:.85; }
+.profile-page .profile-cover h1 { display:flex; align-items:center; min-height:44px; font-size:var(--fs-display); font-weight:var(--fw-bold); letter-spacing:-.02em; }
+
+/* Identity: the selected car as the avatar, username, goal, one dated fact, and the four milestones. */
+.profile-identity { position:relative; z-index:1; margin-top:-40px; padding:20px; border:1px solid var(--profile-hairline); border-radius:var(--radius-xl); background:var(--lane-surface); box-shadow:var(--shadow-raised); }
+.profile-who { display:flex; align-items:center; gap:var(--sp-4); }
+.profile-avatar { position:relative; display:block; flex:none; width:80px; height:80px; padding:0; border:1px solid var(--profile-hairline); border-radius:var(--radius-lg); background:var(--lane-soft); overflow:hidden; }
+/* The art's box is larger than the tile (the tilted car fills its middle); centring it absolutely keeps the car centred. */
+.profile-avatar .profile-car-art { position:absolute; top:50%; left:50%; width:96px; height:96px; max-width:none; transform:translate(-50%,-50%); }
+.profile-who-text { min-width:0; }
+.profile-page .profile-who h2 { font-size:var(--fs-title); font-weight:var(--fw-bold); line-height:1.2; letter-spacing:-.01em; overflow-wrap:anywhere; }
+.profile-page .profile-goal { margin-top:var(--sp-1); color:var(--lane-support); overflow-wrap:anywhere; }
+.profile-meta { display:flex; flex-wrap:wrap; gap:var(--sp-2) var(--sp-4); margin:var(--sp-4) 0 0; padding:0; list-style:none; font-size:var(--fs-caption); color:var(--lane-muted); }
+.profile-meta li { display:flex; align-items:center; gap:var(--sp-1); }
+.profile-meta svg { width:16px; height:16px; }
+.profile-milestones { margin-top:var(--sp-4); padding-top:var(--sp-4); border-top:1px solid var(--profile-hairline); }
+.profile-page .profile-label-row { display:flex; align-items:baseline; justify-content:space-between; gap:var(--sp-3); font-size:var(--fs-caption); color:var(--lane-support); }
+.profile-label-row b { font-weight:var(--fw-bold); color:var(--lane-ink); font-variant-numeric:tabular-nums; }
+/* Four equal columns; with larger text a caption keeps its width and the medals wrap instead of clipping. */
+.profile-medals { display:flex; flex-wrap:wrap; gap:var(--sp-3) var(--sp-2); margin:var(--sp-3) 0 0; padding:0; list-style:none; text-align:center; }
+.profile-medals li { flex:1 0 0; min-width:max-content; }
+.profile-medal { display:block; width:60px; margin:0 auto; }
+.profile-medals small { display:block; margin-top:var(--sp-2); font-size:var(--fs-caption); line-height:1.25; color:var(--lane-muted); }
+.profile-medals .is-earned small { color:var(--lane-ink); font-weight:var(--fw-bold); }
+.profile-medals .is-next small { color:var(--lane-accent-ink); font-weight:var(--fw-bold); font-variant-numeric:tabular-nums; }
+.profile-page .profile-medal-next { margin-top:var(--sp-3); font-size:var(--fs-caption); color:var(--lane-support); text-align:center; }
+.profile-medal-next b { font-weight:var(--fw-bold); color:var(--lane-ink); }
+
+/* Next unlock: the featured surface. The whole card opens the car's sheet; the ochre action appears only when affordable. */
+.profile-next { margin-top:var(--sp-4); }
+.profile-page .profile-unlock { display:flex; flex-direction:column; gap:var(--sp-3); width:100%; padding:20px; border:1px solid color-mix(in srgb,var(--lane-accent-ink) 22%,transparent); border-radius:var(--radius-xl); background:color-mix(in srgb,var(--lane-accent-soft) 62%,var(--lane-surface)); color:var(--lane-ink); text-align:left; box-shadow:var(--shadow-soft); }
+.profile-unlock-top { display:flex; align-items:center; gap:var(--sp-3); }
+.profile-unlock-art { display:grid; place-items:center; flex:none; width:52px; height:52px; border-radius:var(--radius-md); background:var(--lane-hero); color:var(--lane-accent); overflow:hidden; }
 .profile-unlock-art .profile-car-art { width:100%; height:100%; }
-.profile-unlock-body { flex:1; min-width:0; display:flex; flex-direction:column; gap:var(--sp-2); }
-.profile-reward-target { display:flex; flex-direction:column; gap:2px; font-size:var(--fs-caption); color:var(--lane-accent-ink); }
-.profile-reward-target>b { font-size:var(--fs-body); color:var(--lane-ink); font-weight:var(--fw-bold); }
-.profile-reward-target>b>span { font-size:var(--fs-caption); font-weight:var(--fw-regular); color:var(--lane-support); }
-/* A road: dashed center line on the track, the fill is the lane driven so far, with a marker at its head. */
-.profile-next-track { position:relative; display:block; height:12px; border-radius:var(--radius-sm); background:var(--lane-surface); overflow:hidden; }
-.profile-next-track::before { content:''; position:absolute; inset:5px 6px; height:2px; background:repeating-linear-gradient(90deg, var(--lane-track) 0 8px, transparent 8px 16px); pointer-events:none; }
-.profile-next-track>span { position:relative; display:block; height:100%; min-width:12px; max-width:100%; border-radius:inherit; background:var(--lane-accent-ink); }
-/* The marker sits inside the head of the fill so nothing overflows the track. */
-.profile-next-track>span::after { content:''; position:absolute; inset:1px 1px 1px auto; width:10px; border-radius:50%; background:var(--lane-surface); }
-.profile-next-track.is-ready>span { background:var(--lane-accent); }
-.profile-reward-action { display:flex; align-items:center; gap:var(--sp-1); font-size:var(--fs-caption); font-weight:var(--fw-bold); color:var(--lane-support); }
-.profile-reward-action svg { width:16px; height:16px; }
-.profile-unlock.is-ready .profile-reward-action { color:var(--lane-accent-ink); }
-.profile-unlock-go { display:grid; place-items:center; flex:none; width:32px; height:32px; border:1px solid var(--lane-ink); border-radius:50%; background:var(--lane-surface); }
-.profile-unlock-go svg { width:16px; height:16px; }
-.profile-page .profile-reward-complete { display:flex; align-items:center; gap:var(--sp-2); padding:var(--sp-3) var(--sp-4); border:1px solid var(--lane-line); border-radius:var(--radius-lg); background:var(--lane-surface); color:var(--lane-accent-ink); font-size:var(--fs-body); font-weight:var(--fw-bold); }
-.profile-reward-complete svg { width:20px; height:20px; }
-.profile-page .profile-footnote { font-size:var(--fs-caption); line-height:1.5; color:var(--lane-muted); margin-top:var(--sp-2); }
+.profile-unlock-art>svg:not(.profile-car-art) { width:28px; height:28px; }
+.profile-unlock-name { flex:1; min-width:0; display:flex; flex-direction:column; gap:2px; }
+.profile-unlock-name small { font-size:var(--fs-caption); color:var(--lane-accent-ink); }
+.profile-unlock-name b { font-size:var(--fs-title); font-weight:var(--fw-bold); line-height:1.2; letter-spacing:-.01em; }
+.profile-unlock-price { flex:none; display:flex; align-items:center; gap:2px; font-weight:var(--fw-bold); font-variant-numeric:tabular-nums; }
+.profile-unlock-price svg { width:18px; height:18px; color:var(--lane-muted); }
+.profile-unlock-wallet { font-size:var(--fs-caption); color:var(--lane-support); }
+.profile-unlock-wallet b { font-size:var(--fs-body); font-weight:var(--fw-bold); color:var(--lane-ink); font-variant-numeric:tabular-nums; }
+/* The balance drives a lane: ochre fill on a plain white track. */
+.profile-next-track { display:block; height:14px; border:1px solid var(--profile-hairline); border-radius:7px; background:var(--lane-surface); overflow:hidden; }
+.profile-next-track>span { display:block; height:100%; min-width:12px; max-width:100%; border-radius:inherit; background:var(--lane-accent); }
+.profile-unlock-cta { display:flex; align-items:center; justify-content:center; min-height:48px; padding:var(--sp-2) var(--sp-4); border:1.5px solid var(--lane-ink); border-radius:var(--radius-md); background:var(--lane-accent); box-shadow:var(--shadow-cta); font-weight:var(--fw-bold); }
+.profile-page .profile-unlock.is-complete { box-shadow:none; }
+
+/* One grouped list: icon tile, label, value and chevron. Dividers start after the icon. */
+.profile-list { margin-top:var(--sp-6); }
+.profile-list ul { margin:0; padding:var(--sp-1) 0; list-style:none; border:1px solid var(--profile-hairline); border-radius:var(--radius-xl); background:var(--lane-surface); box-shadow:var(--shadow-soft); }
+.profile-list li { position:relative; }
+.profile-list li+li::before { content:''; position:absolute; top:0; left:72px; right:20px; height:1px; background:var(--profile-hairline); }
+.profile-page .profile-row { display:flex; align-items:center; gap:var(--sp-3); width:100%; min-height:64px; padding:var(--sp-2) var(--sp-4) var(--sp-2) 20px; border:0; border-radius:var(--radius-xl); background:transparent; text-align:left; }
+.profile-row-icon { display:grid; place-items:center; flex:none; width:40px; height:40px; border-radius:12px; background:var(--lane-page); color:var(--lane-ink); }
+.profile-row-icon svg { width:20px; height:20px; }
+.profile-row-icon.is-saved svg { fill:var(--lane-accent-soft); }
+/* Liked always glows; Saved glows once something is saved. */
+:is(.profile-row-icon.is-liked,.profile-row.has-items .profile-row-icon.is-saved) { background:var(--lane-accent-soft); color:var(--lane-accent-ink); }
+:is(.profile-row-icon.is-liked,.profile-row.has-items .profile-row-icon.is-saved) svg { fill:var(--lane-accent); }
+.profile-row-label { flex:1; min-width:0; color:var(--lane-ink); }
+.profile-row-value { font-weight:var(--fw-bold); font-variant-numeric:tabular-nums; }
+.profile-row-go { display:grid; color:var(--lane-muted); }
+.profile-row-go svg { width:18px; height:18px; }
+
+/* Garage: one owned count and a three-column grid of collectible cars. */
 .profile-collection { margin-top:var(--sp-6); scroll-margin-top:20px; outline:none; }
 .profile-section-heading { display:flex; align-items:center; justify-content:space-between; gap:var(--sp-3); margin-bottom:var(--sp-3); }
 .profile-page .profile-section-heading h2 { font-size:var(--fs-title); font-weight:var(--fw-bold); letter-spacing:-.01em; }
+.profile-garage-count { font-size:var(--fs-caption); color:var(--lane-muted); font-variant-numeric:tabular-nums; }
 .profile-tiles { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:var(--sp-2); list-style:none; margin:0; padding:0; }
 .profile-tiles li { min-width:0; }
-.profile-tile { display:flex; flex-direction:column; align-items:center; width:100%; height:100%; min-height:164px; padding:var(--sp-2) var(--sp-1); border:1px solid var(--lane-line); border-radius:var(--radius-md); background:transparent; color:var(--lane-ink); text-align:center; }
-.profile-tile.is-selected { border-color:var(--lane-ink); box-shadow:inset 0 0 0 1px var(--lane-ink); background:var(--lane-accent-soft); }
-.profile-tile-art { position:relative; display:grid; place-items:center; height:100px; width:100%; margin-bottom:var(--sp-1); }
+.profile-tile { display:flex; flex-direction:column; align-items:center; width:100%; height:100%; min-height:156px; padding:var(--sp-2) var(--sp-1) var(--sp-3); border:1px solid var(--profile-hairline); border-radius:var(--radius-lg); background:var(--lane-surface); color:var(--lane-ink); text-align:center; }
+.profile-tile.is-selected { border:1.5px solid var(--lane-ink); background:color-mix(in srgb,var(--lane-accent-soft) 70%,var(--lane-surface)); box-shadow:var(--shadow-soft); }
+.profile-tile-art { position:relative; display:grid; place-items:center; height:96px; width:100%; margin-bottom:var(--sp-1); }
+/* A round pad centred under the car, so the car reads as centred in its tile. */
+.profile-tile-art::before { content:''; position:absolute; top:50%; left:50%; width:76px; height:76px; border-radius:50%; background:var(--lane-ink); opacity:.06; transform:translate(-50%,-50%); }
+.profile-tile.is-locked .profile-tile-art>svg { filter:saturate(.45); opacity:.8; }
 .profile-car-art { position:relative; display:block; height:100%; width:auto; max-width:100%; }
 .profile-tile b { font-size:var(--fs-caption); font-weight:var(--fw-bold); line-height:1.3; margin-block:auto var(--sp-1); }
 .profile-tile-state { display:flex; align-items:center; justify-content:center; gap:var(--sp-1); font-size:var(--fs-caption); color:var(--lane-support); }
 .profile-tile-state svg { width:14px; height:14px; flex:none; }
-.profile-identity>div:last-child { min-width:0; }
-.profile-identity .profile-car-shortcut { display:flex; width:fit-content; color:var(--lane-soft); font-weight:var(--fw-regular); }
-.profile-detail-art, .profile-purchase-art { display:flex; align-items:center; justify-content:center; height:220px; margin:var(--sp-2) auto var(--sp-4); }
-.profile-item-sheet [data-item-detail]>p { font-size:var(--fs-body); color:var(--lane-support); line-height:1.5; }
-.profile-item-sheet [data-item-action] { margin-top:var(--sp-5); }
+.profile-tile.is-selected .profile-tile-state { color:var(--lane-accent-ink); font-weight:var(--fw-bold); }
+.profile-page .profile-footnote { font-size:var(--fs-caption); line-height:1.5; color:var(--lane-muted); margin-top:var(--sp-3); }
 .profile-page .profile-status { font-size:var(--fs-caption); margin-top:var(--sp-3); color:var(--lane-support); }
 .profile-status:empty { margin-top:0; }
 .profile-status.is-unlock { position:fixed; z-index:6; left:50%; bottom:calc(80px + env(safe-area-inset-bottom)); transform:translateX(-50%); width:min(390px,calc(100% - 32px)); display:flex; gap:var(--sp-3); align-items:center; padding:var(--sp-3) var(--sp-4); border:1.5px solid var(--lane-ink); border-radius:var(--radius-lg); background:var(--lane-surface); box-shadow:var(--shadow-raised); pointer-events:none; animation:ui-rise 320ms var(--ease-spring) both; }
 .profile-status.is-unlock>svg { width:36px; height:36px; padding:7px; border-radius:50%; background:var(--lane-accent); color:var(--lane-ink); flex:none; box-shadow:var(--glow-accent); }
 .profile-status strong { display:block; font-size:var(--fs-body); color:var(--lane-ink); margin-bottom:2px; }
 .profile-status strong+span { font-size:var(--fs-caption); }
-.profile-likes { margin-top:var(--sp-6); }
-.profile-library-tabs { margin-bottom:var(--sp-4); }
-.profile-library-tabs button { justify-content:space-between!important; text-align:left; }
-.profile-likes li { display:flex; align-items:center; gap:var(--sp-2); }
-.profile-likes li a { flex:1; min-width:0; }
-.profile-unsave { display:grid; place-items:center; flex:none; width:44px; height:44px; padding:10px; border:1px solid var(--lane-ink); border-radius:var(--radius-md); background:var(--lane-surface); }
-.profile-unsave svg { width:22px; height:22px; fill:var(--lane-accent-soft); }
-.profile-likes ul { list-style:none; margin:0; padding:0; border-top:1px solid var(--lane-line); }
-.profile-likes li+li { border-top:1px solid var(--lane-line); }
-.profile-likes li a { display:flex; align-items:center; gap:var(--sp-3); padding:var(--sp-4) 0; min-height:72px; }
-.profile-likes li a>span:nth-child(2) { flex:1; min-width:0; }
-.profile-likes li small { display:block; color:var(--lane-muted); font-size:var(--fs-caption); margin-bottom:2px; }
-.profile-likes li small::first-letter { text-transform:uppercase; }
-.profile-likes li b { display:block; font-size:var(--fs-body); font-weight:var(--fw-bold); line-height:1.35; }
-.profile-heart { display:grid; place-items:center; width:40px; height:40px; flex:none; border-radius:var(--radius-md); background:var(--lane-accent-soft); color:var(--lane-accent-ink); }
-.profile-heart svg { width:22px; height:22px; fill:var(--lane-accent); }
-.profile-likes-empty { padding:var(--sp-5); border:1px dashed var(--lane-muted); border-radius:var(--radius-lg); }
-.profile-likes-empty>svg { width:24px; height:24px; margin-bottom:var(--sp-2); }
-.profile-page .profile-likes-empty p { font-size:var(--fs-body); color:var(--lane-muted); }
-.profile-likes-empty a { display:inline-flex; align-items:center; gap:var(--sp-2); min-height:44px; font-weight:var(--fw-bold); font-size:var(--fs-body); margin-top:var(--sp-1); }
+
+/* Settings and Credits are reached from these two cards, not a gear button (owner, 2026-10-18). */
+.profile-links { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:var(--sp-3); margin-top:var(--sp-4); }
+.profile-page .profile-link-card { display:flex; flex-direction:column; gap:var(--sp-1); min-width:0; padding:var(--sp-4); border:1px solid var(--profile-hairline); border-radius:var(--radius-xl); background:var(--lane-surface); box-shadow:var(--shadow-soft); }
+.profile-link-top { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:var(--sp-2); }
+.profile-link-top>svg { width:18px; height:18px; color:var(--lane-muted); }
+.profile-link-card b { font-weight:var(--fw-bold); line-height:1.25; overflow-wrap:anywhere; }
+.profile-link-card small { font-size:var(--fs-caption); line-height:1.4; color:var(--lane-muted); }
+
+/* Car detail sheet and purchase confirmation. */
+.profile-detail-art, .profile-purchase-art { display:flex; align-items:center; justify-content:center; height:220px; margin:var(--sp-2) auto var(--sp-4); }
+.profile-item-sheet [data-item-detail]>p { font-size:var(--fs-body); color:var(--lane-support); line-height:1.5; }
+.profile-item-sheet [data-item-action] { margin-top:var(--sp-5); }
 .profile-purchase { width:min(360px,calc(100% - 32px)); max-height:calc(100dvh - 32px); padding:var(--sp-5); border:1.5px solid var(--lane-ink); border-radius:var(--radius-xl); background:var(--lane-surface); color:var(--lane-ink); font:var(--fw-regular) var(--fs-body)/1.5 Plex,Arial,sans-serif; text-align:center; box-shadow:var(--shadow-raised); }
 .profile-purchase::backdrop { background:#29251f70; backdrop-filter:blur(5px); }
 .profile-close { position:absolute; top:8px; right:10px; width:44px; height:44px; border:0; background:transparent; font-size:28px!important; }
@@ -108,12 +119,34 @@
 .profile-purchase-total strong { font-weight:var(--fw-bold); }
 .profile-page .profile-primary { margin-top:var(--sp-5); }
 .profile-page .profile-cancel { margin-top:var(--sp-1); }
-@media(max-width:350px){.profile-page .profile-content{padding-inline:16px}.profile-identity{gap:var(--sp-3);padding:16px 12px}.profile-row{gap:var(--sp-2);padding-inline:var(--sp-3)}.profile-lamp{width:44px;height:44px}.profile-tiles{gap:var(--sp-1)}}
-@media(prefers-reduced-motion:reduce){.profile-status.is-unlock{animation:none}}
 
-.profile-current-car { display:grid; place-items:center; flex:none; width:136px; height:148px; border:1px solid var(--lane-line); border-radius:var(--radius-lg); background:var(--lane-soft); overflow:hidden; }
-.profile-current-car .profile-car-art { width:150px; max-width:none; height:150px; }
-.profile-garage-count { font-size:var(--fs-caption); color:var(--lane-muted); font-variant-numeric:tabular-nums; }
-.profile-tile-art::before { content:''; position:absolute; width:64%; height:46%; border-radius:50%; background:var(--lane-ink); opacity:.06; transform:translateY(12px) rotate(-28deg); }
-.profile-tile.is-selected .profile-tile-state { color:var(--lane-accent-ink); font-weight:var(--fw-bold); }
-@media(max-width:350px){.profile-current-car{width:104px;height:124px}.profile-current-car .profile-car-art{width:126px;height:126px}.profile-page .profile-identity h2{font-size:var(--fs-title)}}
+/* Saved and liked lessons open in one sheet: lesson rows that link to the feed, with removal for saves. */
+.profile-library ul { margin:0; padding:0; list-style:none; }
+.profile-library li { display:flex; align-items:center; gap:var(--sp-2); }
+.profile-library li+li { border-top:1px solid var(--profile-hairline); }
+.profile-library li a { flex:1; min-width:0; display:flex; align-items:center; gap:var(--sp-3); min-height:72px; padding:var(--sp-3) 0; }
+.profile-library li a>span:nth-child(2) { flex:1; min-width:0; }
+.profile-library li a>svg { width:18px; height:18px; color:var(--lane-muted); }
+.profile-library small { display:block; margin-bottom:2px; font-size:var(--fs-caption); color:var(--lane-muted); }
+.profile-library small::first-letter { text-transform:uppercase; }
+.profile-library b { display:block; font-size:var(--fs-body); font-weight:var(--fw-bold); line-height:1.35; }
+.profile-unsave { display:grid; place-items:center; flex:none; width:44px; height:44px; padding:10px; border:1px solid var(--profile-hairline); border-radius:var(--radius-md); background:var(--lane-surface); }
+.profile-unsave svg { width:22px; height:22px; fill:var(--lane-accent-soft); }
+.profile-library-empty { display:flex; flex-direction:column; align-items:flex-start; gap:var(--sp-3); padding:var(--sp-2) 0 var(--sp-4); }
+.profile-page .profile-library-empty p { color:var(--lane-support); line-height:1.5; }
+
+@media(max-width:350px){
+  .profile-page .profile-content{padding-inline:16px}
+  .profile-cover{margin-inline:-16px;padding-inline:16px}
+  .profile-identity,.profile-page .profile-unlock{padding:16px}
+  .profile-who{gap:var(--sp-3)}
+  .profile-avatar{width:68px;height:68px}
+  .profile-avatar .profile-car-art{width:82px;height:82px}
+  .profile-medals{column-gap:var(--sp-1)}
+  .profile-page .profile-row{padding-left:var(--sp-4)}
+  .profile-list li+li::before{left:68px}
+  .profile-tiles{gap:var(--sp-1)}
+  .profile-links{gap:var(--sp-2)}
+  .profile-page .profile-link-card{padding:var(--sp-3)}
+}
+@media(prefers-reduced-motion:reduce){.profile-status.is-unlock{animation:none}}

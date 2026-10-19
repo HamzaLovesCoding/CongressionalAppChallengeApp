@@ -178,8 +178,6 @@ for (const phone of PHONES) {
       await capture('home', { reach: true });
       await page.evaluate(() => document.querySelector('.home-preview').scrollTop = 0);
       await scroller('.home-preview'); await capture('home-bottom');
-      await page.locator('[data-menu]').click(); await capture('home-menu', { reach: true });
-      await page.keyboard.press('Escape'); await page.waitForTimeout(300);
       if (!process.env.HOME_ONLY) {
       if (state === 'fresh') {
         // Onboarding on a clean device: both steps fit the phone without sideways scrolling.
@@ -289,7 +287,8 @@ for (const phone of PHONES) {
         await page.locator('[data-car="pickup"]').click(); await capture('profile-car-detail', { reach: true });
         await page.keyboard.press('Escape');
         await page.waitForFunction(() => !document.querySelector('.profile-item-sheet').open);
-        await page.locator('[data-library-tab="saved"]').click(); await scroller('.home-preview'); await capture('profile-saved');
+        await page.locator('[data-library="saved"]').click(); await capture('profile-saved', { reach: true });
+        await page.keyboard.press('Escape');
       }
       }
       }

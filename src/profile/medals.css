@@ -1,0 +1,31 @@
+/* Shared by Profile and Progress. */
+/* Rosettes (medals.ts): each tier has its own rim, face and ribbons, rising to ink and gold for finishing the unit.
+   Earned ones are full colour with sparkles and a warm drop shadow; the next one shows a ring of lessons done. */
+.profile-medal-art { display:block; width:60px; height:67px; overflow:visible; }
+.medal-rim { stroke:var(--lane-ink); stroke-width:1.5; stroke-linejoin:round; }
+.medal-face { stroke:var(--lane-ink); stroke-width:1.25; }
+.medal-ring { fill:none; stroke:rgb(255 250 240 / .55); stroke-width:1.25; stroke-dasharray:2 2.6; }
+.medal-shine { fill:none; stroke:rgb(255 250 240 / .7); stroke-width:2.5; stroke-linecap:round; }
+.medal-ribbon { stroke:var(--lane-ink); stroke-width:1.25; stroke-linejoin:round; }
+.medal-spark { fill:var(--lane-accent); stroke:var(--lane-accent-ink); stroke-width:.75; stroke-linejoin:round; }
+.medal-icon { color:var(--lane-ink); }
+.is-earned .profile-medal-art { filter:drop-shadow(0 3px 3px rgb(120 81 25 / .35)); }
+.is-tier-1 { --medal-rim:var(--lane-roof-shade); --medal-face:var(--lane-roof); --medal-ribbon:var(--lane-error); --medal-ribbon-2:var(--lane-roof-shade); }
+.is-tier-2 { --medal-rim:var(--lane-tree); --medal-face:var(--lane-tree-light); --medal-ribbon:var(--lane-success); --medal-ribbon-2:var(--lane-tree); }
+.is-tier-3 { --medal-rim:var(--lane-accent-ink); --medal-face:var(--lane-accent); --medal-ribbon:var(--lane-error); --medal-ribbon-2:var(--lane-accent-ink); }
+.is-tier-4 { --medal-rim:var(--lane-accent); --medal-face:var(--lane-hero); --medal-ribbon:var(--lane-accent); --medal-ribbon-2:var(--lane-accent-ink); }
+.is-earned .medal-rim { fill:var(--medal-rim); }
+.is-earned .medal-face { fill:var(--medal-face); }
+.is-earned .medal-ribbon { fill:var(--medal-ribbon); }
+.is-earned .medal-ribbon.is-right { fill:var(--medal-ribbon-2); }
+.is-earned.is-tier-4 .medal-icon { color:var(--lane-accent); }
+.is-earned.is-tier-4 .medal-ring { stroke:var(--lane-accent); }
+/* Not yet earned: the same rosette in soft stone with a muted icon. */
+:is(.is-next,.is-locked) .medal-rim { fill:var(--lane-soft); stroke:var(--lane-line); }
+:is(.is-next,.is-locked) .medal-face { fill:var(--lane-surface); stroke:var(--lane-line); }
+:is(.is-next,.is-locked) .medal-ribbon { fill:var(--lane-soft); stroke:var(--lane-line); }
+:is(.is-next,.is-locked) :is(.medal-ring,.medal-shine) { display:none; }
+:is(.is-next,.is-locked) .medal-icon { color:var(--lane-muted); }
+.medal-track, .medal-progress { fill:none; stroke-width:3; }
+.medal-track { stroke:var(--lane-soft); }
+.medal-progress { stroke:var(--lane-accent); stroke-linecap:round; }

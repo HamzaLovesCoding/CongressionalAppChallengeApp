@@ -103,10 +103,9 @@ try {
     await page.goForward();
     await page.getByRole('main', { name: 'Profile', exact: true }).waitFor();
     await nav().getByRole('link', { name: 'Home', exact: true }).click();
-    await page.getByRole('button', { name: 'Settings and more', exact: true }).click();
-    const menu = page.getByRole('navigation', { name: 'Menu', exact: true });
-    assert.deepEqual(await menu.getByRole('link').allInnerTexts(), ['Settings', 'Credits & sources']);
-    await menu.getByRole('link', { name: 'Settings', exact: true }).click();
+    assert.equal(await page.locator('[data-menu]').count(), 0, 'Home has no gear; Settings is a card on Profile');
+    await nav().getByRole('link', { name: 'Profile', exact: true }).click();
+    await page.getByRole('navigation', { name: 'Settings and credits', exact: true }).getByRole('link', { name: /^Settings/ }).click();
     await page.getByRole('heading', { name: 'Settings', level: 1 }).waitFor();
     // Settings changes the main goal, and Home rewords the readiness goal to match.
     await page.getByLabel('Sharpen my driving skills and learn safer habits').check();
@@ -186,7 +185,7 @@ try {
     assert.ok(last.y + last.height <= bar.y, 'Leaderboard scrolls clear of navigation');
     assert.deepEqual(failed.filter(url => !url.includes('/videos/')), []);
     assert.deepEqual(problems.filter(problem => !/^Failed to load resource/.test(problem)), []);
-    console.log(`${name}: signpost, week row, onboarding, readiness goal, gear menu, leaderboard placement, quiz return, practice, navigation, completion, layout and offline passed.`);
+    console.log(`${name}: signpost, week row, onboarding, readiness goal, no gear (Settings via Profile), leaderboard placement, quiz return, practice, navigation, completion, layout and offline passed.`);
     await context.close();
   }
 } finally { await browser.close(); }

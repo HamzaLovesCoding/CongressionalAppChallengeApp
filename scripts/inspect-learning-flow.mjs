@@ -45,14 +45,10 @@ assert.equal(data.clips['lane-end-scan'].done, false, 'two misses are not comple
 assert.equal(data.xp, 0, 'no XP from misses');
 assert.deepEqual(data.attempts.map(a => [a.kind, a.correct]), [['primary', false], ['similar', false]]);
 assert.ok(typeof data.topics['road-awareness'].mastery === 'number', 'topic evidence recorded');
-// A missed lesson comes back in today's review, but it was not saved, so Home shows no Review later row
-// and the gear menu has no Review later link.
+// A missed lesson comes back in today's review, but it was not saved, so Home shows no Review later row.
 await page.goto(base + '#/home', { waitUntil: 'load' });
 assert.equal(await page.locator('.home-review-row').count(), 0, 'automatic picks are not listed as saved');
-await page.click('[data-menu]');
-assert.deepEqual(await page.locator('.home-menu-links a').allInnerTexts(), ['Settings', 'Credits & sources']);
-await page.waitForTimeout(500);
-await shot('03b-gear-menu');
+await shot('03b-home-no-review-row');
 await page.goto(base + '#/review', { waitUntil: 'load' });
 const reviewText = await page.locator('.review-page').innerText();
 assert.match(reviewText, /Today’s review\s+Nothing saved yet\./);

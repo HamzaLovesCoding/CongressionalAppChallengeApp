@@ -10,9 +10,10 @@ import { pathIcon } from './artwork';
 import { CAR_SCALE, LANE, carY, roadAt, roadKnots, type Knot } from './road';
 import { roadScene, trailPath } from './scenery';
 import { bottomSheet, sheetMarkup } from '../home/sheet';
-import { milestones, completionChange } from './milestones';
+import { MILESTONES, milestones, completionChange } from './milestones';
 import { SCENARIOS } from '../simulation/registry';
-import { currentReadiness, nextLessonId } from '../feed/plan';
+import { nextLessonId } from '../feed/plan';
+import { medalArt } from '../profile/medals';
 
 const esc = (value: string) => value.replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]!);
 const ease = (t: number) => t < .5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2;
@@ -45,9 +46,16 @@ function lessonSign(clip: Clip, index: number, state: Stop) {
   </button>`;
 }
 
+// The same rosettes as Profile: each tier keeps its colours, and the next one shows a ring of lessons done.
+const medal = (badge: Badge, completed: number) => {
+  const tier = MILESTONES.findIndex(item => item.count === badge.count) + 1;
+  const state = badge.earned ? 'earned' : MILESTONES.find(item => item.count > completed)?.count === badge.count ? 'next' : 'locked';
+  return `<span class="path-rosette is-${state} is-tier-${tier}">${medalArt(badge.icon, state, completed / badge.count)}</span>`;
+};
+
 // A milestone stands on the road at the lesson that earns it, so the next reward is visible ahead.
-const milestoneRow = (badge: Badge) => `<button class="path-mile${badge.earned ? ' is-earned' : ''}" type="button" data-badges data-count="${badge.count}" aria-haspopup="dialog" aria-label="${esc(`${copy.milestone}, ${badge.title}: ${badge.earned ? copy.earned : copy.remaining(badge.remaining)}`)}">
-    <span class="path-mile-medal">${pathIcon(badge.icon)}</span>
+const milestoneRow = (badge: Badge, completed: number) => `<button class="path-mile${badge.earned ? ' is-earned' : ''}" type="button" data-badges data-count="${badge.count}" aria-haspopup="dialog" aria-label="${esc(`${copy.milestone}, ${badge.title}: ${badge.earned ? copy.earned : copy.remaining(badge.remaining)}`)}">
+    <span class="path-mile-medal">${medal(badge, completed)}</span>
     <span class="path-mile-text"><small>${copy.milestone} · ${copy.milestoneAt(badge.count)}</small><strong>${esc(badge.title)}</strong>
       <span class="path-mile-status">${badge.earned ? `${pathIcon('check')}${copy.earned}` : copy.remaining(badge.remaining)}</span></span>
   </button>`;
@@ -83,7 +91,6 @@ function sheetBody(clip: Clip, index: number, state: Stop) {
 
 export function mountLearningPath(root: HTMLElement): View {
   const progress = lessonProgress(CLIPS, record, nextLessonId());
-  const ready = currentReadiness();
   // Road position: the index of the lesson the car waits at, or CLIPS.length once it has parked past the last one.
   const position = progress.allDone ? CLIPS.length : CLIPS.indexOf(progress.next);
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -116,7 +123,6 @@ export function mountLearningPath(root: HTMLElement): View {
             ${badges.map(badge => `<i class="path-meter-pin${badge.earned ? ' is-earned' : ''}" data-count="${badge.count}" style="--pin:${badge.count / total}"></i>`).join('')}
             <svg class="path-meter-car" viewBox="-16 -9 32 18" aria-hidden="true" focusable="false"><g transform="rotate(90) scale(.68)">${carArt(car)}</g></svg>
           </div>
-          <a class="path-readiness" href="#/review">${ready.score || progress.completed ? copy.readiness(ready.score, ready.status) : copy.readinessEmpty}</a>
         </div>
       </header>
       <div class="path-atlas">
@@ -128,7 +134,7 @@ export function mountLearningPath(root: HTMLElement): View {
           const last = index === total - 1;
           return `<li class="path-stop is-${states[index]}" data-stop>
             <div class="path-board">${lessonSign(clip, index, states[index])}<i class="path-posts" data-checkpoint aria-hidden="true"></i></div>
-            ${badge ? milestoneRow(badge) : ''}
+            ${badge ? milestoneRow(badge, progress.completed) : ''}
             ${last && progress.allDone ? finishSign() : ''}
           </li>`;
         }).join('')}</ol>
@@ -138,7 +144,7 @@ export function mountLearningPath(root: HTMLElement): View {
     <button class="path-locate" type="button" data-locate aria-label="${copy.findCar}" hidden><svg class="path-locate-car" viewBox="-12 -21 24 42" aria-hidden="true" focusable="false"><g transform="scale(.9)">${carArt(car)}</g></svg><span class="path-locate-arrow"></span></button>
     <p class="path-arrival" role="status" aria-live="polite"></p>
     ${homeNavigation('progress')}
-    ${sheetMarkup('path-milestones', 'path-milestones-title', copy.milestones, copy.closeMilestones, `<p>${copy.badgeDetail}</p><ol class="path-medals">${badges.map(badge => `<li class="${badge.earned ? 'is-earned' : ''}" data-count="${badge.count}"><span class="path-medal">${pathIcon(badge.icon)}</span><div><h3>${badge.title}</h3><p>${badge.detail}</p><strong>${badge.earned ? `${pathIcon('check')}${copy.earned}` : copy.remaining(badge.remaining)}</strong></div></li>`).join('')}</ol>${progress.allDone ? `<a class="path-sheet-action ui-button is-split" href="#/practice">${copy.practice}${pathIcon('arrow')}</a>` : ''}`)}
+    ${sheetMarkup('path-milestones', 'path-milestones-title', copy.milestones, copy.closeMilestones, `<p>${copy.badgeDetail}</p><ol class="path-medals">${badges.map(badge => `<li class="${badge.earned ? 'is-earned' : ''}" data-count="${badge.count}"><span class="path-medal">${medal(badge, progress.completed)}</span><div><h3>${badge.title}</h3><p>${badge.detail}</p><strong>${badge.earned ? `${pathIcon('check')}${copy.earned}` : copy.remaining(badge.remaining)}</strong></div></li>`).join('')}</ol>${progress.allDone ? `<a class="path-sheet-action ui-button is-split" href="#/practice">${copy.practice}${pathIcon('arrow')}</a>` : ''}`)}
     ${sheetMarkup('path-sheet', 'path-sheet-title', '', copy.closeDetails, '<div class="path-sheet-content"></div>')}
   </div>`;
   root.append(page);
@@ -234,7 +240,7 @@ export function mountLearningPath(root: HTMLElement): View {
     commit();
     if (!change.added) return;
     const unlocked = change.unlocked.at(-1);
-    arrival.innerHTML = `<span class="path-arrival-icon">${pathIcon(unlocked ? unlocked.icon : 'check')}</span><span><strong>${unlocked ? esc(unlocked.title) : copy.celebration(change.added)}</strong><small>${unlocked ? `${copy.milestoneEarned} · ` : ''}${copy.earnedXP(change.added * XP_PER_CLIP)}</small></span>`;
+    arrival.innerHTML = `${unlocked ? `<span class="path-arrival-medal">${medal(unlocked, progress.completed)}</span>` : `<span class="path-arrival-icon">${pathIcon('check')}</span>`}<span><strong>${unlocked ? esc(unlocked.title) : copy.celebration(change.added)}</strong><small>${unlocked ? `${copy.milestoneEarned} · ` : ''}${copy.earnedXP(change.added * XP_PER_CLIP)}</small></span>`;
     arrival.classList.add('is-visible');
     newlyDone.forEach(id => page.querySelector(`.path-sign[data-lesson="${CLIPS.findIndex(clip => clip.id === id)}"]`)?.classList.add('is-new'));
     change.unlocked.forEach(badge => page.querySelectorAll(`.path-mile[data-count="${badge.count}"], .path-meter-pin[data-count="${badge.count}"]`).forEach(element => element.classList.add('is-new')));

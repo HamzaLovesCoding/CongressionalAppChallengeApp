@@ -24,7 +24,7 @@ const ROUTES = [
   ['credits', '#/credits'],
   ['privacy', '#/privacy'],
   ['terms', '#/terms'],
-  ['home-menu', '#/home', page => page.click('[data-menu]')],
+  ['profile-library', '#/profile', page => page.click('[data-library="saved"]')],
   ['quiz-menu', '#/feed/dark-signal/quiz', page => page.click('.lane-sheet [data-menu]')],
   ['feed-flashcard', '#/feed/emergency-kit/quiz'],
   ['sim-card', '#/feed/sim/four-way-stop'],

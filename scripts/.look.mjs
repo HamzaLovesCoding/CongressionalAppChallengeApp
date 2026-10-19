@@ -14,8 +14,8 @@ await page.locator('.is-current [data-post-choice="1"]').click(); await page.wai
 await page.screenshot({ path: `${out}/3-text-lesson-check.png` });
 await page.goto(base + '#/feed/lane-end-scan', { waitUntil: 'load' }); await page.waitForTimeout(1500);
 await page.screenshot({ path: `${out}/4-video-sound.png` });
-await page.goto(base + '#/home', { waitUntil: 'load' }); await page.waitForTimeout(700);
-await page.click('[data-menu]'); await page.waitForTimeout(600);
-await page.screenshot({ path: `${out}/6-menu.png` });
+await page.goto(base + '#/profile', { waitUntil: 'load' }); await page.waitForTimeout(700);
+await page.evaluate(() => document.querySelector('.profile-links').scrollIntoView());
+await page.screenshot({ path: `${out}/6-profile-links.png` });
 console.log('errors', errors);
 await browser.close();

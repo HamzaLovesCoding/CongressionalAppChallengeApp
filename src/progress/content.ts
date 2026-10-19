@@ -9,8 +9,6 @@ export const PATH_COPY = {
   lessonsComplete: 'Lessons complete',
   milestones: 'Milestones',
   milestonesShort: 'milestones',
-  readiness: (score: number, status: string) => `Driver readiness ${score} · ${status}`,
-  readinessEmpty: 'Driver readiness appears after your first check',
   // Starts with the chip's visible text, so voice control users can say what they see.
   milestonesEarned: (earned: number, total: number) => `${earned}/${total} milestones earned`,
   milestone: 'Milestone',

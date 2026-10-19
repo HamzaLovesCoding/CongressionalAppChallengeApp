@@ -61,6 +61,32 @@
         "coach:local"
       ],
       "port": 5180
+    },
+    {
+      "name": "offline-dev",
+      "runtimeExecutable": "env",
+      "runtimeArgs": [
+        "VITE_SUPABASE_URL=",
+        "VITE_SUPABASE_PUBLISHABLE_KEY=",
+        "VITE_SUPABASE_ANON_KEY=",
+        "npx",
+        "vite",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "5176",
+        "--strictPort"
+      ],
+      "port": 5176
+    },
+    {
+      "name": "preview-test",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "preview:test"
+      ],
+      "port": 4173
     }
   ]
 }
