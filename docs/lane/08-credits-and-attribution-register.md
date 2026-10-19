@@ -53,10 +53,9 @@ Generated on 2026-10-15 from `src/legal/credits.ts`, `src/feed/curriculum.ts`, `
 
 ## Lane and owner materials
 
-- The Lane logo and app icon were supplied by the project owner.
-- The ten practice scenarios use original, code-generated 2D and 3D scenes; they include no third-party artwork.
-- Garage cars, the Progress road and lesson poster maps are drawn by Lane’s own code.
-- Lesson still images are the first frames of the credited lesson videos.
+- We designed the Lane logo and app favicon ourselves (owner, 2026-10-18).
+- We made the 2D and 3D scenes in the practice scenarios ourselves; DriveFocus gave the idea, though its style is very different.
+- We also made the Garage cars, the Progress road and the lesson posters ourselves.
 - Favicon: owner-supplied `AppMaterial/lane_favicon_cac_logo.png`, resized to `public/favicon-32.png` and `favicon-64.png`.
 - Simulation packages: original code-generated geometry; provenance in `vendor/lane-simulations/SOURCE.md` and each package README.
 

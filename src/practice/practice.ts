@@ -53,7 +53,7 @@ export function mountPractice(root: HTMLElement): View {
         <div class="home-section-heading"><h2 id="practice-topics-title">What’s covered</h2></div>
         <ul class="practice-list">${Object.entries(bank.topics).filter(([id]) => counts.has(id)).map(([id, label]) => `<li>${topicIcon(id)}<b>${esc(label)}</b><span>${plural(counts.get(id)!, 'question')}</span></li>`).join('')}</ul>
       </section>
-      <p class="practice-note">You’ll see whether each answer is right as you go, then your score and the topics to review at the end. These are Lane practice questions. The DMV test uses its own.</p>
+      <p class="practice-note">You’ll see whether each answer is right as you go, then your score and the topics to review at the end. These questions are based on what the DMV typically tests.</p>
     </main>
     ${homeNavigation('practice')}
   </div>`;
@@ -94,7 +94,7 @@ export function mountPracticeTest(root: HTMLElement): View {
       <section class="pt-section"><h2>Areas to improve</h2>${review.length ? topicList(review) : '<p class="pt-detail">No topics stood out for review in this attempt.</p>'}</section>
       ${picks.length ? `<section class="pt-section"><h2>Lessons to revisit</h2><ul class="practice-list pt-lessons">${picks.map(p => `<li><a href="#/feed/${esc(p.lessonId)}"><span class="practice-topic-icon">${icon('feed')}</span><b>${esc(clipById(p.lessonId)!.title)}</b><span>${p.missed} missed</span></a></li>`).join('')}</ul><p class="pt-detail">Picked from the questions you missed.</p></section>` : ''}
       ${limited.length ? `<section class="pt-section"><h2>More practice to assess</h2>${topicList(limited)}<p class="pt-detail">This test covers too few different rules in these topics to judge them yet.</p></section>` : ''}
-      <footer class="pt-bottom"><button class="pt-action ui-button" type="button" data-restart>Start again</button><a class="pt-secondary ui-button is-secondary" href="#/practice">Back to practice</a><p class="pt-caption">Practice target: ${targetPct}%. These are Lane practice questions. The DMV test uses its own.</p></footer>`;
+      <footer class="pt-bottom"><button class="pt-action ui-button" type="button" data-restart>Start again</button><a class="pt-secondary ui-button is-secondary" href="#/practice">Back to practice</a><p class="pt-caption">Practice target: ${targetPct}%. These questions are based on what the DMV typically tests.</p></footer>`;
   }
 
   function renderQuestion() {

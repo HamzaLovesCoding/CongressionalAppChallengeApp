@@ -41,8 +41,7 @@ export const OPEN_SOURCE = [
 ] as const;
 
 export const ORIGINAL_MATERIALS = [
-  'The Lane logo and app icon were supplied by the project owner.',
-  'The ten practice scenarios use original, code-generated 2D and 3D scenes; they include no third-party artwork.',
-  'Garage cars, the Progress road and lesson poster maps are drawn by Lane’s own code.',
-  'Lesson still images are the first frames of the credited lesson videos.',
+  'We designed the Lane logo and app favicon ourselves.',
+  'We made the 2D and 3D scenes in the practice scenarios ourselves. DriveFocus gave us the idea, though its style is very different.',
+  'We also made the Garage cars, the Progress road and the lesson posters ourselves.',
 ] as const;
