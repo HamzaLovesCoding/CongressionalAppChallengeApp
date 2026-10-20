@@ -55,7 +55,7 @@ async function videoLesson(name, viewport) {
   assert.equal(await current.locator('video').evaluate(media => media.videoHeight > media.videoWidth), true, 'Clips are vertical');
   assert.equal(await current.locator('.lane-rule').getAttribute('open'), null);
   assert.equal(await current.locator('.lane-rule-content').isVisible(), false);
-  assert.deepEqual(await current.locator('.lane-rail button').evaluateAll(buttons => buttons.map(button => button.getAttribute('aria-label'))), ['Like lesson', 'Comments', 'Save lesson', 'Share lesson'], 'heart, comments, bookmark, share');
+  assert.deepEqual(await current.locator('.lane-rail button').evaluateAll(buttons => buttons.map(button => button.getAttribute('aria-label'))), ['Like lesson', 'Comments', 'Save lesson'], 'heart, comments, bookmark');
   // Without a backend the comments sheet says so, and the lesson resumes when it closes.
   await current.locator('[data-comments]').click();
   assert.match(await page.locator('.lane-comments[open]').innerText(), /Comments are coming soon/);
@@ -142,16 +142,13 @@ try {
     await page.goto(`${base}#/feed/yellow-light`, { waitUntil: 'load' });
     await page.evaluate(() => document.fonts.ready);
     await shot('feed');
-    assert.deepEqual(await page.locator('.is-current .lane-rail button').evaluateAll(buttons => buttons.map(button => button.dataset.like ? 'like' : button.dataset.comments ? 'comments' : button.dataset.save ? 'save' : 'share')), ['like', 'comments', 'save', 'share'], 'text lessons have comments too');
+    assert.deepEqual(await page.locator('.is-current .lane-rail button').evaluateAll(buttons => buttons.map(button => button.dataset.like ? 'like' : button.dataset.comments ? 'comments' : button.dataset.save ? 'save' : 'other')), ['like', 'comments', 'save'], 'text lessons have comments too');
     assert.equal(await page.locator('.is-current [data-play], .is-current time').count(), 0, 'A text lesson has no timer or play control');
     assert.match(await page.locator('.is-current .lane-post').innerText(), /FILL IN THE BLANKS[\s\S]*When the light turns yellow/i);
     for (const kind of ['like', 'save']) {
       await page.locator(`.is-current [data-${kind}]`).click();
       assert.equal(await page.locator(`.is-current [data-${kind}]`).getAttribute('aria-pressed'), 'true');
     }
-    await page.evaluate(() => Object.defineProperty(navigator, 'share', { configurable: true, value: async data => { window.sharedLesson = data; } }));
-    await page.locator('.is-current [data-share]').click();
-    assert.match((await page.evaluate(() => window.sharedLesson)).url, /#\/feed\/yellow-light$/);
     // Swiping on with blanks still empty asks "Are you sure?" on an important lesson; Keep going stays.
     await page.locator('.lane-feed').evaluate(el => el.scrollTo({ top: el.querySelector('.is-current').offsetTop + el.querySelector('.is-current').offsetHeight, behavior: 'instant' }));
     assert.match(await page.locator('.lane-sheet[aria-hidden="false"] .lane-question').innerText(), /blanks/);
