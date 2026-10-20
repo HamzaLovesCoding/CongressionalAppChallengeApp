@@ -62,7 +62,7 @@ After that, run the Supabase security advisor (Dashboard → Advisors) and repea
 
 The coach on Practice is answered by the `coach` Edge Function (`functions/coach/`), which keeps the Anthropic API key on the server. The app never sees the key: anything in a `VITE_` variable ships inside the app's JavaScript, where anyone could copy it.
 
-Status (2026-10-18): built and tested against stand-ins only. The migration, the secret and the function are **not** on the live project yet.
+Status (2026-10-20): tested end to end with the owner's real key through `npm run coach:local` (six questions answered correctly, with handbook page citations, safety refusals and prompt caching working). Then **deployed to the live project**: the migration, the `ANTHROPIC_API_KEY` secret and the `coach` function. An unauthenticated test POST returns `{"error":"unauthorized"}` (401), which means the function runs and has its key. The first real question from a signed-in learner on the hosted app is still to be checked (step 5 below).
 
 **Try it on this computer first** (no deploy, nothing sent to the live project): paste the key into `functions/.env`, run `npm run coach:local`, and open http://127.0.0.1:5180/#/practice. It runs the same handler under Deno (downloaded through npx the first time) on 127.0.0.1:8788 and a dev build of the app without Supabase settings. The key is re-read on every question, so no restart is needed after pasting it. Real questions are billed to the key.
 
@@ -87,7 +87,7 @@ How it works:
 - Server-side fallback (`fallbacks: "default"`) retries a request Anthropic's safety classifiers decline on another model where one applies; anything still declined shows "can't help with that one".
 - `coach_take_turn()` counts each question: **30 per learner per Pacific day, 500 for everyone together**. Change the numbers in the function and re-run it to adjust. Counts older than a week are deleted; `delete_my_data()` leaves them (it would otherwise reset the limit).
 - Nothing the learner types is stored. The app sends the last five exchanges as context; Anthropic receives a one-way hash of the account ID as `metadata.user_id`.
-- Rough cost (Sonnet 5.5: $2 input, $10 output, $2.50 cache write, $0.20 cache read per million tokens; handbook about 25,000 tokens): about $0.01 per question while the cache is warm, about $0.07 for the first question after five quiet minutes. 500 cold questions in a day would be roughly $35, which is why the Console spend limit matters.
+- Rough cost (Sonnet 5.5: $2 input, $10 output, $2.50 cache write, $0.20 cache read per million tokens). The system prompt and handbook come to 52,451 cached tokens (measured with the real key, 2026-10-20). That's about $0.015 per question while the cache is warm and about $0.13 for the first question after five quiet minutes. 500 cold questions in a day would be roughly $67, which is why the Console spend limit matters.
 
 ## Verify
 

@@ -36,7 +36,9 @@ export function coachHandler(client: () => Anthropic | null | Promise<Anthropic 
     if (allowance.status !== 'ok') return json(429, { error: 'busy' });
 
     const learner = allowance.learner ? await hash(allowance.learner) : undefined;
-    const stream = anthropic.beta.messages.stream(coachRequest(turns, learner), { signal: request.signal });
+    // Not tied to request.signal: the hosted edge runtime aborts it as soon as the streamed Response is returned,
+    // which cancelled every answer. cancel() below still stops the request when the learner closes the app.
+    const stream = anthropic.beta.messages.stream(coachRequest(turns, learner));
     const state = streamState();
     const encoder = new TextEncoder();
     const body = new ReadableStream<Uint8Array>({
@@ -49,7 +51,8 @@ export function coachHandler(client: () => Anthropic | null | Promise<Anthropic 
           console.log(JSON.stringify({ coach: 'answered', stop: state.stop, ...state.usage }));
         } catch (error) {
           const status = error instanceof Anthropic.APIError ? error.status ?? null : null;
-          console.error(JSON.stringify({ coach: 'failed', status, error: error instanceof Error ? error.name : 'unknown' }));
+          // The SDK's error classes all report name "Error", so log the class (e.g. APIUserAbortError, APIConnectionError).
+          console.error(JSON.stringify({ coach: 'failed', status, error: error instanceof Error ? error.constructor.name : 'unknown' }));
           send({ type: 'error', code: status === 429 || status === 503 || status === 529 ? 'busy' : 'failed' });
         }
         try { controller.close(); } catch { /* cancelled */ }
