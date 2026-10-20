@@ -8,7 +8,7 @@ Last checked against `main` at `e4080b3` (October 20, 2026). This applies to any
 | --- | --- | --- |
 | The app (HTML, JavaScript, images, 19 lesson videos) | **Manus**, as a static website | To do |
 | Accounts, backups, leaderboards, comments, code groups | **Supabase** project `lane` (`mtcphmkheqkzyvbvruey`) | Live |
-| Driver coach (AI) | Supabase Edge Function `coach`, which calls Anthropic | **Not deployed yet** (step 3) |
+| Driver coach (AI) | Supabase Edge Function `coach`, which calls Anthropic | Live (deployed 2026-10-20, step 3) |
 
 ## 1. Every environment file and variable
 
@@ -66,7 +66,13 @@ Also check **Authentication → Sign In / Providers → Allow anonymous sign-ins
 
 ## 3. Turn on the Driver coach (on your computer)
 
-Without this, the coach on Practice shows "You're offline" (test report H1). Run it before judges see the site.
+**Done on 2026-10-20.** Repeat these steps only to change the key or redeploy after editing `supabase/functions/coach/`. Run the commands from **inside the project folder**: run from your home folder, they fail with "supabase/functions/.env: not found" and "Entrypoint path does not exist". To check a deploy without spending anything:
+
+```sh
+curl -s -X POST https://mtcphmkheqkzyvbvruey.supabase.co/functions/v1/coach -H "Content-Type: application/json" -d '{"messages":[{"role":"user","text":"hi"}]}'
+```
+
+`{"error":"unauthorized"}` means it's working (the test isn't signed in). `{"error":"not-configured"}` means the key secret is missing. A "not found" reply means the function isn't deployed.
 
 1. Run `supabase/migrations/20261022000000_lane_driver_coach.sql` in the SQL editor if step 2 showed `coach_take_turn` missing.
 2. Put the key in `supabase/functions/.env` (one line: `ANTHROPIC_API_KEY=sk-ant-…`).
@@ -133,6 +139,6 @@ Upload the **contents** of `dist/` (the files inside it, with `index.html` at th
 
 ## 7. Fix before judges (from `docs/testing/2026-10-19-bug-report.md`)
 
-- **H1:** the coach says "You're offline" until step 3 is done.
+- **H1:** fixed by deploying the coach (step 3). If the function is ever removed, the app's message would again wrongly say "You're offline".
 - **H2:** someone whose first visit is a direct lesson link (`…/#/feed/<lesson>`), and who then likes or answers anything, never sees the welcome and Terms screens, but their data is still backed up. Share links to the home page, not to a lesson, until this is fixed.
 - **M3:** on a laptop, the arrow keys don't move the feed until you click inside it.

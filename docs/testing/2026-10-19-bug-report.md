@@ -22,6 +22,8 @@
 ## High
 
 ### H1 — Driver coach tells every user "You're offline" on the live backend
+> **Status (2026-10-20): resolved for users.** The `coach` function and its key are now deployed. A test POST returns 401 instead of 404, so the preflight succeeds. Fix 2 (the misleading "offline" label when the function is missing) is still open but no longer visible.
+
 - **What a judge sees:** Practice → *Driver coach (AI)* → ask anything → *"You're offline. The coach needs an internet connection."* with a Retry button. The device is online.
 - **Evidence:** live Supabase logs show `/functions/v1/coach` returning **404** for both `OPTIONS` and `GET` (the function was never deployed; `CLAUDE.md` says "not deployed"). I reproduced the exact message against a local HTTPS stand-in that returns 404 like the live project. With a working function the same flow answers normally.
 - **Cause:** the browser's CORS preflight gets a 404, so `fetch` throws a `TypeError` before any response can be read. `createClient().invoke()` turns every thrown fetch into `RemoteError('offline')` (`src/data/supabase.ts:59`), and `askCoach` maps that to the `offline` problem (`src/coach/client.ts:29`). The 404 → "not switched on" branch at `src/coach/client.ts:35` can never run in a browser.

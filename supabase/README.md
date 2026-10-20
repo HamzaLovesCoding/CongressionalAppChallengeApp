@@ -62,7 +62,7 @@ After that, run the Supabase security advisor (Dashboard → Advisors) and repea
 
 The coach on Practice is answered by the `coach` Edge Function (`functions/coach/`), which keeps the Anthropic API key on the server. The app never sees the key: anything in a `VITE_` variable ships inside the app's JavaScript, where anyone could copy it.
 
-Status (2026-10-20): tested end to end with the owner's real key through `npm run coach:local` (six questions answered correctly, with handbook page citations, safety refusals and prompt caching working). The migration, the secret and the function are still **not** on the live project.
+Status (2026-10-20): tested end to end with the owner's real key through `npm run coach:local` (six questions answered correctly, with handbook page citations, safety refusals and prompt caching working). Then **deployed to the live project**: the migration, the `ANTHROPIC_API_KEY` secret and the `coach` function. An unauthenticated test POST returns `{"error":"unauthorized"}` (401), which means the function runs and has its key. The first real question from a signed-in learner on the hosted app is still to be checked (step 5 below).
 
 **Try it on this computer first** (no deploy, nothing sent to the live project): paste the key into `functions/.env`, run `npm run coach:local`, and open http://127.0.0.1:5180/#/practice. It runs the same handler under Deno (downloaded through npx the first time) on 127.0.0.1:8788 and a dev build of the app without Supabase settings. The key is re-read on every question, so no restart is needed after pasting it. Real questions are billed to the key.
 
