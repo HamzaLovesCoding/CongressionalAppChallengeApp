@@ -34,7 +34,6 @@ const sessionClock = (seconds: number) => { const h = Math.floor(seconds / 3600)
 const bookmark = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12v18l-6-4-6 4z"/></svg>';
 const heart = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/></svg>';
 const commentIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/></svg>';
-const shareIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m21 3-7 18-4-8-8-3 19-7Zm0 0L10 13"/></svg>';
 const back = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14 5-7 7 7 7"/></svg>';
 const play = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 5 11 7-11 7z"/></svg>';
 const check = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg>';
@@ -48,7 +47,7 @@ type Kind = 'primary' | 'similar' | 'harder';
 type Question = { question: string; options: string[]; answer: number; explanation: string; source?: string };
 export type FeedTarget = { id?: string; quiz?: boolean; sim?: string };
 
-const rail = (clip: Clip) => `<div class="lane-rail"><button class="lane-icon" data-like="${clip.id}" aria-label="${marked('liked', clip.id) ? 'Unlike lesson' : 'Like lesson'}" aria-pressed="${marked('liked', clip.id)}">${heart}</button><button class="lane-icon" data-comments="${clip.id}" aria-label="Comments">${commentIcon}</button><button class="lane-icon" data-save="${clip.id}" aria-label="${marked('saved', clip.id) ? 'Unsave lesson' : 'Save lesson'}" aria-pressed="${marked('saved', clip.id)}">${bookmark}</button><button class="lane-icon" data-share="${clip.id}" aria-label="Share lesson">${shareIcon}</button></div>`;
+const rail = (clip: Clip) => `<div class="lane-rail"><button class="lane-icon" data-like="${clip.id}" aria-label="${marked('liked', clip.id) ? 'Unlike lesson' : 'Like lesson'}" aria-pressed="${marked('liked', clip.id)}">${heart}</button><button class="lane-icon" data-comments="${clip.id}" aria-label="Comments">${commentIcon}</button><button class="lane-icon" data-save="${clip.id}" aria-label="${marked('saved', clip.id) ? 'Unsave lesson' : 'Save lesson'}" aria-pressed="${marked('saved', clip.id)}">${bookmark}</button></div>`;
 // A text lesson (no video): a post whose sentences the learner completes one blank at a time.
 function textLessonHtml(clip: Clip, index: number, revisit: boolean) {
   return `<article class="lane-clip lane-card lane-text-lesson" data-item="${index}" data-clip="${clip.id}" aria-label="Lesson ${lessonNumber(clip.id)}: ${esc(clip.title)}">
@@ -285,12 +284,6 @@ export function mountFeed(root: HTMLElement, target: FeedTarget = {}): View {
     const entry = item() as Extract<PlanItem, { kind: 'lesson' }>, clip = current();
     return !sheetOpen && !entry.revisit && !gatePassed.has(clip.id) && !checked.has(clip.id) && !record(clip.id)?.done
       && (learning()?.safety ?? 0) >= SAFETY_GATE && videoUnfinished();
-  }
-  async function shareClip(clip: Clip) {
-    const url = `${location.origin}${location.pathname}#/feed/${clip.id}`;
-    if (navigator.share) { await navigator.share({ title: clip.title, url }).catch(() => {}); return; }
-    try { await navigator.clipboard.writeText(url); announce('Link copied'); }
-    catch { announce('Sharing isn’t available here'); }
   }
   function openAbout(clip: Clip) {
     const lesson = clip.lesson;
@@ -797,11 +790,6 @@ export function mountFeed(root: HTMLElement, target: FeedTarget = {}): View {
     if (like) { const on = toggleMark('liked', like.dataset.like!); like.classList.toggle('is-popped', on); like.setAttribute('aria-pressed', String(on)); like.setAttribute('aria-label', on ? 'Unlike lesson' : 'Like lesson'); return; }
     const save = target.closest<HTMLButtonElement>('[data-save]');
     if (save) { const on = toggleMark('saved', save.dataset.save!); save.classList.toggle('is-popped', on); save.setAttribute('aria-pressed', String(on)); save.setAttribute('aria-label', on ? 'Unsave lesson' : 'Save lesson'); return; }
-    const share = target.closest<HTMLButtonElement>('[data-share]');
-    if (share) {
-      const clip = clipById(share.dataset.share);
-      if (clip) void shareClip(clip);
-    }
   }, { signal: controller.signal });
   root.addEventListener('toggle', event => {
     const rule = event.target;
