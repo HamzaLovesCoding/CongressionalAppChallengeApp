@@ -143,7 +143,9 @@ try {
     await page.evaluate(() => document.fonts.ready);
     await shot('feed');
     assert.deepEqual(await page.locator('.is-current .lane-rail button').evaluateAll(buttons => buttons.map(button => button.dataset.like ? 'like' : button.dataset.comments ? 'comments' : button.dataset.save ? 'save' : 'other')), ['like', 'comments', 'save'], 'text lessons have comments too');
-    assert.equal(await page.locator('.is-current [data-play], .is-current time').count(), 0, 'A text lesson has no timer or play control');
+    assert.equal(await page.locator('.is-current [data-play]').count(), 0, 'A text lesson has no play control');
+    // Every card shows the feed-visit timer (owner, 2026-10-17); a text lesson has no clip timer of its own.
+    assert.equal(await page.locator('.is-current time').count(), await page.locator('.is-current .lane-scroll-time time').count(), 'A text lesson has no clip timer');
     assert.match(await page.locator('.is-current .lane-post').innerText(), /FILL IN THE BLANKS[\s\S]*When the light turns yellow/i);
     for (const kind of ['like', 'save']) {
       await page.locator(`.is-current [data-${kind}]`).click();
