@@ -11,3 +11,6 @@ artifacts/
 AppMaterial/
 .playwright-mcp/
 supabase/.temp/
+# Personal notes and one-off scripts, kept on your computer only
+docs/deploy/
+supabase/maintenance/

@@ -92,7 +92,6 @@ How it works:
 ## Verify
 
 - Use `npm run build:test && npm run preview:test` for browser walkthroughs. The separate `dist-test/` build clears every Supabase setting, including those from `.env.local`; regular production builds remain connected when configured.
-- The one-off October 18 test-account cleanup is `maintenance/20261018_remove_demo_test_learners.sql`. It checks and deletes only the four UUIDs read from the live dashboard, with cascading learner data and the two comments owned by `yob`. It is separate from migrations and must be run manually; do not apply it to other environments.
 - Static checks: `node --test scripts/supabase-schema.test.mjs`.
 - Behavior on local Postgres with four learners (84 checks: ownership, no direct writes, same-backup XP, answer/completion arrival order, idempotency, usernames, leaderboard fields, buddy requests/acceptance/privacy, duo streak, code groups, helper functions closed to direct calls, lesson comments, deletion):
 

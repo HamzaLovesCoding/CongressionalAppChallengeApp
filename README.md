@@ -120,7 +120,7 @@ Screen-by-screen walkthroughs use Playwright and save screenshots to `artifacts/
 | `vendor/lane-simulations/` | The ten driving challenges |
 | `supabase/` | Database migrations, the coach Edge Function and backend setup notes |
 | `public/videos/` | Lesson videos (H.264, re-encoded for phones) |
-| `docs/` | Design notes, the hosting guide, legal drafts, the content index and the credits register |
+| `docs/` | Design notes, legal drafts, the content index and the credits register |
 
 ## Content sources and credits
 
