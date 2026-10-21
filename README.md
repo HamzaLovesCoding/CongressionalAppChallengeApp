@@ -10,11 +10,6 @@
     <img src="https://img.shields.io/badge/Platform-Web%20%28installable%29-5A4632.svg" alt="Web, installable" />
     <img src="https://img.shields.io/badge/Made%20In-Novato-FF5733.svg" alt="Made in Novato" />
     <img src="https://img.shields.io/badge/Congressional%20App%20Challenge-2026-4CAF50.svg" alt="Congressional App Challenge 2026" />
-    <br />
-    <img src="https://img.shields.io/github/issues/HamzaLovesCoding/CongressionalAppChallengeApp" alt="GitHub issues" />
-    <img src="https://img.shields.io/github/contributors/HamzaLovesCoding/CongressionalAppChallengeApp" alt="GitHub contributors" />
-    <img src="https://img.shields.io/github/repo-size/HamzaLovesCoding/CongressionalAppChallengeApp" alt="Repository size" />
-    <img src="https://img.shields.io/github/stars/HamzaLovesCoding/CongressionalAppChallengeApp" alt="GitHub stars" />
 </p>
 
 ## About
