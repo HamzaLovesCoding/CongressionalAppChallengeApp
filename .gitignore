@@ -9,3 +9,5 @@ artifacts/
 .env.*
 !.env.example
 AppMaterial/Videos.zip
+.playwright-mcp/
+supabase/.temp/

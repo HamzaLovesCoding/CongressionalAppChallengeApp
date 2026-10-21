@@ -60,6 +60,8 @@ Don’t assume a planned feature exists. Check the code.
 
 Deadline: **TODO**. Team and content owner: **Hamza Wadera**.
 
+**Team review (2026-10-20):** the team reported reviewing all licensing and all content and completing the open TODOs. The `draft: true` flags, the Deadline above and the Performance floor below have not yet been updated to match; get the exact values from the team before changing them, and don't describe the content as unreviewed in the meantime.
+
 ## Source materials (`AppMaterial/`)
 
 The owner supplied these planning documents, curriculum files and media. They describe intent and draft content, and none of them proves a feature is built. Where they disagree with this file or `DESIGN.md`, follow this file and tell the owner about the conflict instead of resolving it yourself.
