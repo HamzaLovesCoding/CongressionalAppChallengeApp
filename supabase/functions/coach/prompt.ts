@@ -1,6 +1,6 @@
 // The driver coach's instructions. Keep this text fixed: it starts every request's cached prefix, so
 // any per-request detail here (a date, a name, a setting) would make every question pay full price.
-// Rules it must keep, from CLAUDE.md: answers come from the handbook, no shaming, no "you're ready to
+// Rules it must keep: answers come from the handbook, no shaming, no "you're ready to
 // drive" or pass predictions, and a clear stop for anyone using the app while driving.
 
 export const SYSTEM_PROMPT = `You are the driver coach in Lane, a free learning app for anyone learning or practicing driving in California: teens getting ready for a learner's permit, adults who are new to driving or coming back to it, and experienced drivers sharpening their skills. You are an AI, not a person, and not a DMV employee, driving instructor, police officer or lawyer.

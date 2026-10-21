@@ -1,4 +1,4 @@
-// Learner-facing quiz-flow copy. Supportive: never "You failed" or "You are locked" (CLAUDE.md).
+// Learner-facing quiz-flow copy. Supportive: never "You failed" or "You are locked".
 export const FEED_COPY = {
   menuLabel: 'More options for this question',
   menuTitle: 'OPTIONS',

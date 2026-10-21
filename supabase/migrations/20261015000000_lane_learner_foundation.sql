@@ -171,7 +171,7 @@ language sql stable set search_path = '' as $$
   select least(coalesce(nullif(value, '')::timestamptz, now()), now());
 $$;
 
--- The only write path. Payload shape: docs/lane/02-frontend-to-backend-map.md and src/data/sync.ts.
+-- The only write path. Payload shape: src/data/sync.ts.
 create function public.sync_learner(payload jsonb) returns jsonb
 language plpgsql security definer set search_path = '' as $$
 declare
@@ -323,7 +323,7 @@ end;
 $$;
 
 -- Erases the caller's learner data. Removing the anonymous auth account itself needs the
--- service role and is handled by the owner's deletion process (docs/lane/09).
+-- service role and is handled by the owner's deletion process.
 create function public.delete_my_data() returns void
 language plpgsql security definer set search_path = '' as $$
 declare uid uuid := auth.uid();

@@ -8,6 +8,6 @@ artifacts/
 .env
 .env.*
 !.env.example
-AppMaterial/Videos.zip
+AppMaterial/
 .playwright-mcp/
 supabase/.temp/

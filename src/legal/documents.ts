@@ -1,5 +1,5 @@
-// Privacy Policy and Terms, version-controlled. Written from docs/lane/07-data-and-vendor-inventory.md
-// (what the code actually stores and sends); scripts/legal.test.mjs checks the two stay in step.
+// Privacy Policy and Terms, version-controlled. Written from what the code actually stores and sends;
+// scripts/legal.test.mjs checks the two stay in step.
 // Operator, contact and effective date supplied by the owner on October 18, 2026.
 // Remaining policy decisions still need owner/legal review.
 

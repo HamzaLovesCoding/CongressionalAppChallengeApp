@@ -56,7 +56,7 @@ Generated on 2026-10-15 from `src/legal/credits.ts`, `src/feed/curriculum.ts`, `
 - We designed the Lane logo and app favicon ourselves (owner, 2026-10-18).
 - We made the 2D and 3D scenes in the practice scenarios ourselves; DriveFocus gave the idea, though its style is very different.
 - We also made the Garage cars, the Progress road and the lesson posters ourselves.
-- Favicon: owner-supplied `AppMaterial/lane_favicon_cac_logo.png`, resized to `public/favicon-32.png` and `favicon-64.png`.
+- Favicon: the team's Lane favicon artwork, resized to `public/favicon-32.png` and `favicon-64.png`.
 - Simulation packages: original code-generated geometry; provenance in `vendor/lane-simulations/SOURCE.md` and each package README.
 
 ## Research checklist (owner / content editor)

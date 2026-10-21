@@ -1,7 +1,7 @@
 import { VIDEO_LESSONS } from '../feed/curriculum.ts';
 import { HANDBOOK } from '../content/handbook.ts';
 
-// The attribution register behind Credits & sources (docs/lane/08-credits-and-attribution-register.md).
+// The attribution register behind Credits & sources (readable copy: docs/credits.md).
 // Video rows come from each lesson's own credit record, so a new lesson is credited by its data.
 // Unknown facts stay null and are shown as pending; never fill them from a filename or a guess.
 

@@ -2,7 +2,7 @@
 // context, limits, refusals, retries, stopping an answer and a new chat. Screenshots: artifacts/coach/.
 //
 // The backend is stood in by Playwright, so no request reaches Supabase or Anthropic. Needs a dev server
-// built with a stand-in backend URL (the "fake-backend" entry in .claude/launch.json):
+// built with a stand-in backend URL:
 //   VITE_SUPABASE_URL=https://fake-lane.supabase.co VITE_SUPABASE_PUBLISHABLE_KEY=test npx vite --port 5175 --strictPort
 import { chromium } from '@playwright/test';
 import assert from 'node:assert/strict';

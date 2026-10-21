@@ -6,7 +6,7 @@
 # 30 fps, ~1–1.8 Mbps, moov atom first (faststart) so playback starts before the download finishes.
 #
 # Usage: FFMPEG=/path/to/ffmpeg scripts/encode-videos.sh <source.mp4> <lesson-id> [...more pairs]
-# Sources are the originals in AppMaterial/Videos.zip; extract only the clips being encoded.
+# Sources are the original clips (AppMaterial/Videos.zip, kept outside git); extract only the clips being encoded.
 set -euo pipefail
 FFMPEG=${FFMPEG:-ffmpeg}
 cd "${0:A:h}/.."

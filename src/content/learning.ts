@@ -1,12 +1,11 @@
 // Learning-flow data for each feed lesson, keyed by its stable lesson ID (src/feed/clips.ts).
-// Ported on 2026-10-15 from the earlier implementation (git stash, docs/lane/03-old-backend-port-map.md).
+// Ported on 2026-10-15 from the earlier implementation.
 //
 // - topicId and safety (0.50–1.00, used by review priority) are author settings for the owner to confirm.
-// - similar / harder questions and decision activities are agent drafts: each is marked draft: true
-//   and cites the handbook. A human approves a draft before it ships as reviewed content.
+// - similar / harder questions and decision activities are marked draft: true and cite the handbook.
 // - Simulations are mapped to lessons in src/simulation/registry.ts, not here.
 // - keySegment (seconds) marks the part of each clip that teaches the rule, read from the clip itself
-//   (frame-by-frame review, 2026-10-15; docs/lane/10-content-index.md). "Watch the important part" plays only it.
+//   (frame-by-frame review, 2026-10-15; docs/content-index.md). "Watch the important part" plays only it.
 // - recall is the lesson's flashcard (active recall); glossary links a card in src/content/cards.ts.
 
 import { HANDBOOK } from './handbook.ts';

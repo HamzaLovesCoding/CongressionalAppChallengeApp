@@ -8,7 +8,7 @@ A driving app with an earthy identity, substantial mobile controls, and a clear 
 
 Use single surfaces with clear dark boundaries. Rows and ordinary sections share the page; do not put bordered cards inside other bordered cards. A featured lesson, profile identity, or test introduction may have one rounded outer surface. Avoid heavy shadows, decorative characters outside Profile, promotional sublines, and repeated calls to action.
 
-Read this with `CLAUDE.md`. Current user instructions supersede its older soft-green visual baseline. Preserve hash routing, the progress store and its keys, quizzes, optional simulator practice, and offline support.
+Preserve hash routing, the progress store and its keys, quizzes, optional simulator practice, and offline support.
 
 ## Sources
 
@@ -25,8 +25,6 @@ Read this with `CLAUDE.md`. Current user instructions supersede its older soft-g
 - `src/feed/poster.ts`: decorative street-map fallback; not lesson footage or rule instruction.
 - `src/pages/pages.css`: menu screens (Review, Settings, Credits, Privacy, Terms) on the practice-test column pattern.
 - `src/simulation/host.css`: the stage a simulation package fills inside its feed card (packages style themselves in Shadow DOM).
-- `docs/design/home-earth-reference.png`: original earthy reference.
-- `docs/design/home-rebuilt-reference.png`: current rebuilt Home.
 - `docs/design/rebuild-decisions.md`: rationale and audience tradeoffs.
 
 ## Palette and type
@@ -144,7 +142,7 @@ Every reward reads from data the app already stores; nothing adds currency, stor
 
 ## Assets and motion
 
-The supplied source is `AppMaterial/testappicon.png`; `public/images/brand/lane-logo.png` preserves it. Home crops the wordmark without stretching or showing the tagline. App icons use the supplied full logo centered on square cream backgrounds, with extra safe-area padding for maskable icons (owner direction, October 13, 2026). Keep asset provenance files.
+The supplied logo is `public/images/brand/lane-logo.png`. Home crops the wordmark without stretching or showing the tagline. App icons use the supplied full logo centered on square cream backgrounds, with extra safe-area padding for maskable icons (owner direction, October 13, 2026). Keep asset provenance files.
 
 `public/images/lessons/cedar-crossing.png` is captured from Lane's own Babylon scene; Home no longer shows it. Retired avatar art remains in `public/images/avatars/road-crew/`; provenance and generation prompts are linked in `src/profile/ARTWORK.md`. Its provenance is retained; these characters are no longer displayed. No new dependencies.
 

@@ -2,7 +2,7 @@ import type { QuizAttempt, ReviewItem, TopicRecord } from '../feed/progress.ts';
 import { reviewPriority } from './scoring.ts';
 
 // Chooses today's review. Pure: everything is passed in, so the rules are tested without a browser
-// and could run on a backend later. Ported from the earlier planner (docs/lane/03-old-backend-port-map.md).
+// and could run on a backend later. Ported from the earlier planner.
 
 export type ReviewLesson = { id: string; topicId: string; safety: number; done: boolean };
 export type ReviewReason = 'saved' | 'skipped' | 'missed' | 'practice' | 'today' | 'yesterday' | 'two-days-ago' | 'weak-topic';

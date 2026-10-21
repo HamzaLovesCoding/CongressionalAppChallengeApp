@@ -7,7 +7,7 @@ const browser = await chromium.launch({
 });
 try {
   const page = await browser.newPage({ deviceScaleFactor: 1 });
-  const source = await fs.readFile('AppMaterial/testappicon.png');
+  const source = await fs.readFile('public/images/brand/lane-logo.png');
   const dataUrl = `data:image/png;base64,${source.toString('base64')}`;
   await page.setContent(`<img src="${dataUrl}" />`);
   const bounds = await page.evaluate(async () => {

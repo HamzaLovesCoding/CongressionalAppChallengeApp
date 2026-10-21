@@ -120,12 +120,12 @@ Screen-by-screen walkthroughs use Playwright and save screenshots to `artifacts/
 | `vendor/lane-simulations/` | The ten driving challenges |
 | `supabase/` | Database migrations, the coach Edge Function and backend setup notes |
 | `public/videos/` | Lesson videos (H.264, re-encoded for phones) |
-| `docs/` | Design notes, content index, credits register and test reports |
+| `docs/` | Design notes, the hosting guide, legal drafts, the content index and the credits register |
 
 ## Content sources and credits
 
 - **Driving rules:** *California Driver's Handbook* and *California Quick Reference Driver's Handbook (DL 600X, 2025)*, California Department of Motor Vehicles, licensed under [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/). Lane is not affiliated with or endorsed by the DMV.
-- **Lesson videos 1–19:** from the YouTube channels **Trubicars** and **CRUDE Ultimate Driving Education**, licensed under [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/). Lane trimmed and re-encoded the clips and added California corrections. Each lesson links to its original video, and the full list is in the app under **Credits & sources** and in [`docs/lane/08-credits-and-attribution-register.md`](docs/lane/08-credits-and-attribution-register.md).
+- **Lesson videos 1–19:** from the YouTube channels **Trubicars** and **CRUDE Ultimate Driving Education**, licensed under [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/). Lane trimmed and re-encoded the clips and added California corrections. Each lesson links to its original video, and the full list is in the app under **Credits & sources** and in [`docs/credits.md`](docs/credits.md).
 - **Local figures:** 2023 crash data for Novato, California Office of Traffic Safety.
 - **Fonts:** [IBM Plex Sans](https://github.com/IBM/plex) and Zilla Slab, both under the SIL Open Font License 1.1 (license files in `public/fonts/`).
 - **3D engine:** [Babylon.js](https://github.com/BabylonJS/Babylon.js), Apache License 2.0.

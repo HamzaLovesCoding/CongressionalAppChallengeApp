@@ -137,7 +137,7 @@ Upload the **contents** of `dist/` (the files inside it, with `index.html` at th
 
 **Updating later:** push to `main` and redeploy on Manus (or rebuild and re-upload `dist/`). People who already visited get the new version the next time they open the app.
 
-## 7. Fix before judges (from `docs/testing/2026-10-19-bug-report.md`)
+## 7. Known issues to fix before judging
 
 - **H1:** fixed by deploying the coach (step 3). If the function is ever removed, the app's message would again wrongly say "You're offline".
 - **H2:** someone whose first visit is a direct lesson link (`…/#/feed/<lesson>`), and who then likes or answers anything, never sees the welcome and Terms screens, but their data is still backed up. Share links to the home page, not to a lesson, until this is fixed.

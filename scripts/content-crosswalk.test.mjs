@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { CLIPS } from '../src/feed/clips.ts';
 
-// Display titles changed on 2026-10-15 (docs/lane/04-content-and-ux-cleanup.md). Stable IDs are what
+// Display titles changed on 2026-10-15. Stable IDs are what
 // progress, videos, posters and quizzes key on, so they and the feed order must never move.
 const STABLE_ORDER = [
   'lane-end-scan', 'after-collision', 'emergency-kit', 'front-curb', 'dark-signal', 'emergency-pull-right',

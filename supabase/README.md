@@ -16,7 +16,7 @@ Status (2026-10-16): the owner pasted the foundation and streak-buddies migratio
 
 Update (October 18, 2026): `20261021000000_lane_xp_on_answer.sql` was applied to the live Lane project through the SQL editor. The `xp_on_answer` trigger on `public.learning_events` was verified as installed and enabled. Same-backup XP behavior passed the local Postgres checks; no hosted test learners were created for this change. The four-account cleanup below remains a manual operation.
 
-1. **Apply the migrations**, in order, in the project's SQL editor (Dashboard → SQL Editor → paste and run each file), or allow the connector’s `apply_migration` tool in claude.ai and ask the agent to apply them:
+1. **Apply the migrations**, in order, in the project's SQL editor (Dashboard → SQL Editor → paste and run each file):
    - `migrations/20261015000000_lane_learner_foundation.sql`
    - `migrations/20261016000000_lane_streak_buddies.sql`
    - `migrations/20261017000000_lane_lesson_comments.sql`

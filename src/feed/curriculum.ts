@@ -1,9 +1,9 @@
 import type { Clip } from './clips';
 import { HANDBOOK } from '../content/handbook.ts';
 
-// Video lessons 1–19 from the owner-supplied curriculum in AppMaterial/ (Video Lessons, Quizzes &
-// Decision Prompts deck, cross-checked against the Video Validation package). Clip licenses were
-// confirmed by the owner on October 13, 2026; creator names are not yet recorded.
+// Video lessons 1–19 from the team's curriculum (Video Lessons, Quizzes & Decision Prompts deck,
+// cross-checked against the Video Validation package). Clip licenses (CC BY 3.0) and creator names
+// are in each lesson's credit.
 // Quick checks stay draft until a human approves them against the handbook.
 const OTS = 'California Office of Traffic Safety, Novato 2023';
 const LOCAL = {

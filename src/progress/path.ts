@@ -79,7 +79,7 @@ function sheetBody(clip: Clip, index: number, state: Stop) {
   const firstTry = result?.done && result.firstTry ? `<span class="ui-chip is-accent">${pathIcon('star')}${copy.firstTry}</span>` : '';
   const detail = result?.done ? '' : result?.tries ? copy.started : clip.lesson ? '' : copy.fresh(clip.followUp ? 2 : 1);
   const action = result?.done ? copy.reviewLesson : result?.tries ? copy.continueLesson : copy.startLesson;
-  // Optional practice appears only after the lesson's check is done (CLAUDE.md).
+  // Optional practice appears only after the lesson's check is done.
   const scenario = result?.done ? SCENARIOS.find(entry => entry.lessonId === clip.id) : undefined;
   return `<p class="path-sheet-meta">${copy.lesson(index + 1)} · ${esc(topicLabel(clip.topic))}</p>
     <p class="path-sheet-chips">${status}${reward}${firstTry}</p>
