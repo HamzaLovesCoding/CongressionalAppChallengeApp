@@ -23,7 +23,7 @@
 .lane-meta>span { display:block; margin-bottom:var(--sp-2); font-size:var(--fs-caption); font-weight:var(--fw-bold); text-transform:uppercase; letter-spacing:.06em; }
 .lane-meta h2 { margin:0; font-size:24px; line-height:1.15; letter-spacing:-.02em; font-weight:var(--fw-bold); text-wrap:balance; }
 .lane-rail { position:absolute; z-index:3; right:var(--sp-4); bottom:calc(env(safe-area-inset-bottom) + var(--sp-5)); display:flex; flex-direction:column; gap:var(--sp-3); }
-.lane-icon { width:48px; height:48px; display:grid; place-items:center; padding:12px; border:1.5px solid var(--lane-ink); border-radius:var(--radius-md); background:color-mix(in srgb,var(--lane-surface) 92%,transparent); color:var(--lane-ink); box-shadow:var(--shadow-soft); transition:background .18s,transform .18s; }
+.lane-icon { width:48px; height:48px; display:grid; place-items:center; padding:0; border:1.5px solid var(--lane-ink); border-radius:var(--radius-md); background:color-mix(in srgb,var(--lane-surface) 92%,transparent); color:var(--lane-ink); box-shadow:var(--shadow-soft); transition:background .18s,transform .18s; }
 .lane-icon svg { width:23px; height:23px; fill:none; stroke:currentColor; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round; }
 .lane-icon[aria-pressed=true] { background:var(--lane-ink); color:var(--lane-accent); }
 .lane-icon[aria-pressed=true] svg { fill:currentColor; }

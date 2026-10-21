@@ -33,8 +33,8 @@ const esc = (value: string) => value.replace(/[&<>"']/g, char => ({ '&': '&amp;'
 const sessionClock = (seconds: number) => { const h = Math.floor(seconds / 3600), mm = String(Math.floor(seconds / 60) % 60).padStart(2, '0'), ss = String(seconds % 60).padStart(2, '0'); return h ? `${h}:${mm}:${ss}` : `${mm}:${ss}`; };
 const bookmark = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12v18l-6-4-6 4z"/></svg>';
 const heart = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/></svg>';
-const commentIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/></svg>';
-const back = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14 5-7 7 7 7"/></svg>';
+const commentIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4.5h16v11H9l-5 4z"/></svg>';
+const back = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15.5 5-7 7 7 7"/></svg>';
 const play = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 5 11 7-11 7z"/></svg>';
 const check = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg>';
 const flame = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2c1 7-6 6-3 12 2-1 3-3 3-5 5 4 6 7 4 11-2 3-8 3-11 0C1 14 6 9 8 7c-1 4 1 4 1 4C8 5 12 5 13 2Z"/></svg>';
@@ -179,7 +179,7 @@ export function mountFeed(root: HTMLElement, target: FeedTarget = {}): View {
     if (!button) return;
     button.innerHTML = playing ? '' : play;
     panel().classList.toggle('is-paused', !playing);
-    button.setAttribute('aria-label', panel().querySelector('.lane-rule[open]') ? 'Close California rule' : playing ? video()?.muted ? 'Play clip with sound' : 'Pause clip' : 'Play clip');
+    button.setAttribute('aria-label', panel().querySelector('.lane-rule[open]') ? 'Close California rule' : playing ? video()?.muted && !soundOff() ? 'Play clip with sound' : 'Pause clip' : 'Play clip');
   }
   // Counts taps on the sound button, so a late autoplay fallback never overrides a choice made since.
   let soundChanges = 0;
@@ -780,7 +780,8 @@ export function mountFeed(root: HTMLElement, target: FeedTarget = {}): View {
     const playback = target.closest<HTMLButtonElement>('[data-play]');
     const expandedRule = isLesson() ? panel().querySelector<HTMLDetailsElement>('.lane-rule[open]') : null;
     if (playback && expandedRule) { expandedRule.open = false; return; }
-    if (playback && playing && video()?.muted) { setPlaying(true); return; }
+    // A tap turns sound on only when the browser muted the clip itself; a clip the learner muted pauses.
+    if (playback && playing && video()?.muted && !soundOff()) { setPlaying(true); return; }
     if (playback) {
       // A finished clip opens its check if it hasn't been answered yet; otherwise it plays again.
       if (!playing && !videoUnfinished()) { if (!checked.has(current().id)) openCheck(); else replay(); return; }

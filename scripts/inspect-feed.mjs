@@ -74,7 +74,20 @@ async function videoLesson(name, viewport) {
   assert.equal(await page.evaluate(() => JSON.parse(localStorage.getItem('roadloop-progress')).soundOff), false);
   await current.locator('[data-sound]').click();
   assert.equal(await page.evaluate(() => JSON.parse(localStorage.getItem('roadloop-progress')).soundOff), true, 'Muting is remembered');
+  // A clip the learner muted still pauses on a tap (only a clip the browser muted turns sound on).
+  const tap = { position: { x: viewport.width / 2, y: viewport.height * .35 } };
+  await current.locator('[data-play]').click(tap);
+  await page.waitForFunction(() => document.querySelector('.is-current video').paused);
+  await current.locator('[data-play]').click(tap);
+  await page.waitForFunction(() => !document.querySelector('.is-current video').paused);
+  assert.equal(await current.locator('video').evaluate(media => media.muted), true, 'Resuming keeps the learner muted');
   await current.locator('[data-sound]').click();
+  // Icons sit in the middle of their buttons.
+  const offsets = await current.locator('.lane-home, .lane-rail .lane-icon').evaluateAll(buttons => buttons.map(button => {
+    const b = button.getBoundingClientRect(), s = button.querySelector('svg').getBoundingClientRect();
+    return Math.max(Math.abs(s.left + s.width / 2 - (b.left + b.width / 2)), Math.abs(s.top + s.height / 2 - (b.top + b.height / 2)));
+  }));
+  assert.ok(offsets.every(offset => offset < .25), `Feed button icons are centered (${offsets.join(', ')})`);
   assert.match(await current.locator('.lane-scroll-time').innerText(), /^\d{2}:\d{2}$/, 'The corner timer shows time in the feed');
   const meta = await current.locator('.lane-meta').boundingBox();
   assert.ok(meta.height < viewport.height * .4, 'Collapsed metadata leaves most of the video visible');
