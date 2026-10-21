@@ -41,8 +41,8 @@ export const PRIVACY: LegalDocument = {
       'Anthropic uses the conversation to write the answer. Under its commercial terms it doesn’t train its AI models on it, and it deletes it within 30 days unless it must keep it longer to enforce its usage policy or the law.',
       'Don’t type personal details such as your full name, address, school or phone number into the coach.',
     ] },
-    { heading: 'Links and sharing', body: [
-      'Each lesson links to its original video on YouTube. Opening that link takes you to YouTube, whose own privacy policy applies. The Share button uses your device’s share sheet or copies a lesson link; Lane does not see what you share or with whom.',
+    { heading: 'Links', body: [
+      'Each lesson links to its original video on YouTube. Opening that link takes you to YouTube, whose own privacy policy applies.',
     ] },
     { heading: 'Your choices', body: [
       'You can change or clear your permit test date and username at any time in Settings. You can remove all progress on this device by clearing this site’s data in your browser settings.',

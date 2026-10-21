@@ -64,7 +64,7 @@ Lane doesn't set any cookies. [Team: confirm the hosting service doesn't add any
 
 ## 5. Sharing a lesson
 
-The share button opens your device's share menu, or copies a link if no menu is available. The link only names the lesson, for example `#/feed/high-beams`. It contains nothing about you or your progress, and we can't see who you share it with.
+Lessons have no share button. A lesson's address only names the lesson, for example `#/feed/high-beams`, so a link you copy yourself contains nothing about you or your progress.
 
 ## 6. Links to other sites
 
