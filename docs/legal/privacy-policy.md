@@ -86,7 +86,7 @@ This permanently erases your lessons, XP, streak and Garage. We can't recover th
 
 ## 9. Children's privacy
 
-Lane is made for teens about 14 to 16 who are getting ready for a learner's permit. It isn't directed to children under 13. Today Lane collects no personal information from anyone.
+Lane is made for anyone learning or practicing driving, including teens getting ready for a learner's permit. It isn't directed to children under 13. Today Lane collects no personal information from anyone.
 
 [Planned, decide before accounts launch: how Lane checks age at sign-up, and whether children under 13 are blocked or need verifiable parental consent under the Children's Online Privacy Protection Act (COPPA). Recommended: don't allow accounts for anyone under 13.]
 

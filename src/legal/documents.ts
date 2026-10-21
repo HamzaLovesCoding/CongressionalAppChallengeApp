@@ -48,8 +48,8 @@ export const PRIVACY: LegalDocument = {
       'You can change or clear your permit test date and username at any time in Settings. You can remove all progress on this device by clearing this site’s data in your browser settings.',
       'When backup is on, Settings includes Delete backed-up data, which removes your learning records, group memberships and comments from the server. To remove the anonymous account itself or ask about your data, use the contact below.',
     ] },
-    { heading: 'Teens and families', body: [
-      'Lane is designed for teens preparing for a learner’s permit. The age policy and any parent or guardian consent process will be set by the operator before public release.',
+    { heading: 'Age and families', body: [
+      'Lane is designed for anyone learning or practicing driving, including teens preparing for a learner’s permit. The age policy and any parent or guardian consent process will be set by the operator before public release.',
     ] },
     { heading: 'Security and retention', body: [
       'Server data is protected by access rules that let each learner read only their own records; group members see only the details listed above. No system is perfectly secure. How long backed-up data is kept will be stated here before public release.',

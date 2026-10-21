@@ -2,7 +2,7 @@
     <img src="public/images/brand/lane-logo.png" alt="Lane logo" width="280" />
 </h1>
 <p align="center">
-    <strong>Short, swipeable driving lessons for teens getting ready for their permit.</strong><br />
+    <strong>Short, swipeable driving lessons for new drivers, teens getting their permit and anyone sharpening their skills.</strong><br />
     <em>Learn And Navigate Emergencies</em>
     <br /><br />
     <img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="MIT License" />
@@ -16,7 +16,7 @@
 
 Lane is our entry for the **Congressional App Challenge 2026**, California's 2<sup>nd</sup> congressional district.
 
-Teens already spend time scrolling short videos. Lane turns that habit into something useful: a phone-first feed of short driving lessons, each followed by a quick check, built for teens about 14 to 16 who are getting ready for their learner's permit or just starting to drive. Every rule and answer is checked against the **California Driver's Handbook**, and each lesson cites the handbook page it comes from.
+Most of us already spend time scrolling short videos. Lane turns that habit into something useful: a phone-first feed of short driving lessons, each followed by a quick check. It's built for teens getting ready for their learner's permit, adults who are learning to drive or getting back behind the wheel, and drivers who want to sharpen their skills. Every rule and answer is checked against the **California Driver's Handbook**, and each lesson cites the handbook page it comes from.
 
 Lane runs in the browser and can be installed to a phone's home screen. Once installed, lessons work offline.
 

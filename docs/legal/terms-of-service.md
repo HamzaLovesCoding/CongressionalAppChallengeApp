@@ -17,7 +17,7 @@
 
 These terms are an agreement between you and Hamza Wadera ("we" or "us"), the team that makes Lane. By using Lane, you agree to them and to our [Privacy Policy](privacy-policy.md). If you don't agree, please don't use Lane.
 
-Lane is made for teens about 14 to 16. If you're under 18, a parent or guardian should read these terms with you and agree to them for you. [Planned, decide before accounts launch: whether children under 13 may use Lane. See the Privacy Policy, section 9.]
+Lane is made for anyone learning or practicing driving, including teens getting ready for a learner's permit. If you're under 18, a parent or guardian should read these terms with you and agree to them for you. [Planned, decide before accounts launch: whether children under 13 may use Lane. See the Privacy Policy, section 9.]
 
 ## 2. What Lane is, and what it isn't
 

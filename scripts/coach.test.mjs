@@ -87,7 +87,7 @@ test('the instructions are fixed text that keeps the coach safe, honest and on d
   assert.doesNotMatch(source, /\$\{|Date|new Date|toLocale/, 'nothing per-request in the cached prefix');
   for (const rule of [/driving right now, tell them to stop using the app/, /call 911/, /988/, /Never invent a rule or a number/,
     /Don't predict test results, and don't say the learner is ready to drive or will pass/, /Only help with driving and road safety/,
-    /Learners are minors/, /don't copy DMV test questions/, /Never shame a mistake/, /Don't write page numbers/]) {
+    /Many learners are minors, and you can't know any learner's age, so keep everything age-appropriate/, /don't copy DMV test questions/, /Never shame a mistake/, /Don't write page numbers/]) {
     assert.match(SYSTEM_PROMPT, rule);
   }
   assert.doesNotMatch(SYSTEM_PROMPT, /You failed|You are locked/i);

@@ -6,11 +6,11 @@ Visual design rules live in `DESIGN.md`.
 
 ## What Lane is
 
-A phone-first, casual alternative to social media for teens who plan to drive or are already learning to drive. Lane uses a satisfying short-form feed, but turns scrolling time into useful driving knowledge. Built for the Congressional App Challenge.
+A phone-first, casual alternative to social media for teens who plan to drive, adults who are learning or returning to driving, and drivers sharpening their skills. Lane uses a satisfying short-form feed, but turns scrolling time into useful driving knowledge. Built for the Congressional App Challenge.
 
 The intended short **videos are driving lessons**: they teach practical, real-world driving situations and safer decisions. California permit-test preparation is one part of Lane, not its whole identity. The feed opens with 19 licensed curriculum video lessons; the five original lessons after them are fill-in-the-blank text lessons. When a lesson’s video ends, its check opens over the same screen. The feed is ordered by a planner (`src/learning/planner.ts`): it resumes where the learner left off and mixes lessons with in-feed challenges (all ten SIM packages) and glossary/flashcard/permit-tip cards.
 
-- **User:** teens before their permit, roughly 14–16.
+- **User:** teens before their permit (roughly 14–16), adults who are learning to drive or returning to it, and licensed drivers sharpening their skills. Many users are minors, so keep content age-appropriate for everyone.
 
 - **Rules source:** the California Driver’s Handbook and California DMV Quick Reference Handbook. The curriculum in `AppMaterial/` cites the *California Quick Reference Driver’s Handbook (DL 600X, 2025)* by section and page; use that edition’s page numbers in `source` fields unless a newer edition replaces it. Every rule and correct answer must match the applicable handbook guidance. Use US English and US driving terms (curb, tire, yield). Fix current UK wording such as “give way” and “kerbs” only as part of the relevant content edit.
 
