@@ -1,150 +1,220 @@
-<h1 align="center">
-    <img src="public/images/brand/lane-logo.png" alt="Lane logo" width="280" />
-</h1>
-<p align="center">
-    <strong>Short, swipeable driving lessons for new drivers, teens getting their permit and anyone sharpening their skills.</strong><br />
-    <em>Learn And Navigate Emergencies</em>
-    <br /><br />
-    <img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="MIT License" />
-    <img src="https://img.shields.io/badge/Language-TypeScript-3178C6.svg" alt="TypeScript" />
-    <img src="https://img.shields.io/badge/Platform-Web%20%28installable%29-5A4632.svg" alt="Web, installable" />
-    <img src="https://img.shields.io/badge/Made%20In-Novato-FF5733.svg" alt="Made in Novato" />
-    <img src="https://img.shields.io/badge/Congressional%20App%20Challenge-2026-4CAF50.svg" alt="Congressional App Challenge 2026" />
-</p>
+<div align="center">
+
+<img src="public/images/brand/lane-logo.png" alt="Lane logo" width="320">
+
+# 🚗 Lane
+
+**A free, scroll friendly way to actually remember the rules of the road.**
+
+[![License](https://img.shields.io/badge/License-MIT-2E86C1)](LICENSE)
+[![Language](https://img.shields.io/badge/Language-TypeScript-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Platform](https://img.shields.io/badge/Platform-Web%20%28PWA%29-5A0FC8?logo=pwa&logoColor=white)](#why-isnt-this-on-the-app-store)
+[![Made in](https://img.shields.io/badge/Made%20in-Novato-E2725B)](https://www.novato.org/)
+[![Congressional App Challenge](https://img.shields.io/badge/Congressional%20App%20Challenge-2026-B22234)](https://www.congressionalappchallenge.us/)
+[![District](https://img.shields.io/badge/District-CA%202nd-1F4E79)](https://www.congressionalappchallenge.us/)
+
+[![Version](https://img.shields.io/badge/version-0.1.0-C8962E)](package.json)
+[![Backend](https://img.shields.io/badge/Backend-Supabase-3ECF8E?logo=supabase&logoColor=white)](https://supabase.com/)
+[![3D](https://img.shields.io/badge/3D-Babylon.js-BB464B?logo=babylondotjs&logoColor=white)](https://www.babylonjs.com/)
+[![Build](https://img.shields.io/badge/Built%20with-Vite-646CFF?logo=vite&logoColor=white)](https://vite.dev/)
+[![Lessons](https://img.shields.io/badge/lessons-24-6B7F3A)](src/feed/clips.ts)
+[![Simulations](https://img.shields.io/badge/simulations-10-D4A017)](vendor/lane-simulations/)
+[![Contributors](https://img.shields.io/badge/contributors-2-2E2A26)](https://github.com/HamzaLovesCoding/CongressionalAppChallengeApp/graphs/contributors)
+
+[![Try Lane](https://img.shields.io/badge/Try%20Lane-laneapp.vercel.app-C8962E?style=for-the-badge&logo=vercel&logoColor=white)](https://laneapp.vercel.app/#/welcome)
+
+</div>
 
 ## About
 
-Lane is our entry for the **Congressional App Challenge 2026**, California's 2<sup>nd</sup> congressional district.
+Lane was created for the Congressional App Challenge, 2026. 2<sup>nd</sup> district of California.
 
-Most of us already spend time scrolling short videos. Lane turns that habit into something useful: a phone-first feed of short driving lessons, each followed by a quick check. It's built for teens getting ready for their learner's permit, adults who are learning to drive or getting back behind the wheel, and drivers who want to sharpen their skills. Every rule and answer is checked against the **California Driver's Handbook**, and each lesson cites the handbook page it comes from.
+Lane is a driving education app for teens who are about to get their permit, are learning to drive, or just want to stay sharp. It looks and feels like the short video apps you already scroll every day, but every swipe teaches you something useful about driving. You watch a short driving lesson, answer a quick check about what you just saw, and the app figures out what you should see next.
 
-Lane runs in the browser and can be installed to a phone's home screen. Once installed, lessons work offline.
+[Click here to try Lane in your browser.](https://laneapp.vercel.app/#/welcome) It works best on a phone.
 
-## Features
+Here is what is inside right now.
 
-**Lesson feed**
-- 24 lessons: 19 short video lessons and 5 fill-in-the-blank text lessons.
-- Each video lesson shows a **California rule** panel that corrects anything in the clip that doesn't match California law (for example, clips filmed in left-hand traffic), with the handbook citation.
-- When a video ends, a one-question check opens over it. A wrong answer explains the rule and asks a similar question instead of repeating the same one.
-- Swiping away early from an important lesson asks first, with options to keep watching, take the check, or save it for later.
-- Like, save and comment on lessons.
+* 🎬 **A lesson feed.** 24 lessons you swipe through. 19 of them are real driving videos and 5 are tap the missing word text lessons. Every lesson carries the matching California rule and the exact handbook page it comes from.
+* ✅ **Quick checks.** When a video ends, a question opens right over it. Miss it and Lane explains the rule, then asks a similar question instead of the same one.
+* 🕹️ **10 driving simulations.** Short 2D and 3D challenges like a yellow light, a four way stop, a freeway entrance and a railroad crossing, where you have a few seconds to make the safe call.
+* 🧠 **A learning algorithm we made ourselves.** It looks at how you answer, how much effort you put in, how long you spend and whether you finish a video, then picks your next lesson, a review item or a challenge.
+* 📝 **A practice permit test** with 43 California questions and a breakdown by topic.
+* 🛣️ **Progress as a highway.** Your car drives down a winding road as you finish lessons and pass milestones.
+* 🏁 **Streaks, XP and a garage.** Earn XP from lessons and spend it on collectible cars. Make a group with a code and compete with friends on a weekly leaderboard.
+* 🔔 **Reminders inside the app** for your permit test date, your streak, and when a friend passes you.
+* 📴 **Works offline.** Install it to your home screen and lessons you have watched keep playing without a connection.
 
-**Driving challenges**
-- Ten short decision scenarios inside the feed: a four-way stop, an unprotected left turn, a roundabout, a lane ending, a motorcycle in the blind spot, an emergency vehicle at an intersection, railroad tracks without a clear exit, a yellow light, a freeway entrance, and a right turn with a pedestrian and a bicyclist. The last three are in 3D from the driver's seat.
-- Unsafe choices show cartoon warnings, never crashes or injuries. A challenge stays in the feed until the safe choice is made.
+## Congressional App Challenge
 
-**Practice and review**
-- A 43-question California practice test with feedback on every answer and results by topic.
-- **Driver coach:** an AI chat that answers driving questions from the California Driver's Handbook (see [Driver coach](#driver-coach-ai)).
-- **Review:** saved lessons come back for review, then return after 2, 4, 8 and 16 days.
+Lane was made as an entry for the Congressional App Challenge, a competition that encourages students to learn coding and computer science by building their own apps. The challenge is run by members of the U.S. House of Representatives, and winners are recognized for what they build in their district.
 
-**Progress and motivation**
-- **Home** shows the next lesson, this week's streak, a readiness score out of 100, and notifications such as an upcoming permit test date.
-- **Progress** is a winding road with your car at your next lesson and milestones along the way.
-- **Profile** has a garage of six cars you unlock with XP earned from lessons.
-- **Leaderboards:** a weekly global board, plus private group boards you create and share with a 6-character code.
+### Why we made it
 
-## How Lane decides what comes next
+In 2019, a San Marin High School student died in a crash on Simmons Lane on his 16th birthday. In April 2026, another crash at San Marin Drive and Simmons Lane killed a Rancho Cotate High School student and seriously injured four other teens. Both happened close to our school.
 
-Lessons go in order, and each one is scored on four things: how you answered, whether you finished the recovery steps after a miss, how much of the video you watched, and a small time factor. Those scores update a mastery level for each topic. Weak topics and saved lessons come back in review.
+Those crashes made us think about how young drivers actually prepare. Most people study for the permit test once, pass it (or don't), and never look at the rules again. Knowing a rule for a test is very different from remembering it in a stressful moment on the road. We also knew that anything that felt like homework would never get opened. So instead of fighting the scrolling habit, we used it. Lane is the same swipe you already know, just filled with things that might help you make a safer choice someday.
 
-The readiness score combines lessons completed (80%) with average topic mastery (20%). The weights are simple rules of thumb, not a trained or validated model, and the score is a study guide, not a prediction of passing the test.
+Yes, the name is a little bit of a nod to Simmons Lane. It also stands for **L**earn **A**nd **N**avigate **E**mergencies.
 
-## Driver coach (AI)
+### AI Disclosure
 
-The Driver coach on the Practice tab answers driving questions using **Claude Sonnet 5.5**, a model by Anthropic.
+This project was built with the help of AI tools. Specifically, we used **Claude Code** and **OpenAI Codex** as support while we were developing. Everything they helped with was reviewed, tested and changed by us before it stayed in the app.
 
-- It answers only from the *California Quick Reference Driver's Handbook (DL 600X, 2025)* and shows the handbook pages it used. Tap a page to see the quoted lines.
-- Answers are written by AI and can be wrong, and the chat says so under the question box.
-- It works only when backup is on (see [Privacy](#privacy)). Each learner can ask 30 questions per day.
-- The conversation lives in memory only. Lane doesn't store what you type. Your question and the recent chat are sent through Lane's server to Anthropic, along with a one-way hash of your anonymous account ID.
-- The API key stays on the server, in a Supabase Edge Function. It is never in the app.
+How we feel about it is pretty simple. AI is a tool that helps you go faster, and it is not the one making the app. It helped us when we were stuck, but we still had to understand every part of Lane, connect it all together, and make the calls about what belonged in it. Driving rules have to be right, so a human (one of us) always had the final say.
 
-## Privacy
+<details>
+<summary>What was AI used for?</summary>
 
-- Progress is kept on your device by default.
-- Backup is optional. Turning it on creates an anonymous account (no email or password) so progress, leaderboards, groups and comments can sync. Only your chosen username appears to others.
-- No ads, no analytics, no tracking cookies.
-- The full policy is in the app under **Profile → Settings → Privacy Policy**.
+* Explaining technical approaches when we were unsure how to build something.
+* Reviewing parts of our code and logic, and helping test the code near the end.
+* Thinking through how a social media style feed and video playback should behave.
+* Turning the simulations and quick time events we designed into interactive scenes.
+* Checking how our sources were organized after we collected them ourselves.
+* Pointing out wording that was inconsistent from one screen to another.
+* Double checking our reading of the California DMV handbook with ChatGPT, so our own bias would not slip into the quiz answers.
+* Lane also has a **Driver Coach** on the Practice tab that answers driving questions using the California handbook and shows the page it got the answer from. It runs on Claude through a Supabase Edge Function. It is built and tested, but it is not switched on in the live app yet.
 
-## Tech stack
+</details>
 
-| Part | Built with |
-| --- | --- |
-| App | TypeScript and [Vite](https://vite.dev/), with no UI framework |
-| 3D challenges | [Babylon.js](https://www.babylonjs.com/) 9.27.1, loaded only when a 3D challenge opens |
-| Offline | Installable web app (PWA) with a hand-written service worker |
-| Backend | [Supabase](https://supabase.com/): Postgres with row-level security, anonymous sign-in and Edge Functions |
-| Driver coach | [Anthropic API](https://docs.anthropic.com/) (Claude Sonnet 5.5), called from a Supabase Edge Function |
-| Testing | Node's built-in test runner and [Playwright](https://playwright.dev/) |
+### What did we NOT use AI for?
 
-## Running it locally
+* Coming up with the idea for Lane.
+* Designing the learning flow.
+    1. Video, then a quick check, then feedback, then review or a simulation.
+    2. Deciding what happens when someone gets an answer wrong.
+    3. Deciding when to offer a simulation and when to bring a lesson back for review.
+* Creating the formula behind our learning algorithm and choosing what it looks at.
+* Writing the quiz questions. We wrote them by hand from California DMV resources.
+* Choosing the lesson videos. We tried AI generated videos early on, and they were not good enough to teach driving, so we picked real ones and checked every license.
+* The look of the app. Colors, layout, animations and the feed buttons were our call. We looked at DaisyUI, Dribbble and Figma for inspiration, then threw most of it out and copied nothing.
+* Deciding what made it into the final app and what did not.
+* ... and so on (you get it).
 
-You need [Node.js](https://nodejs.org/) 22 or newer.
+AI shows up in different spots across the codebase, but every piece of it went through us. If it did not match what we wanted, it got rewritten or removed.
+
+## Tech Stack
+
+Lane's tech stack includes:
+
+* **Frontend:** Lane is a web app that you can install on your phone (a PWA).
+    * **TypeScript:** The main language for the whole app. No UI framework, just plain TypeScript.
+    * **Vite:** Builds and bundles everything, and runs the local dev server.
+    * **CSS:** Every screen is styled by hand (with some help from CSSMatic for shadows).
+    * **Babylon.js:** Powers the 3D driving simulations, and only loads when you open one so the app stays fast.
+    * **A custom service worker:** Lets Lane load and play saved videos offline.
+* **Backend:** The server Lane talks to when backup is on.
+    * **Supabase:** Postgres database, anonymous accounts and Edge Functions.
+    * **PL/pgSQL:** Database functions for XP, leaderboards, code groups and lesson comments.
+    * **Row Level Security:** So every learner can only touch their own data.
+* **Testing:** Node's built in test runner for our logic, plus Playwright walkthroughs that click through every screen on a bunch of phone sizes.
+
+<details>
+<summary>Privacy</summary>
+
+Lane is built for teenagers, so we tried to collect as little as we possibly could.
+
+* Lane never asks for your real name, email, phone number, address or school.
+* It does not use your location, camera, microphone or contacts.
+* There are no ads, no analytics and no tracking.
+* Your progress is saved on your own device first. Backup to our server is optional and uses an anonymous account, not a login.
+* The only name anyone else ever sees is the username you pick, on leaderboards and comments. You can delete your own comments whenever you want.
+* Likes, saves and the cars you unlock never leave your device.
+
+The full Privacy Policy and Terms are inside the app, under Profile.
+
+</details>
+
+## Why isn't this on the App Store?
+
+Short version: Lane is a web app on purpose, so it works on any phone without going through an app store.
+
+Publishing to the App Store and Google Play costs money every year and goes through a review process, and we wanted anyone (iPhone, Android, a school Chromebook, whatever) to be able to use Lane right away. Since Lane is a PWA, you can add it to your home screen and it opens full screen just like a normal app, even offline. Wrapping it for the app stores is something we might do later.
+
+<details>
+<summary>How to add Lane to your home screen</summary>
+
+**iPhone (Safari)**
+1. Open Lane in Safari.
+2. Tap the Share button.
+3. Tap **Add to Home Screen**, then **Add**.
+
+**Android (Chrome)**
+1. Open Lane in Chrome.
+2. Tap the three dots in the top right corner.
+3. Tap **Add to Home screen** or **Install app**.
+
+</details>
+
+## Building from Source
+
+To run Lane on your own computer, follow these steps:
+
+1. Clone the repository:
 
 ```bash
 git clone https://github.com/HamzaLovesCoding/CongressionalAppChallengeApp.git
 cd CongressionalAppChallengeApp
+```
+
+2. Install the dependencies (you need [Node.js](https://nodejs.org/) installed):
+
+```bash
 npm install
+```
+
+3. Start the dev server:
+
+```bash
 npm run dev
 ```
 
-Open http://localhost:5173. Without backend settings, Lane runs on this device only: lessons, challenges, practice, review, progress and the garage all work. Leaderboards, groups, comments, backup and the Driver coach need the backend.
+4. Open the link it prints (usually `http://localhost:5173`) in your browser. If you want the real phone experience, open your browser's dev tools and switch to a phone view.
 
-**Connecting a backend (optional)**
-1. Copy `.env.example` to `.env.local` and fill in your Supabase project URL and publishable key.
-2. Follow [`supabase/README.md`](supabase/README.md) to apply the database migrations, turn on anonymous sign-ins, and deploy the Driver coach.
+That's it. Without any setup, Lane runs completely on your device and saves progress locally. Leaderboards, groups and comments need a Supabase project. If you have one, copy `.env.example` to `.env.local` and fill in your project URL and publishable key. The steps for setting up the database are in [`supabase/README.md`](supabase/README.md).
 
-**Trying the Driver coach without a backend:** put an Anthropic API key in `supabase/functions/.env` (see [`supabase/functions/.env.example`](supabase/functions/.env.example)) and run `npm run coach:local`, then open http://127.0.0.1:5180/#/practice. Questions are billed to that key.
-
-**Production build:** `npm run build` writes the app to `dist/`, which can be served by any static host.
-
-## Testing
+... Or, if you just want to build the final app and check the tests pass, you can do that too:
 
 ```bash
-npm run build:test              # type-check and build an offline copy into dist-test/
-node --test scripts/*.test.mjs  # unit tests: scoring, planner, content checks, sync, legal text and more
+npm run build
 ```
 
-Screen-by-screen walkthroughs use Playwright and save screenshots to `artifacts/`. Start the test build with `npm run preview:test`, then run a walkthrough such as `npm run inspect:feed` or `node scripts/inspect-baseline.mjs`. Run `npx playwright install chromium webkit` once first, and set `CHROMIUM` to the path of your Chromium or Chrome executable when you run a walkthrough.
+```bash
+node --test scripts/*.test.mjs
+```
 
-## Project layout
+The finished build ends up in the `dist` folder.
 
-| Path | What's there |
-| --- | --- |
-| `src/feed/` | The lesson feed, checks, and lesson data (`curriculum.ts`, `clips.ts`) |
-| `src/learning/` | Scoring, the lesson planner and daily review |
-| `src/home/`, `src/progress/`, `src/practice/`, `src/profile/` | The five main screens |
-| `src/coach/` | The Driver coach chat |
-| `src/legal/` | Privacy Policy, Terms and the credits list |
-| `vendor/lane-simulations/` | The ten driving challenges |
-| `supabase/` | Database migrations, the coach Edge Function and backend setup notes |
-| `public/videos/` | Lesson videos (H.264, re-encoded for phones) |
-| `docs/` | Design notes, legal drafts, the content index and the credits register |
+We built and tested Lane on Node 24, so we would recommend using that.
 
-## Content sources and credits
+## Credits
 
-- **Driving rules:** *California Driver's Handbook* and *California Quick Reference Driver's Handbook (DL 600X, 2025)*, California Department of Motor Vehicles, licensed under [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/). Lane is not affiliated with or endorsed by the DMV.
-- **Lesson videos 1–19:** from the YouTube channels **Trubicars** and **CRUDE Ultimate Driving Education**, licensed under [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/). Lane trimmed and re-encoded the clips and added California corrections. Each lesson links to its original video, and the full list is in the app under **Credits & sources** and in [`docs/credits.md`](docs/credits.md).
-- **Local figures:** 2023 crash data for Novato, California Office of Traffic Safety.
-- **Fonts:** [IBM Plex Sans](https://github.com/IBM/plex) and Zilla Slab, both under the SIL Open Font License 1.1 (license files in `public/fonts/`).
-- **3D engine:** [Babylon.js](https://github.com/BabylonJS/Babylon.js), Apache License 2.0.
-- **Driver coach answers:** Claude Sonnet 5.5 by [Anthropic](https://www.anthropic.com/). Anthropic does not endorse Lane.
+Lane is developed by [Hamza Wadera](https://github.com/HamzaLovesCoding) and [Arnav Lal](https://github.com/cubinghay-lgtm) for the Congressional App Challenge 2026, 2<sup>nd</sup> district of California.
+
+A big thank you to everyone whose work made Lane possible.
+
+* **Lesson videos:** The 19 lesson videos come from the YouTube channels **Trubicars** and **CRUDE Ultimate Driving Education**, used under the [Creative Commons Attribution 3.0](https://creativecommons.org/licenses/by/3.0/) license. We trimmed them and converted them so they play on every phone. Every clip is credited by title and creator on the Credits page inside Lane and in [docs/credits.md](docs/credits.md).
+* **Driving rules:** The *California Driver's Handbook* and the *California Quick Reference Driver's Handbook (DL 600X, 2025)* from the California DMV, used under [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/). Lane is not made by or connected to the DMV.
+* **Local data:** Novato crash figures come from the California Office of Traffic Safety.
+* **Fonts:** IBM Plex Sans and Zilla Slab, under the SIL Open Font License.
+* **3D engine:** [Babylon.js](https://github.com/BabylonJS/Babylon.js), under the Apache License 2.0.
+* **Testers:** Our classmates and the people online who tried early versions and told us what was confusing. Thank you!
 
 ## License
 
-The code written for Lane is released under the [MIT License](LICENSE).
+The code we wrote for Lane is open source under the [MIT License](LICENSE). That means you can use it, change it and share it, as long as you keep our names on it.
 
-The MIT License does not cover third-party material in this repository. The lesson videos, the DMV handbook text, the fonts and Babylon.js keep their own licenses, listed above. The handbook text is licensed for **non-commercial use only**, so any commercial reuse of Lane would need to remove or replace it.
-
-## Team
-
-Lane was built by **Arnav Lal** ([@cubinghay-lgtm](https://github.com/cubinghay-lgtm)) and **Hamza Wadera** ([@HamzaLovesCoding](https://github.com/HamzaLovesCoding)) for the Congressional App Challenge 2026, California's 2<sup>nd</sup> congressional district.
+The MIT License only covers our code. The lesson videos, the DMV handbook text, the fonts and Babylon.js keep their own licenses, listed in Credits above. The handbook text is for non commercial use only, so anyone who wants to use Lane commercially would have to remove or replace it.
 
 ## ⚠️ Disclaimer
 
-- **Never use Lane while driving.**
-- Lane is a study aid. It is not an official DMV resource and does not replace the California Driver's Handbook, a licensed driving instructor or behind-the-wheel training.
-- The readiness score and the Driver coach can be wrong, and neither guarantees you will pass the permit or driving test.
+Lane is **not** a replacement for a driver's education course, a licensed driving instructor, or supervised practice behind the wheel. It is a study and review tool that works alongside them. Lane cannot tell you that you are ready to drive or that you will pass your test.
 
-This software is provided "as is", without warranty of any kind. See [LICENSE](LICENSE).
+**Never use Lane while you are driving.** Not at a red light, not in traffic, not ever. Pull over and park first.
+
+For official rules and testing information, always go to the source.
+
+* California DMV: [dmv.ca.gov](https://www.dmv.ca.gov/)
+* California Driver's Handbook: [dmv.ca.gov/portal/handbook](https://www.dmv.ca.gov/portal/handbook/california-driver-handbook/)
+
+This software is provided *"as is"* without warranty of any kind. The developers are not responsible for any consequences that come from using it, to the fullest extent allowed by law. See the [LICENSE](LICENSE) file for more information.
