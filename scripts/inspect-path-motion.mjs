@@ -20,9 +20,9 @@ try {
     const page = await context.newPage();
     await page.goto(`${base}#/progress`);
     await page.locator('.path-car [data-car-art="pickup"]').waitFor();
-    // Lesson 1 is the first curriculum video lesson; its quick check is answer C (10 seconds ahead).
-    await page.goto(`${base}#/feed/lane-end-scan/quiz`);
-    await page.locator('[data-answer="2"]').click();
+    // Lesson 1 is the first lesson in the feed; its quick check is answer B (reach freeway speed).
+    await page.goto(`${base}#/feed/freeway-entry/quiz`);
+    await page.locator('[data-answer="1"]').click();
     await page.locator('[data-continue]').click();
     await page.goto(`${base}#/progress`);
     await page.locator('.path-car [data-car-art="pickup"]').waitFor();

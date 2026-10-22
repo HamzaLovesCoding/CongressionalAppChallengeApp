@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { planFeed, resumeLesson, checkFor, STANDALONE_SIM_AFTER } from '../src/learning/planner.ts';
+import { planFeed, resumeLesson, checkFor, STANDALONE_SIM_AFTER, CARD_GAPS } from '../src/learning/planner.ts';
 
 const blank = { mastery: null, lastPracticedAt: null, attempts: 0, correct: 0, skips: 0, help: 0, retries: 0, reviewAttempts: 0, reviewCorrect: 0 };
 const lessons = Array.from({ length: 8 }, (_, i) => ({ id: `l${i + 1}`, topicId: `t${i + 1}`, safety: i === 2 ? 0.6 : 0.9, hasRecall: true, hasGlossary: i !== 4, scenarioId: i === 1 ? 'simA' : undefined }));
@@ -34,6 +34,39 @@ test('every lesson and simulation appears once; cards are spaced, never back to 
   assert.equal(new Set(keys).size, keys.length);
   assert.equal(plan.filter(item => item.kind === 'lesson').length, lessons.length);
   for (let i = 1; i < plan.length; i++) assert.ok(!(plan[i].kind === 'card' && plan[i - 1].kind === 'card'), `cards adjacent at ${i}`);
+});
+
+// A full 24-lesson unit with plenty of cards, for where the cards land.
+const unit = Array.from({ length: 24 }, (_, i) => ({ id: `u${i + 1}`, topicId: `t${i % 12}`, safety: 0.9, hasRecall: true, hasGlossary: true }));
+const deck = ['glossary', 'flashcard', 'permit-post'].flatMap(kind => Array.from({ length: 6 }, (_, i) => ({ id: `${kind}-${i}`, kind, topicId: `t${i}` })));
+// For each card: how many lessons come before it in the plan.
+const cardSpots = plan => plan.flatMap((item, index) => item.kind === 'card' ? [plan.slice(0, index).filter(entry => entry.kind === 'lesson').length] : []);
+
+test('with no test date, one card comes in the first five lessons, a few in the middle, most at the end', () => {
+  const plan = planFeed(unit, [], deck, state());
+  const spots = cardSpots(plan);
+  assert.equal(spots.filter(at => at <= 5).length, 1, 'one card among the first five lessons');
+  assert.equal(plan.find(item => item.kind === 'card').id.startsWith('permit-post'), true, 'and it is a permit test tip');
+  const middle = spots.filter(at => at > 5 && at <= 16).length, end = spots.filter(at => at > 16).length;
+  assert.ok(middle >= 1 && middle < end, `some in the middle (${middle}), most at the end (${end})`);
+  assert.equal(spots.length, 8, 'as many cards as one every three lessons');
+  assert.ok(plan.filter(item => item.kind === 'card' && item.id.startsWith('permit-post')).length >= 3, 'permit tips appear early, in the middle stretch and at the end');
+});
+
+test('cards still come more often as the permit test gets closer', () => {
+  assert.deepEqual(CARD_GAPS.month, [2]);
+  const inDays = days => new Date(now.getFullYear(), now.getMonth(), now.getDate() + days).toISOString().slice(0, 10);
+  assert.deepEqual(cardSpots(planFeed(unit, [], deck, state({ permitTestDate: inDays(25) }))).slice(0, 4), [2, 4, 6, 8], 'a month out: every second lesson');
+  assert.deepEqual(cardSpots(planFeed(unit, [], deck, state({ permitTestDate: inDays(5) }))).slice(0, 4), [2, 3, 4, 5], 'days out: after every lesson but the first');
+});
+
+test('a standalone simulation never comes straight after another simulation', () => {
+  const withSims = unit.slice(0, 8).map((lesson, i) => ({ ...lesson, scenarioId: i < 5 ? `own${i}` : undefined }));
+  const own = withSims.filter(lesson => lesson.scenarioId).map(lesson => ({ id: lesson.scenarioId, topicId: lesson.topicId, lessonId: lesson.id }));
+  const plan = planFeed(withSims, [...own, { id: 'simSolo', topicId: 'ts', lessonId: null }], [], state());
+  const solo = plan.findIndex(item => item.id === 'simSolo');
+  assert.notEqual(plan[solo - 1].kind, 'sim', 'it follows a lesson');
+  assert.equal(plan[solo - 1].id, 'u6', 'the first lesson past the fourth without its own simulation');
 });
 
 test('next lesson is always the earliest unfinished one, wherever the learner was', () => {

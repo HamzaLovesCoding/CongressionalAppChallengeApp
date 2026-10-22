@@ -59,8 +59,8 @@ try {
     assert.ok(page.url().endsWith('#/home'));
     await page.evaluate(() => document.fonts.ready);
     assert.equal(await page.getByRole('heading', { name:'Lane', exact:true }).count(), 1);
-    assert.equal(await page.locator('.home-sign-face').getAttribute('href'), '#/feed/lane-end-scan');
-    assert.equal(await page.getByRole('link', { name: 'Start lesson: Scanning Ahead for Lane-End Warnings', exact: true }).count(), 1);
+    assert.equal(await page.locator('.home-sign-face').getAttribute('href'), '#/feed/freeway-entry');
+    assert.equal(await page.getByRole('link', { name: 'Start lesson: Entering a Freeway', exact: true }).count(), 1);
     assert.equal(await page.locator('.home-strip, .home-strip-card').count(), 0, 'the lesson strip is gone (Progress lists every lesson)');
     assert.equal(await page.locator('.home-week-bars li').count(), 7);
     assert.equal(await page.getByRole('progressbar').getAttribute('aria-valuenow'), '0');

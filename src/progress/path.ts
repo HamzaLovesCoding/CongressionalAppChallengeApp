@@ -86,7 +86,7 @@ function sheetBody(clip: Clip, index: number, state: Stop) {
     ${clip.lesson ? `<p class="path-sheet-summary">${esc(clip.lesson.summary)}</p>` : ''}
     ${detail ? `<p class="path-sheet-result">${detail}</p>` : ''}
     <a class="path-sheet-action ui-button is-split" href="#/feed/${esc(clip.id)}">${action}${pathIcon('arrow')}</a>
-    ${scenario ? `<a class="path-sheet-action ui-button is-split is-secondary" href="#/feed/sim/${scenario.id}">${copy.simulator}<small>${copy.optional}</small></a>` : ''}`;
+    ${scenario ? `<a class="path-sheet-action ui-button is-split is-secondary" href="#/feed/sim/${scenario.id}">${copy.simulator(scenario.type)}<small>${copy.optional}</small></a>` : ''}`;
 }
 
 export function mountLearningPath(root: HTMLElement): View {

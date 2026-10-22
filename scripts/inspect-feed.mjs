@@ -42,14 +42,17 @@ async function videoLesson(name, viewport) {
     if (!navigator.serviceWorker.controller) await new Promise(resolve => navigator.serviceWorker.addEventListener('controllerchange', resolve, { once: true }));
   });
   await page.reload({ waitUntil: 'load' });
-  assert.match(page.url(), /feed\/lane-end-scan$/, 'A new learner starts on curriculum lesson 1');
+  assert.match(page.url(), /feed\/freeway-entry$/, 'A new learner starts on the first lesson in the feed');
   assert.equal(await page.locator('[data-clip]').count(), 24, 'All 24 lessons are in a new learner\'s feed');
-  assert.equal(await page.locator('[data-item="1"].lane-sim-card').count(), 1, 'Lesson 1 is followed by its challenge');
+  assert.equal(await page.locator('[data-item="1"].lane-sim-card').count(), 1, 'Lesson 1 is followed by its simulation');
+  assert.match(await page.locator('[data-item="0"] .lane-sim-tag').innerText(), /Includes a 3D driving simulation/, 'Lesson 1 says a simulation follows');
+  assert.match(await page.locator('[data-item="1"] .lane-card-label').innerText(), /3D DRIVING SIMULATION/);
+  assert.equal(await page.locator('[data-item="1"] .lane-sim-preview').count(), 1, 'The simulation card shows its preview');
   assert.equal(await page.locator('.lane-clip.has-video video[data-src][data-poster]').count(), 19, 'Every video lesson has a source and a poster');
   // Only clips within two feed items ahead (and one behind) attach a source, and the neighbors only once
-  // the current clip can play. Item 1 is lesson 1's challenge card, so lesson 2 (item 2) is the neighbor.
+  // the current clip can play. Item 1 is lesson 1's simulation card, so lesson 2 (item 2) is the neighbor.
   await page.waitForFunction(() => document.querySelectorAll('.lane-clip video[src]').length === 2);
-  assert.deepEqual(await page.locator('.lane-clip video[src]').evaluateAll(list => list.map(media => media.closest('.lane-clip').dataset.clip)), ['lane-end-scan', 'after-collision']);
+  assert.deepEqual(await page.locator('.lane-clip video[src]').evaluateAll(list => list.map(media => media.closest('.lane-clip').dataset.clip)), ['freeway-entry', 'emergency-pull-right']);
   const current = page.locator('.is-current');
   await current.locator('video').evaluate(media => new Promise(resolve => media.readyState >= 2 ? resolve() : media.addEventListener('loadeddata', resolve, { once: true })));
   assert.equal(await current.locator('video').evaluate(media => media.videoHeight > media.videoWidth), true, 'Clips are vertical');
@@ -106,8 +109,8 @@ async function videoLesson(name, viewport) {
   const about = page.locator('.lane-about[open]');
   await about.waitFor();
   assert.equal(await current.locator('video').evaluate(media => media.paused), true, 'Details pause the clip');
-  assert.match(await about.innerText(), /California rule[\s\S]*p\. 44[\s\S]*Novato[\s\S]*How to Navigate and be Aware of Hazards and Changes/i);
-  assert.equal(await about.locator('a[target="_blank"]').getAttribute('href'), 'https://www.youtube.com/shorts/Y_WfR2eIQHo');
+  assert.match(await about.innerText(), /California rule[\s\S]*pp\. 15–16[\s\S]*Novato[\s\S]*How to enter a ramp on the highway/i);
+  assert.equal(await about.locator('a[target="_blank"]').getAttribute('href'), 'https://www.youtube.com/shorts/yVxIoBMzeoo');
   await shot('about');
   await page.keyboard.press('Escape');
   await page.locator('.lane-about:not([open])').waitFor({ state: 'attached' });
@@ -120,18 +123,18 @@ async function videoLesson(name, viewport) {
   await current.locator('video').evaluate(media => { media.currentTime = Math.max(0, media.duration - .4); });
   await page.locator('.lane-sheet[aria-hidden="false"]').waitFor({ timeout: 12000 });
   assert.match(await current.locator('.lane-scroll-time').innerText(), /^\d{2}:\d{2}$/, 'The feed timer keeps counting after the clip ends');
-  await page.locator(`[data-answer="${answerOf('lane-end-scan')}"]`).click();
-  assert.match(await page.locator('.lane-feedback').innerText(), /Nailed it[\s\S]*DL 600X, 2025[\s\S]*p\. 44/);
+  await page.locator(`[data-answer="${answerOf('freeway-entry')}"]`).click();
+  assert.match(await page.locator('.lane-feedback').innerText(), /Nailed it[\s\S]*DL 600X, 2025[\s\S]*pp\. 15–16/);
   await shot('quiz');
-  await page.waitForFunction(async () => !!(await (await caches.open('amber-videos-h264')).match(new URL('videos/lane-end-scan.mp4', location.href).href)), null, { timeout: 30000 });
+  await page.waitForFunction(async () => !!(await (await caches.open('amber-videos-h264')).match(new URL('videos/freeway-entry.mp4', location.href).href)), null, { timeout: 30000 });
 
   await context.setOffline(true);
-  await page.goto(`${base}#/feed/lane-end-scan`, { waitUntil: 'load' });
+  await page.goto(`${base}#/feed/freeway-entry`, { waitUntil: 'load' });
   await page.reload({ waitUntil: 'load' });
   const offline = page.locator('.is-current video');
   await offline.evaluate(media => new Promise((resolve, reject) => { if (media.readyState >= 2) resolve(); media.addEventListener('loadeddata', resolve, { once: true }); media.addEventListener('error', () => reject(new Error('offline video failed')), { once: true }); }));
   await page.waitForFunction(() => document.querySelector('.is-current video').currentTime > .3, null, { timeout: 10000 });
-  assert.equal(await offline.getAttribute('src'), 'videos/lane-end-scan.mp4', 'Watched clip replays offline');
+  assert.equal(await offline.getAttribute('src'), 'videos/freeway-entry.mp4', 'Watched clip replays offline');
   assert.deepEqual(problems.filter(problem => !/Failed to load resource/.test(problem)), []);
   console.log(`${name}: video lesson dropdown, details, playback, ended → quiz, citation and offline replay passed.`);
   await context.close();
@@ -214,7 +217,7 @@ try {
     assert.equal((await stored()).clips['yellow-light'].firstTry, false);
     await page.waitForTimeout(800);
     await shot('cleared');
-    assert.match(await page.locator('.lane-sheet [data-next]').innerText(), /30-second challenge/);
+    assert.match(await page.locator('.lane-sheet [data-next]').innerText(), /3D driving simulation/);
     await page.locator('.lane-sheet [data-next]').click();
     await page.waitForURL(/feed\/sim\/yellow-light-stop$/);
     await page.locator('.is-current [data-sim-start]').click();
@@ -243,13 +246,13 @@ try {
     await page.locator('.lane-sheet[aria-hidden="false"]').waitFor({ timeout: 12000 });
     await completeCheck(page, 'roundabout');
     assert.match(await page.locator('.lane-clear-kicker').innerText(), /ALL CHECKS COMPLETE/);
-    assert.match(await page.locator('.lane-sheet [data-next]').innerText(), /30-second challenge/, 'roundabout is followed by its challenge');
+    assert.match(await page.locator('.lane-sheet [data-next]').innerText(), /2D driving simulation/, 'roundabout is followed by its simulation');
     assert.equal((await stored()).xp, 20);
     await page.locator('[data-next]').click();
     await page.waitForURL(/feed\/sim\/roundabout-entry$/);
     // A repeat visit gets a lighter check chosen by topic mastery, and never a second 10 XP.
     await page.goto(`${base}#/feed/yellow-light/quiz`, { waitUntil: 'load' });
-    await page.waitForFunction(() => document.querySelector('.lane-sheet[aria-hidden="false"] .lane-round-label')?.textContent.includes('LESSON 20') && !document.querySelector('.lane-sheet .lane-result'));
+    await page.waitForFunction(() => document.querySelector('.lane-sheet[aria-hidden="false"] .lane-round-label')?.textContent.includes('LESSON 09') && !document.querySelector('.lane-sheet .lane-result'));
     await completeCheck(page, 'yellow-light');
     assert.match(await page.locator('.lane-round-stats').innerText(), /ALREADY EARNED/);
     assert.doesNotMatch(await page.locator('.lane-round-stats').innerText(), /\+10/);

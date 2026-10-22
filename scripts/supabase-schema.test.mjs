@@ -24,7 +24,8 @@ test('security definer functions pin search_path and are not executable by anon'
 
 test('the lesson catalog, scenario list and car list match the app', () => {
   const catalog = [...sql.match(/insert into public\.lesson_catalog \(id\) values([\s\S]*?);/)[1].matchAll(/'([a-z-]+)'/g)].map(match => match[1]);
-  assert.deepEqual(catalog, CLIPS.map(clip => clip.id));
+  // A set on the server: feed order doesn't matter there, only that every lesson can earn XP.
+  assert.deepEqual([...catalog].sort(), CLIPS.map(clip => clip.id).sort());
   const scenarios = [...registry.matchAll(/\{ id: '([a-z-]+)', number:/g)].map(match => match[1]);
   for (const id of scenarios) assert.ok(sql.split(`'${id}'`).length >= 3, `${id} allowed in table and function`);
   for (const car of CARS) assert.ok(sql.includes(`'${car.id}'`), car.id);

@@ -90,7 +90,7 @@ try {
     await page.locator('[data-library="liked"]').click(); await page.waitForFunction(() => document.querySelector('.profile-library-sheet').open);
     assert.equal(await page.locator('.profile-library li').count(), 1);
     await page.locator('.profile-library li a').click();
-    assert.match(page.url(), /feed\/lane-end-scan$/);
+    assert.match(page.url(), /feed\/freeway-entry$/);
     await page.locator('.is-current [data-like]').click();
     await page.goto(`${base}#/profile`);
     await page.locator('[data-library="liked"]').click(); await page.waitForFunction(() => document.querySelector('.profile-library-sheet').open);
@@ -106,12 +106,12 @@ try {
     assert.equal(await page.locator('[data-library-count="saved"]').innerText(), '1');
     await page.locator('[data-library="saved"]').click(); await page.waitForFunction(() => document.querySelector('.profile-library-sheet').open);
     await page.locator('.profile-library li a').click();
-    assert.match(page.url(), /feed\/lane-end-scan$/);
+    assert.match(page.url(), /feed\/freeway-entry$/);
     await page.goto(`${base}#/profile`);
     await page.locator('[data-library="saved"]').click(); await page.waitForFunction(() => document.querySelector('.profile-library-sheet').open);
     await page.waitForTimeout(450); await shot('saved-from-feed');
     const beforeUnsave = await saved();
-    await page.getByRole('button', {name:'Remove Scanning Ahead for Lane-End Warnings from saved lessons'}).click();
+    await page.getByRole('button', {name:'Remove Entering a Freeway from saved lessons'}).click();
     assert.deepEqual(await saved(), {...beforeUnsave, saved:[], reviewLater: beforeUnsave.reviewLater ?? []}, 'Removing a save preserves other progress');
     assert.equal(await page.locator('#profile-library-title').evaluate(el=>el===document.activeElement), true);
     assert.equal(await page.locator('[data-library-count="saved"]').innerText(), '0');

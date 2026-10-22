@@ -37,11 +37,14 @@ const localDay = (date: Date) => new Date(date.getFullYear(), date.getMonth(), d
 export const REFRESH_THRESHOLD = 0.45;
 // Safety weight from which a first visit gets the full quiz (src/content/learning.ts QUIZ_SAFETY).
 export const QUIZ_SAFETY = 0.7;
-// A standalone simulation (no lesson of its own) comes after this many lessons.
+// A standalone simulation (no lesson of its own) comes after this many lessons, or after the next
+// lesson that has no simulation of its own.
 export const STANDALONE_SIM_AFTER = 4;
 
+// Lessons between feed cards; the last gap repeats. With no test date soon, a session opens with lessons
+// and their simulations: one card early, a few in the middle, most toward the end (owner, 2026-10-22).
 // Cards come more often, and flashcards first, as the permit test gets closer.
-const CARD_SPACING: Record<TestBand, number> = { none: 3, month: 2, weeks: 1, days: 1 };
+export const CARD_GAPS: Record<TestBand, number[]> = { none: [3, 6, 4, 3, 2], month: [2], weeks: [1], days: [1] };
 const CARD_ORDER: Record<TestBand, PlanCard['kind'][]> = {
   none: ['permit-post', 'glossary', 'flashcard'],
   month: ['permit-post', 'flashcard', 'glossary'],
@@ -119,16 +122,23 @@ export function planFeed(lessons: PlanLesson[], sims: PlanSim[], cards: PlanCard
   // A first session keeps the first two foundation lessons together, with nothing between them.
   const firstSession = !started;
 
-  let lessonCount = 0;
+  const gaps = CARD_GAPS[band];
+  let lessonCount = 0, cardSlot = 0, nextCardAt = gaps[0], standaloneDue = false;
   const addAfterLesson = (lesson: PlanLesson) => {
     lessonCount++;
+    let ownSim = false;
     if (lesson.scenarioId && !state.safeSim(lesson.scenarioId)) {
       const sim = sims.find(entry => entry.id === lesson.scenarioId);
-      if (sim) pushSim(sim.id, sim.lessonId);
+      if (sim) { pushSim(sim.id, sim.lessonId); ownSim = true; }
     }
-    if (lessonCount % STANDALONE_SIM_AFTER === 0 && standalone.length) { const sim = standalone.shift()!; pushSim(sim.id, null); }
+    // A standalone simulation waits for a lesson without its own, so two never come back to back.
+    if (lessonCount % STANDALONE_SIM_AFTER === 0) standaloneDue = true;
+    if (standaloneDue && !ownSim && standalone.length) { const sim = standalone.shift()!; pushSim(sim.id, null); standaloneDue = false; }
     const quiet = firstSession && lessonCount < 2;
-    if (!quiet && lessonCount % CARD_SPACING[band] === 0 && roundRobin.length) plan.push({ kind: 'card', id: roundRobin.shift()!.id });
+    if (lessonCount === nextCardAt) {
+      nextCardAt += gaps[Math.min(++cardSlot, gaps.length - 1)];
+      if (!quiet && roundRobin.length) plan.push({ kind: 'card', id: roundRobin.shift()!.id });
+    }
     if (lessonCount % 3 === 0 && reviewQueue.length) {
       const revisit = reviewQueue.shift()!;
       if (!used.has(revisit.id)) { pushLesson(revisit.id, true); addAfterLesson(revisit); }

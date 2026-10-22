@@ -2,9 +2,10 @@ import { VIDEO_LESSONS } from './curriculum.ts';
 import { HANDBOOK } from '../content/handbook.ts';
 import type { PosterScene } from './poster';
 
-// The curriculum video lessons come first. The five original lessons have no video; each is an
+// The 19 curriculum video lessons plus five original lessons without video; each of those is an
 // interactive text post: the learner fills one blank at a time, then takes the lesson's check.
-// Optional practice scenarios are mapped to lessons in src/simulation/registry.ts.
+// FEED_ORDER below sets the order they appear in. Optional practice scenarios are mapped to lessons
+// in src/simulation/registry.ts.
 export type Clip = {
   id: string;
   topic: string;
@@ -38,8 +39,7 @@ export type Clip = {
 
 export type PostStep = { before: string; after: string; choices: string[]; answer: number; why: string };
 
-export const CLIPS: Clip[] = [
-  ...VIDEO_LESSONS,
+const TEXT_LESSONS: Clip[] = [
   {
     id: 'yellow-light', topic: 'signals',
     title: 'When the light turns yellow',
@@ -109,6 +109,22 @@ export const CLIPS: Clip[] = [
     ] },
   },
 ];
+
+// Feed order (owner, 2026-10-22). Judges see the front of the feed first, so it opens with the
+// strongest videos that have a driving simulation, each on a different topic. Every other topic gets
+// its first lesson next, best footage first; lessons that return to a topic come last. Progress, XP
+// and review key on lesson IDs, never on position, so reordering moves no one's records.
+const FEED_ORDER = [
+  // Video + simulation, six different topics.
+  'freeway-entry', 'emergency-pull-right', 'passing-bicyclist', 'intersection-right-of-way', 'lane-end-scan', 'blind-spot-check',
+  // The first lesson for each remaining topic.
+  'after-collision', 'stopping-distance', 'yellow-light', 'high-beams', 'front-curb', 'drive-test-readiness', 'emergency-kit', 'blind-curve',
+  // Lessons on a topic the learner has already seen.
+  'dark-signal', 'freeway-merge', 'roundabout', 'emergency-right-edge', 'three-second-check', 'merging-trailer', 'four-way-stop',
+  'blind-bend', 'following-distance', 'school-bus',
+];
+const ALL_LESSONS = [...VIDEO_LESSONS, ...TEXT_LESSONS];
+export const CLIPS: Clip[] = FEED_ORDER.map(id => ALL_LESSONS.find(clip => clip.id === id)!);
 
 export const clipById = (id: string | undefined) => CLIPS.find(clip => clip.id === id);
 export const nextClip = (id: string) => CLIPS[CLIPS.findIndex(clip => clip.id === id) + 1];

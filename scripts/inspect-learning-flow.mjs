@@ -84,7 +84,7 @@ await page.click(`${sheet} [data-finish]`);
 // The algorithm may add one quick recall card first (developing band).
 if (await page.isVisible(`${sheet} [data-recall-show]`)) { await page.click(`${sheet} [data-recall-show]`); await page.click(`${sheet} [data-recall-got]`); }
 await page.waitForSelector(`${sheet} [data-next]`);
-assert.match(await page.textContent(`${sheet} [data-next]`), /30-second challenge/);
+assert.match(await page.textContent(`${sheet} [data-next]`), /2D driving simulation/);
 await page.waitForTimeout(700);
 await shot('06-complete-challenge-next');
 data = await stored();

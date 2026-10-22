@@ -37,7 +37,7 @@ export const PATH_COPY = {
   startLesson: 'Start lesson',
   continueLesson: 'Continue lesson',
   reviewLesson: 'Review lesson',
-  simulator: 'Practice this decision',
+  simulator: (type: '2d' | '3d') => `Try the ${type.toUpperCase()} driving simulation`,
   optional: 'Optional',
   closeDetails: 'Close lesson details',
   allDone: 'Road basics complete',

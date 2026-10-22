@@ -13,12 +13,25 @@ check — chosen by the planner (src/learning/planner.ts, checkFor):
   first visit, safety ≥ 0.7 → quiz        first visit, safety < 0.7 → flashcard (lessons 3, 4, 13)
   repeat visit: mastery < 0.6 → quiz again (counts as later review, C3) · < 0.8 → flashcard · ≥ 0.8 → glossary term
   ▼ session score (owner algorithm): strong → done · developing → one quick-recall flashcard · miss → rule + similar question · miss again → important part / activity / rule, saved to Review later
-challenge card (if the lesson has one and the learner hasn't made the safe choice yet) → Start challenge runs it in the card; Exit stays put and saves to Review later
-feed card every 3rd lesson (glossary / flashcard / permit-test tip; more often as the permit date nears)
+simulation card (if the lesson has one and the learner hasn't made the safe choice yet) → Start simulation runs it in the card; Exit stays put and saves to Review later
+feed card (glossary / flashcard / permit-test tip): with no test date in the next 30 days, after lessons 3, 9, 13, 16, 18, 20, 22, 24 of a session; every 2nd lesson within a month of the permit test, every lesson within two weeks
 next lesson
 ```
 
-Feed order (src/feed/plan.ts → planFeed): resume where the learner left off (saved on the device); a returning learner on a new day may first get one due refresher, and a challenge can stand in for that video; SIM-07 (railroad, no lesson) appears after the 4th lesson; finished lessons waiting in Review later return after every 3rd lesson; when everything is done, at most 5 refreshers.
+Feed order (src/feed/plan.ts → planFeed): resume where the learner left off (saved on the device); a returning learner on a new day may first get one due refresher, and a challenge can stand in for that video; SIM-07 (railroad, no lesson) appears after the 4th lesson, or after the next lesson without a simulation of its own so two never come back to back; finished lessons waiting in Review later return after every 3rd lesson; when everything is done, at most 5 refreshers.
+
+Lesson order (src/feed/clips.ts → FEED_ORDER, owner 2026-10-22). Judges see the front of the feed, so it opens with the strongest videos that have a simulation, each on a different topic; every other topic then gets its first lesson, best footage first; lessons that return to a topic come last. The # column in the index below is the curriculum deck's numbering, not the feed position. Progress, XP and review key on lesson IDs, so the order can change without moving anyone's records (tested in scripts/content-crosswalk.test.mjs).
+
+| Feed | Lesson ID | Why it sits here | Simulation |
+| --- | --- | --- | --- |
+| 1 | `freeway-entry` | Animated 3D interchange, the most polished clip | SIM-09, 3D |
+| 2 | `emergency-pull-right` | Studio presenter with captions; matches California law as filmed | SIM-06 |
+| 3 | `passing-bicyclist` | Clear dashcam with captions | SIM-10, 3D |
+| 4 | `intersection-right-of-way` | Studio presenter; the California rule panel corrects its tie rule | SIM-02 |
+| 5 | `lane-end-scan` | Dashcam with captions | SIM-04 |
+| 6 | `blind-spot-check` | Letterboxed and right-hand drive, but the last video with a simulation | SIM-05 |
+| 7–14 | `after-collision`, `stopping-distance`, `yellow-light`, `high-beams`, `front-curb`, `drive-test-readiness`, `emergency-kit`, `blind-curve` | First lesson for each remaining topic; presenter clips and the braking demo first, the letterboxed left-hand-traffic clip last. `yellow-light` is a text lesson with the third 3D simulation (SIM-08). | SIM-07 after `after-collision`; SIM-08 |
+| 15–24 | `dark-signal`, `freeway-merge`, `roundabout`, `emergency-right-edge`, `three-second-check`, `merging-trailer`, `four-way-stop`, `blind-bend`, `following-distance`, `school-bus` | Second lessons on a topic, never two of one topic in a row; text lessons last | SIM-03, SIM-01 |
 
 ## Index
 

@@ -43,7 +43,7 @@ export function mountProgress(root: HTMLElement): View {
       </section>
       <section class="lane-route" aria-label="Choose a lesson"><div class="lane-route-heading"><h2>Your lessons</h2><span>${s.done} / ${CLIPS.length}</span></div>${CLIPS.map((clip, i) => {
         const done = record(clip.id)?.done;
-        return `<a class="lane-route-stop${done ? ' is-cleared' : clip.id === next.id ? ' is-next' : ''}" href="#/feed/${clip.id}"><span class="lane-route-node" aria-hidden="true">${done ? '<svg viewBox="0 0 24 24"><path d="m6 12.5 4 4 8-9"/></svg>' : String(i + 1).padStart(2, '0')}</span><span class="lane-route-copy"><small>${done ? 'Complete' : clip.id === next.id ? 'Up next' : `Lesson ${String(i + 1).padStart(2, '0')}`}${SCENARIOS.some(entry => entry.lessonId === clip.id) ? ' · Challenge included' : ''}</small><strong>${clip.title}</strong></span><span aria-hidden="true">${done ? '↻' : '↗'}</span></a>`;
+        return `<a class="lane-route-stop${done ? ' is-cleared' : clip.id === next.id ? ' is-next' : ''}" href="#/feed/${clip.id}"><span class="lane-route-node" aria-hidden="true">${done ? '<svg viewBox="0 0 24 24"><path d="m6 12.5 4 4 8-9"/></svg>' : String(i + 1).padStart(2, '0')}</span><span class="lane-route-copy"><small>${done ? 'Complete' : clip.id === next.id ? 'Up next' : `Lesson ${String(i + 1).padStart(2, '0')}`}${SCENARIOS.some(entry => entry.lessonId === clip.id) ? ' · Simulation included' : ''}</small><strong>${clip.title}</strong></span><span aria-hidden="true">${done ? '↻' : '↗'}</span></a>`;
       }).join('')}</section>
       <section class="lane-week" aria-label="XP earned each day this week">
         <h2>This week</h2>

@@ -1,7 +1,7 @@
 import { chromium } from '@playwright/test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
-import { VIDEO_LESSONS } from '../src/feed/curriculum.ts';
+import { CLIPS } from '../src/feed/clips.ts';
 import { CAR_GAP } from '../src/progress/road.ts';
 const base = process.env.BASE ?? 'http://127.0.0.1:4173/';
 // Vite dev has no service worker; use OFFLINE=0 when checking the current app on 5173.
@@ -21,7 +21,7 @@ const road = page => page.evaluate(() => {
 });
 const seed = (page, done, xp) => page.evaluate(([done, xp]) => localStorage.setItem('roadloop-progress', JSON.stringify({ xp, clips:Object.fromEntries(done.map((id, i) => [id, { done:true, tries:i ? 2 : 1, firstTry:!i }])), daily:{}, liked:[], saved:[] })), [done, xp]);
 // The 19 curriculum video lessons come first, then the five original lessons.
-const LESSONS = [...VIDEO_LESSONS.map(lesson => lesson.id), 'yellow-light','roundabout','four-way-stop','following-distance','school-bus'];
+const LESSONS = CLIPS.map(clip => clip.id);
 const TOTAL = LESSONS.length, YELLOW = LESSONS.indexOf('yellow-light'), SPACING = LESSONS.indexOf('following-distance');
 try {
   for (const [name, viewport] of Object.entries({ portrait: { width:390, height:844 }, narrow:{ width:320, height:740 }, landscape:{ width:844, height:390 }, desktop:{ width:1440, height:1000 } })) {
@@ -62,7 +62,7 @@ try {
     assert.equal(await trophies.evaluate(el => el === document.activeElement), true);
     // The next sign is Home's sign: one tap starts that lesson.
     await page.locator('.path-sign[aria-current]').click();
-    await page.waitForFunction(() => location.hash === '#/feed/lane-end-scan');
+    await page.waitForFunction(() => location.hash === '#/feed/freeway-entry');
     await page.locator('.lane-feed').waitFor();
 
     // Each sign opens lesson details; Start goes to that lesson and the optional simulator only appears where one exists.

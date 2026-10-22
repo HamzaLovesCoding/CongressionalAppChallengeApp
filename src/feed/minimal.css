@@ -166,6 +166,16 @@
 .lane-card-status { margin:0; min-height:1.4em; font-size:var(--fs-caption); font-weight:var(--fw-bold); color:var(--lane-support); }
 .lane-card-source { font-size:var(--fs-caption); line-height:1.4; color:var(--lane-support); }
 /* A running simulation fills its card and locks the feed so a swipe can't skip the decision. */
+.lane-sim-tag { width:fit-content; margin:var(--sp-2) 0 0; white-space:normal; }
+.lane-sim-tag svg { fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; }
+.lane-post .lane-sim-tag { margin:0; }
+/* The package's own capture, so the card reads as a simulation before it starts. */
+.lane-sim-preview { display:block; width:100%; height:min(30dvh,260px); object-fit:cover; border:1.5px solid var(--lane-ink); border-radius:var(--radius-md); background:var(--lane-surface); box-shadow:var(--shadow-soft); }
+/* Room for "Start simulation" on one line beside Not now. */
+.lane-sim-card .lane-card-actions [data-sim-start] { flex:1.6 1 190px; }
+.lane-sim-card .lane-card-actions [data-sim-skip] { flex:1 1 110px; }
+@media(max-height:720px) { .lane-sim-preview { height:min(20dvh,140px); } }
+@media(max-height:600px) { .lane-sim-preview { display:none; } }
 .lane-sim-stage.sim-stage { position:absolute; z-index:4; inset:0; width:100%; min-height:0; overflow:auto; }
 .lane-sim-stage[hidden] { display:none; }
 .is-sim-active .lane-feed { overflow:hidden; touch-action:none; }

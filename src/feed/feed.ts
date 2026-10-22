@@ -35,6 +35,7 @@ const bookmark = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12v1
 const heart = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/></svg>';
 const commentIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4.5h16v11H9l-5 4z"/></svg>';
 const back = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15.5 5-7 7 7 7"/></svg>';
+const wheel = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2.5"/><path d="M3 12h6.5m5 0H21m-9 2.5V21"/></svg>';
 const play = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 5 11 7-11 7z"/></svg>';
 const check = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg>';
 const flame = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2c1 7-6 6-3 12 2-1 3-3 3-5 5 4 6 7 4 11-2 3-8 3-11 0C1 14 6 9 8 7c-1 4 1 4 1 4C8 5 12 5 13 2Z"/></svg>';
@@ -49,15 +50,17 @@ export type FeedTarget = { id?: string; quiz?: boolean; sim?: string };
 
 const rail = (clip: Clip) => `<div class="lane-rail"><button class="lane-icon" data-like="${clip.id}" aria-label="${marked('liked', clip.id) ? 'Unlike lesson' : 'Like lesson'}" aria-pressed="${marked('liked', clip.id)}">${heart}</button><button class="lane-icon" data-comments="${clip.id}" aria-label="Comments">${commentIcon}</button><button class="lane-icon" data-save="${clip.id}" aria-label="${marked('saved', clip.id) ? 'Unsave lesson' : 'Save lesson'}" aria-pressed="${marked('saved', clip.id)}">${bookmark}</button></div>`;
 // A text lesson (no video): a post whose sentences the learner completes one blank at a time.
-function textLessonHtml(clip: Clip, index: number, revisit: boolean) {
+function textLessonHtml(clip: Clip, index: number, revisit: boolean, sim?: ScenarioEntry) {
   return `<article class="lane-clip lane-card lane-text-lesson" data-item="${index}" data-clip="${clip.id}" aria-label="Lesson ${lessonNumber(clip.id)}: ${esc(clip.title)}">
     <div class="lane-top"><a class="lane-home" href="#/home" aria-label="Back to home">${back}</a>${scrollTime}</div>
-    <div class="lane-card-body lane-post"><span class="lane-card-label">${revisit ? `${copy.reviewLabel} · ` : ''}${esc(clip.topic.toUpperCase())} · ${copy.fillLabel}</span><h2>${esc(clip.title)}</h2><ol class="lane-post-steps" data-post-steps></ol><p class="lane-card-status" role="status" data-post-status></p><small class="lane-card-source">Source: ${esc(citation(clip.post!.source))}</small></div>
+    <div class="lane-card-body lane-post"><span class="lane-card-label">${revisit ? `${copy.reviewLabel} · ` : ''}${esc(clip.topic.toUpperCase())} · ${copy.fillLabel}</span><h2>${esc(clip.title)}</h2>${simTag(sim)}<ol class="lane-post-steps" data-post-steps></ol><p class="lane-card-status" role="status" data-post-status></p><small class="lane-card-source">Source: ${esc(citation(clip.post!.source))}</small></div>
     ${rail(clip)}
   </article>`;
 }
-function lessonHtml(clip: Clip, index: number, revisit: boolean) {
-  if (clip.post) return textLessonHtml(clip, index, revisit);
+// Says up front that a simulation follows this lesson; only when the plan really has it next.
+const simTag = (sim?: ScenarioEntry) => sim ? `<p class="lane-sim-tag ui-chip is-accent">${wheel}${copy.simIncluded(sim.type)}</p>` : '';
+function lessonHtml(clip: Clip, index: number, revisit: boolean, sim?: ScenarioEntry) {
+  if (clip.post) return textLessonHtml(clip, index, revisit, sim);
   const lesson = clip.lesson;
   // The source and poster are attached only while the clip is near the screen (see paintPreload).
   return `<article class="lane-clip${lesson ? ' has-lesson' : ''}${clip.video ? ' has-video' : ''}" data-item="${index}" data-clip="${clip.id}" aria-label="Lesson ${lessonNumber(clip.id)}: ${esc(clip.title)}">
@@ -65,7 +68,7 @@ function lessonHtml(clip: Clip, index: number, revisit: boolean) {
     <div class="lane-poster" aria-hidden="true">${roadPoster(CLIPS.indexOf(clip), clip.poster?.scene)}</div>
     <button class="lane-play-surface" data-play aria-label="Pause clip"></button>
     <div class="lane-top"><a class="lane-home" href="#/home" aria-label="Back to home">${back}</a><div class="lane-top-end">${clip.video ? '<button class="lane-sound" data-sound aria-pressed="false" aria-label="Mute sound"></button>' : ''}${scrollTime}</div></div>
-    <div class="lane-meta"><span>${revisit ? `${copy.reviewLabel} · ` : ''}${esc(lesson?.category ?? clip.topic)}</span><h2>${esc(clip.title)}</h2>${lesson ? `<details class="lane-rule"><summary>California rule<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><div class="lane-rule-content"><p>${esc(lesson.californiaRule)}</p><small>${esc(lesson.handbook)}</small><button class="lane-about-open" data-about="${clip.id}" aria-haspopup="dialog">About this lesson</button></div></details>` : ''}</div>
+    <div class="lane-meta"><span>${revisit ? `${copy.reviewLabel} · ` : ''}${esc(lesson?.category ?? clip.topic)}</span><h2>${esc(clip.title)}</h2>${simTag(sim)}${lesson ? `<details class="lane-rule"><summary>California rule<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><div class="lane-rule-content"><p>${esc(lesson.californiaRule)}</p><small>${esc(lesson.handbook)}</small><button class="lane-about-open" data-about="${clip.id}" aria-haspopup="dialog">About this lesson</button></div></details>` : ''}</div>
     ${rail(clip)}
   </article>`;
 }
@@ -73,8 +76,9 @@ function lessonHtml(clip: Clip, index: number, revisit: boolean) {
 const citation = (source: string) => { const at = source.search(/California Quick Reference/); return at >= 0 ? source.slice(at) : /Aceable/.test(source) ? 'Aceable driver’s ed glossary' : source; };
 const cardTop = `<div class="lane-top"><a class="lane-home" href="#/home" aria-label="Back to home">${back}</a>${scrollTime}</div>`;
 function simHtml(entry: ScenarioEntry, index: number) {
-  return `<article class="lane-clip lane-card lane-sim-card" data-item="${index}" aria-label="${esc(`${copy.simLabel}: ${entry.title}`)}">${cardTop}
-    <div class="lane-card-body" data-sim-body><span class="lane-card-label">${copy.simLabel} · SIM ${String(entry.number).padStart(2, '0')}</span><h2>${esc(entry.title)}</h2><p class="lane-card-rule">${esc(entry.rule)}</p><p class="lane-card-note">${copy.simPitch}</p>
+  const label = `${entry.type.toUpperCase()} ${copy.simLabel}`;
+  return `<article class="lane-clip lane-card lane-sim-card" data-item="${index}" aria-label="${esc(`${label}: ${entry.title}`)}">${cardTop}
+    <div class="lane-card-body" data-sim-body><img class="lane-sim-preview" src="${esc(entry.thumbnail)}" alt="" loading="lazy" decoding="async"><span class="lane-card-label">${label} · ${copy.simLength}</span><h2>${esc(entry.title)}</h2><p class="lane-card-rule">${esc(entry.rule)}</p><p class="lane-card-note">${copy.simView[entry.type]}</p>
       <div class="lane-card-actions"><button class="ui-button is-split" data-sim-start>${copy.simStart} <span aria-hidden="true">→</span></button><button class="ui-button is-secondary" data-sim-skip>${copy.simSkip}</button></div><p class="lane-card-status" role="status"></p></div>
     <div class="lane-sim-stage sim-stage" data-sim-stage hidden></div></article>`;
 }
@@ -89,7 +93,10 @@ export function mountFeed(root: HTMLElement, target: FeedTarget = {}): View {
   const startClip = clipById(target.id);
   const items: PlanItem[] = currentPlan({ lessonId: startClip?.id, scenarioId: scenarioById(target.sim)?.id });
   const itemHtml = (item: PlanItem, index: number) => {
-    if (item.kind === 'lesson') return lessonHtml(clipById(item.id)!, index, item.revisit);
+    if (item.kind === 'lesson') {
+      const following = items[index + 1];
+      return lessonHtml(clipById(item.id)!, index, item.revisit, following?.kind === 'sim' && following.lessonId === item.id ? scenarioById(following.id) : undefined);
+    }
     if (item.kind === 'sim') return simHtml(scenarioById(item.id)!, index);
     return contentCardHtml(CONTENT_CARDS.find(card => card.id === item.id)!, index);
   };
@@ -472,7 +479,7 @@ export function mountFeed(root: HTMLElement, target: FeedTarget = {}): View {
     if (!upcoming) return { label: 'View summary', html: `<p class="lane-result-copy">${copy.endSession(0)}</p>` };
     if (upcoming.kind === 'sim') {
       const entry = scenarioById(upcoming.id)!;
-      return { label: copy.nextSim, html: `<div class="lane-next-mission"><span class="lane-practice-label">${copy.nextUp}</span><h3>${esc(entry.title)}</h3><p>${copy.simPitch}</p></div>` };
+      return { label: copy.nextSim(entry.type), html: `<div class="lane-next-mission"><span class="lane-practice-label">${copy.nextUp}</span><h3>${esc(entry.title)}</h3><p>${copy.simPitch}</p></div>` };
     }
     if (upcoming.kind === 'lesson') return { label: 'Next lesson', html: `<div class="lane-next-mission"><span class="lane-practice-label">${copy.nextUp}</span><h3>${esc(clipById(upcoming.id)!.title)}</h3></div>` };
     return { label: 'Continue', html: '' };
