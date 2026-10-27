@@ -23,6 +23,10 @@
 
 [![Try Lane](https://img.shields.io/badge/Try%20Lane-laneapp.vercel.app-C8962E?style=for-the-badge&logo=vercel&logoColor=white)](https://laneapp.vercel.app/#/welcome)
 
+## 🎥 [**Watch our demo video on YouTube**](https://youtu.be/a0TtCb2v99g)
+
+[![Watch the Lane demo video](https://img.shields.io/badge/▶%20Watch%20the%20demo-YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://youtu.be/a0TtCb2v99g)
+
 </div>
 
 ## About
